@@ -1,9 +1,6 @@
 package com.utr.match.strategy;
 
-import com.utr.match.model.Line;
-import com.utr.match.model.LinePair;
-import com.utr.match.model.Lineup;
-import com.utr.match.model.Team;
+import com.utr.match.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +11,7 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
 
     public FixedPairTeamStrategy(int count, Map<String, String> fixedPairs) {
         this.count = count;
-        this.name = "fixed_pair";
+        this.name = "Fixed Pair";
         this.fixedPairs = fixedPairs;
     }
 
@@ -32,13 +29,11 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
         return true;
     }
 
-    @Override
-    public void matchingPairs(Team team) {
-        for (Line line: team.getLines()) {
-            team.possiblePairs(line);
-            if (fixedPairs.get(line.getName()) != null) {
-                line.resetMatchedPairs(fixedPairs.get(line.getName()));
-            }
+    protected List<PlayerPair> getTopNPairs(Line line) {
+        if (fixedPairs.get(line.getName()) != null) {
+            line.resetMatchedPairs(fixedPairs.get(line.getName()));
         }
+        return line.getTopNPairs(20);
     }
+
 }

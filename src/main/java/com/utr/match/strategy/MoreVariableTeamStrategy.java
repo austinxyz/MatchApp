@@ -10,7 +10,7 @@ import java.util.Set;
 public class MoreVariableTeamStrategy extends BaseTeamStrategy {
 
     public MoreVariableTeamStrategy() {
-        this.name = "more_variable";
+        this.name = "More Variable";
     }
     @Override
     protected boolean isGoodCandidate(List<Lineup> candidateLineups, Lineup newCandidateLineup) {

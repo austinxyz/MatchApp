@@ -13,7 +13,7 @@ public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy
 
     public FixedPairWithMoreVariableTeamStrategy(int count, Map<String, String> fixedPairs) {
         super(count, fixedPairs);
-        this.name = "fix_with_more_variable";
+        this.name = "Fixed Pairs with More Variable";
     }
     @Override
     protected boolean isGoodCandidate(List<Lineup> candidateLineups, Lineup newCandidateLineup) {

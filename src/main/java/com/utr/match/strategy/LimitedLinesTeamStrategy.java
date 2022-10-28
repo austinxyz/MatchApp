@@ -6,7 +6,7 @@ public class LimitedLinesTeamStrategy extends BaseTeamStrategy {
 
     public LimitedLinesTeamStrategy() {
         this.count = 5;
-        this.name = "limit_lines";
+        this.name = "Limited lines";
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.utr.match.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashSet;
@@ -10,11 +8,11 @@ import java.util.Set;
 
 public class Lineup {
 
-    public String getTeamName() {
-        return teamName;
+    public String getStrategyName() {
+        return strategyName;
     }
 
-    String teamName;
+    String strategyName;
     @JsonProperty(value="D1")
     LinePair d1;
     @JsonProperty(value="D2")
@@ -32,8 +30,8 @@ public class Lineup {
     @JsonIgnore
     Set<Player> players = new HashSet<>();
 
-    public Lineup(String teamName, LinePair d1, LinePair d2, LinePair d3, LinePair md, LinePair wd, Set<Player> players, boolean has7Member) {
-        this.teamName = teamName;
+    public Lineup(String strategyName, LinePair d1, LinePair d2, LinePair d3, LinePair md, LinePair wd, Set<Player> players, boolean has7Member) {
+        this.strategyName = strategyName;
         this.d1 = d1;
         this.d2 = d2;
         this.d3 = d3;
@@ -44,7 +42,7 @@ public class Lineup {
     }
 
     public Lineup(String teamName) {
-        this.teamName = teamName;
+        this.strategyName = teamName;
     }
 
     public void setD1(LinePair d1) {
@@ -101,7 +99,7 @@ public class Lineup {
 
         Set<Player> players = new HashSet<>(this.players);
 
-        return new Lineup(teamName, d1, d2, d3, md, wd, players, this.has7Member);
+        return new Lineup(strategyName, d1, d2, d3, md, wd, players, this.has7Member);
     }
     private boolean addPlayerPair(LinePair pair) {
         if (players.contains(pair.getPlayer1())) {

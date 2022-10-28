@@ -1,5 +1,8 @@
 package com.utr.match;
 
+import com.utr.match.model.Line;
+import com.utr.match.model.Player;
+import com.utr.match.model.PlayerPair;
 import com.utr.match.model.Team;
 
 import java.io.BufferedReader;
@@ -20,11 +23,11 @@ public class TeamLoader {
             while (line != null) {
                 String[] pStrings = line.split(",");
                 if (team == null) {
-                    team = new Team(pStrings[3]);
+                    team = createTeam(pStrings[3]);
                 }
 
                 if(!pStrings[0].startsWith("-")) {
-                    team.addPlayer(pStrings[0], pStrings[1], pStrings[2]);
+                    createPlayer(team, pStrings[0], pStrings[1], pStrings[2]);
                 }
                 // read next line
                 line = reader.readLine();
@@ -36,4 +39,23 @@ public class TeamLoader {
         return team;
     }
 
+    private void createPlayer(Team team, String name, String gender, String UTR) {
+        Player newPlayer = new Player(name, gender, UTR);
+        for (Player player: team.getPlayers() ) {
+            PlayerPair pair = new PlayerPair(player, newPlayer);
+            for (Line line:team.getLines()) {
+                line.addMatchedPair(pair);
+            }
+        }
+        team.getPlayers().add(newPlayer);
+    }
+    private Team createTeam(String teamName) {
+        Team team = new Team(teamName);
+        team.getLines().add(new Line("D3", (float)11.0, 0));
+        team.getLines().add(new Line("MD", (float)10.5,  1));
+        team.getLines().add(new Line("D2", (float)12.0,  0));
+        team.getLines().add(new Line("D1", (float)13.0,  0));
+        team.getLines().add(new Line("WD", (float)9.5,  2));
+        return team;
+    }
 }

@@ -1,6 +1,8 @@
 package com.utr.match.strategy;
 
+import com.utr.match.model.Line;
 import com.utr.match.model.Lineup;
+import com.utr.match.model.PlayerPair;
 import com.utr.match.model.Team;
 
 import java.util.ArrayList;
@@ -8,14 +10,15 @@ import java.util.List;
 
 public class BaseTeamStrategy {
     int count = 5;
-    String name = "base";
+    String name = "Base Strategy";
 
-    public List<Lineup> getPreferedLineups(Team team) {
-        List<Lineup> lineups = team.getLineups();
+    public void analysisLineups(Team team) {
+        List<Lineup> lineups = matchingLineup(0, team.getLines(), new ArrayList<>() );
 
         ranking(lineups);
 
-        return getLineups(lineups);
+        team.setPreferedLineups(getLineups(lineups));
+
     }
 
     public String getName() {
@@ -57,11 +60,43 @@ public class BaseTeamStrategy {
         lineups.sort((o1, o2) -> Float.compare(getScore(o1), getScore(o2)));
     }
 
-    public void matchingPairs(Team team) {
-        team.matchingPairs();
-    }
-
     protected float getScore(Lineup lineup) {
         return lineup.getGAPs();
+    }
+
+    private List<Lineup> matchingLineup(int index, List<Line> lines, List<Lineup> lineups) {
+        if (index == 5) {
+            return lineups;
+        }
+
+        List<Lineup> newLineups = new ArrayList<>();
+
+        Line line = lines.get(index);
+
+        if (lineups.isEmpty()) {
+            for (PlayerPair pair: getTopNPairs(line)) {
+                Lineup newLineup = new Lineup(this.getName());
+                newLineup.setLinePair(line, pair);
+                if (newLineup.isValid() && newLineup.completedPairNumber() == index+1) {
+                    newLineups.add(newLineup);
+                }
+            }
+        } else {
+            for (Lineup lineup : lineups) {
+                for (PlayerPair pair : getTopNPairs(line)) {
+                    Lineup newLineup = lineup.clone();
+                    newLineup.setLinePair(line, pair);
+                    if (newLineup.isValid() && newLineup.completedPairNumber() == index + 1) {
+                        newLineups.add(newLineup);
+                    }
+                }
+            }
+        }
+
+        return matchingLineup(index+1, lines, newLineups);
+    }
+
+    protected List<PlayerPair> getTopNPairs(Line line) {
+        return line.getTopNPairs(20);
     }
 }
