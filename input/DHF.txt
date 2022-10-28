@@ -4,7 +4,7 @@ Yao Michael,M,5.25,大华附UCSD
 Shih  Allen,M,7.47,大华附UCSD
 Yao Kevin,M,6.86,大华附UCSD
 Jen Scott,M,6.34,大华附UCSD
-Chen Kevin,M,6.36,大华附UCSD
+-Chen Kevin,M,6.36,大华附UCSD
 Luo  Russell,M,5.76,大华附UCSD
 Pang Gary,M,5.72,大华附UCSD
 Zhang Johnny,M,4.53,大华附UCSD
