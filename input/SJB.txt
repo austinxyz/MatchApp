@@ -1,0 +1,11 @@
+Lee Victor,M,4.50,圣吉伯爱之星
+Peng Jackson,M,6.00,圣吉伯爱之星
+Tang Chengcheng,M,4.75,圣吉伯爱之星
+Wang Dan,M,4.75,圣吉伯爱之星
+Xu Steve,M,4.25,圣吉伯爱之星
+Yang Bobby,M,4.75,圣吉伯爱之星
+Yu Jiahong,M,5.96,圣吉伯爱之星
+Su Wei,M,3.43,圣吉伯爱之星
+Wang Sunny,F,4.00,圣吉伯爱之星
+Moore Yan,F,4.73,圣吉伯爱之星
+Li Ping,F,3.56,圣吉伯爱之星

@@ -1,0 +1,17 @@
+Gao Hang,M,5.75,华山
+Cai Ying,M,7.46,华山
+Li Kehan,M,6.43,华山
+Jin Yi,M,6.20,华山
+Jing  Wei,M,5.97,华山
+Zhao  Shuchun,M,6.03,华山
+Xue Jierong(Jerry),M,5.22,华山
+Mao  Neil,M,4.95,华山
+Lei  Ke,M,4.87,华山
+Ouyang Xun (Ivan),M,4.71,华山
+Yin Duke,M,4.30,华山
+Cui Yi,F,2.75,华山
+Li  Lina,F,5.22,华山
+Xu Jindan,F,3.50,华山
+Nakamura Katherine,F,3.38,华山
+Zhou Xingxin,F,3.08,华山
+Lin  Wen,F,2.89,华山

@@ -1,0 +1,15 @@
+Chen Mark,M,5.75,北大
+Liu Jian,M,8.14,北大
+Zhou Ron,M,7.86,北大
+Cao David,M,6.75,北大
+Zhou Mike,M,6.61,北大
+Zhang  Tao,M,6.48,北大
+Huang  Mario,M,6.32,北大
+An Songzhu Michael,M,6.30,北大
+Li  John,M,5.68,北大
+Yan  Haihua,M,5.58,北大
+Liu Manqing,M,5.51,北大
+Wang Zheng,M,4.72,北大
+Du Kate Yue,F,5.44,北大
+Zhang  Lynda,F,4.06,北大
+Pan  Lucy,F,4.02,北大

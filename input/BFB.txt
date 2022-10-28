@@ -1,0 +1,17 @@
+Cheng Mo,M,5.25,北复伯联队
+Cui Jeffrey,M,4.75,北复伯联队
+Fu Daniel,M,3.75,北复伯联队
+Wang Jingwen,M,4.75,北复伯联队
+-Wan Michael,M,8.44,北复伯联队
+Chen Justin,M,7.26,北复伯联队
+Kuo Jason,M,6.25,北复伯联队
+Wan Bin,M,5.57,北复伯联队
+Zheng Cheng,M,5.46,北复伯联队
+Zhou Yufeng,M,5.26,北复伯联队
+Liang  Alan,M,4.99,北复伯联队
+Xu Lin,M,4.61,北复伯联队
+Zeng Yong,M,4.15,北复伯联队
+Liu Yin,F,2.75,北复伯联队
+Wu Lan,F,3.39,北复伯联队
+Fan  Kathy,F,3.22,北复伯联队
+Su Dan,F,3.02,北复伯联队

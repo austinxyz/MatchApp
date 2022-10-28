@@ -1,0 +1,13 @@
+Bowei Zhang,M,5.00,天南南
+Hu  William,M,5.75,天南南
+Li Yun,M,6.50,天南南
+Xu  Shuangxi,M,6.75,天南南
+Wen  Eric,M,6.93,天南南
+Yang  Chen,M,5.63,天南南
+He Wenxin,M,5.53,天南南
+Song Long,M,5.33,天南南
+Han Wei,M,5.31,天南南
+Wen Lijie "Jane",F,4.59,天南南
+Zhang  Zhen,F,4.16,天南南
+Wang Jianqing,F,2.95,天南南
+Yu Hong,F,2.85,天南南

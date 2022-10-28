@@ -1,0 +1,18 @@
+Jia Bill,M,5.75,交大
+Li Ming,M,5.75,交大
+Zhang Shouyong,M,6.00,交大
+Lin Xinda,M,8.10,交大
+Guan Ye,M,7.70,交大
+Chen  Kevin,M,7.11,交大
+Hu Yuan,M,5.83,交大
+Zheng  Henry,M,5.31,交大
+Zhang  Chen,M,5.14,交大
+Wang  Jiajing,M,5.03,交大
+Ye Rong,M,4.84,交大
+Gao Mao,M,4.85,交大
+Chang Susan,F,3.75,交大
+Song  Celine,F,3.25,交大
+Kong  Jie,F,5.58,交大
+Oktavia （何小萍） Lisa,F,5.48,交大
+Wang  Christine,F,4.64,交大
+Wang Ping,F,4.51,交大

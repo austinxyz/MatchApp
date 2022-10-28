@@ -1,0 +1,19 @@
+Huang Ping,M,4.75,清华MIT CIT
+Yang  Alex,M,7.61,清华MIT CIT
+Li Fred,M,6.80,清华MIT CIT
+Li  Tianbo,M,6.68,清华MIT CIT
+Yu  Ping,M,6.38,清华MIT CIT
+Guo  Yong,M,6.40,清华MIT CIT
+Heng Xin,M,6.36,清华MIT CIT
+Xie Yuntao "Young",M,5.54,清华MIT CIT
+Ma  Dongning,M,5.45,清华MIT CIT
+Zhang Ran,M,5.36,清华MIT CIT
+Chen Yilun,M,5.04,清华MIT CIT
+Fang  Yan,M,4.56,清华MIT CIT
+Feng Qiuping,F,3.50,清华MIT CIT
+Zhang Marina,F,6.26,清华MIT CIT
+Xiao  Chen,F,5.43,清华MIT CIT
+Qi Ji,F,5.40,清华MIT CIT
+Yang Xiuping,F,4.74,清华MIT CIT
+Lu Alice,F,3.75,清华MIT CIT
+Yao Yu Sandy,F,3.46,清华MIT CIT

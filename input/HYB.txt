@@ -1,0 +1,20 @@
+Gao Pengfei,M,4.75,航燕伯
+Hu Chris,M,5.00,航燕伯
+Li Frank,M,4.75,航燕伯
+Zhou Qi,M,5.75,航燕伯
+Zhu Liheng,M,6.25,航燕伯
+Yue Huanyu,M,6.44,航燕伯
+Lim Perry,M,5.67,航燕伯
+Lu  He,M,5.56,航燕伯
+Li Thomas,M,5.38,航燕伯
+Wang Minfa,M,5.31,航燕伯
+Wu Harry,M,5.28,航燕伯
+Wang  Jing,M,5.14,航燕伯
+Dong Shawn,M,4.69,航燕伯
+Yang Yudi,M,4.62,航燕伯
+Liu Ning,M,4.19,航燕伯
+Fu  Xiuhong (Mina),F,4.35,航燕伯
+Xie Yiwen,F,3.35,航燕伯
+Zhao Elaine,F,3.19,航燕伯
+Wang Yaqiong,F,3.10,航燕伯
+Jiang Cindy,F,2.99,航燕伯

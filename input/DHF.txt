@@ -1,0 +1,16 @@
+Chiu Frank,M,5.00,大华附UCSD
+Wong Jonathan T,M,4.75,大华附UCSD
+Yao Michael,M,5.25,大华附UCSD
+Shih  Allen,M,7.47,大华附UCSD
+Yao Kevin,M,6.86,大华附UCSD
+Jen Scott,M,6.34,大华附UCSD
+Chen Kevin,M,6.36,大华附UCSD
+Luo  Russell,M,5.76,大华附UCSD
+Pang Gary,M,5.72,大华附UCSD
+Zhang Johnny,M,4.53,大华附UCSD
+Su Dongmin,M,4.51,大华附UCSD
+Fu  Hong,F,3.75,大华附UCSD
+Cheung Elizabeth,F,3.92,大华附UCSD
+Yang Amy,F,3.51,大华附UCSD
+Vongsachang Hurjane,F,3.13,大华附UCSD
+Pan Xin,F,2.64,大华附UCSD
