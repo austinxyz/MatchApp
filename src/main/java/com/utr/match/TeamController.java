@@ -2,8 +2,7 @@ package com.utr.match;
 
 import com.utr.match.model.Team;
 import com.utr.match.strategy.BaseTeamStrategy;
-import com.utr.match.strategy.LimitedLinesTeamStrategy;
-import com.utr.match.strategy.MoreVariableTeamStrategy;
+import com.utr.match.strategy.TeamStrategyFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,11 +28,9 @@ public class TeamController {
 
         Team team = new TeamLoader().initTeam(teamName);
 
-        LineUpMatcher matcher = new LineUpMatcher();
+        BaseTeamStrategy strategy = TeamStrategyFactory.getStrategy(Integer.parseInt(strategyNo));
 
-        BaseTeamStrategy strategy = getStrategy(Integer.parseInt(strategyNo));
-
-        matcher.analysis(strategy, team);
+        strategy.analysisLineups(team);
 
         if (team.getPreferedLineups().size() > 0 ) {
             return ResponseEntity.ok(team);
@@ -42,12 +39,4 @@ public class TeamController {
         }
     }
 
-    private BaseTeamStrategy getStrategy(int strategyNo) {
-        switch (strategyNo) {
-            case 0: return new BaseTeamStrategy();
-            case 1: return new MoreVariableTeamStrategy();
-            case 2: return new LimitedLinesTeamStrategy();
-            default: return new MoreVariableTeamStrategy();
-        }
-    }
 }

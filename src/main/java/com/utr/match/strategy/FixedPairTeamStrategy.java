@@ -15,20 +15,6 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
         this.fixedPairs = fixedPairs;
     }
 
-    @Override
-    protected boolean isGoodCandidate(List<Lineup> candidateLineups, Lineup newCandidateLineup) {
-
-        for (String name: fixedPairs.keySet()) {
-            String pair = fixedPairs.get(name);
-            LinePair candidatePair = newCandidateLineup.getLinePair(name);
-
-            if (!pair.equals(candidatePair.getPairName())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     protected List<PlayerPair> getTopNPairs(Line line) {
         if (fixedPairs.get(line.getName()) != null) {
             line.resetMatchedPairs(fixedPairs.get(line.getName()));
