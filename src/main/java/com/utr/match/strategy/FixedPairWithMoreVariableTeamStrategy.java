@@ -6,13 +6,11 @@ import com.utr.match.model.PlayerPair;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy{
 
-    public FixedPairWithMoreVariableTeamStrategy(int count, Map<String, String> fixedPairs) {
-        super(count, fixedPairs);
+    public FixedPairWithMoreVariableTeamStrategy() {
         this.name = "Fixed Pairs with More Variable";
     }
     @Override
@@ -39,7 +37,7 @@ public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy
             String pair = fixedPairs.get(lineName);
             LinePair candidatePair = newCandidateLineup.getLinePair(lineName);
 
-            return pair.equals(candidatePair.getPairName());
+            return pair.equals(candidatePair.getPair().getPairName());
         }
 
         int currentCandidateSize = candidateLineups.size();

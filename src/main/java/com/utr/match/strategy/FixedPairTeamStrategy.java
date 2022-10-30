@@ -9,12 +9,13 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
 
     Map<String, String> fixedPairs;
 
-    public FixedPairTeamStrategy(int count, Map<String, String> fixedPairs) {
-        this.count = count;
+    public FixedPairTeamStrategy() {
         this.name = "Fixed Pair";
-        this.fixedPairs = fixedPairs;
     }
 
+    public void setFixedPairs(Map<String, String> fixedPairs) {
+        this.fixedPairs = fixedPairs;
+    }
     protected List<PlayerPair> getTopNPairs(Line line) {
         if (fixedPairs.get(line.getName()) != null) {
             line.resetMatchedPairs(fixedPairs.get(line.getName()));
