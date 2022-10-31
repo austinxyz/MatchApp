@@ -8,8 +8,13 @@ import java.util.List;
 public class Line {
 
     String name;
+    @JsonIgnore
     float utrLimit;
+    @JsonIgnore
     int femaleCount;
+
+    @JsonIgnore
+    int count = 10;
 
     @JsonIgnore
     List<PlayerPair> matchedPairs;
@@ -25,6 +30,11 @@ public class Line {
         return utrLimit;
     }
 
+    public List<PlayerPair> getTopPairs() {
+        return getTopNPairs(this.count);
+    }
+
+    @JsonIgnore
     public List<PlayerPair> getMatchedPairs() {
         matchedPairs.sort((o1, o2) -> Float.compare(o2.getTotalUTR(), o1.getTotalUTR()));
         return matchedPairs;

@@ -13,7 +13,9 @@ public class BaseTeamStrategy {
     String name = "Base Strategy";
 
     public void analysisLineups(Team team) {
-        List<Lineup> lineups = matchingLineup(0, team.getLines(), new ArrayList<>() );
+        List<Line> lines = new ArrayList<>(team.getLines().values());
+
+        List<Lineup> lineups = matchingLineup(0, lines, new ArrayList<>() );
 
         ranking(lineups);
 

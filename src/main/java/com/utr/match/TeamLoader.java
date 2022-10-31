@@ -43,7 +43,7 @@ public class TeamLoader {
         Player newPlayer = new Player(name, gender, UTR);
         for (Player player: team.getPlayers() ) {
             PlayerPair pair = new PlayerPair(player, newPlayer);
-            for (Line line:team.getLines()) {
+            for (Line line:team.getLines().values()) {
                 line.addMatchedPair(pair);
             }
         }
@@ -51,11 +51,11 @@ public class TeamLoader {
     }
     private Team createTeam(String teamName) {
         Team team = new Team(teamName);
-        team.getLines().add(new Line("D3", (float)11.0, 0));
-        team.getLines().add(new Line("MD", (float)10.5,  1));
-        team.getLines().add(new Line("D2", (float)12.0,  0));
-        team.getLines().add(new Line("D1", (float)13.0,  0));
-        team.getLines().add(new Line("WD", (float)9.5,  2));
+        team.getLines().put("D3", new Line("D3", (float)11.0, 0));
+        team.getLines().put("MD", new Line("MD", (float)10.5,  1));
+        team.getLines().put("D2", new Line("D2", (float)12.0,  0));
+        team.getLines().put("D1", new Line("D1", (float)13.0,  0));
+        team.getLines().put("WD", new Line("WD", (float)9.5,  2));
         return team;
     }
 }

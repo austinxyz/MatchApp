@@ -41,10 +41,6 @@ public class LinePair {
         return line.getUtrLimit() - pair.getTotalUTR();
     }
 
-    public String getPairInfo() {
-        return toString();
-    }
-
     @Override
     public String toString() {
         return getPairName() + ":" + String.format("%.02f", getPair().getTotalUTR());

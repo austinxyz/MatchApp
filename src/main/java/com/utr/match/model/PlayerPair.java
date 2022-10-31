@@ -5,8 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
 
 public class PlayerPair {
+    @JsonIgnore
     Player player1;
+    @JsonIgnore
     Player player2;
+    @JsonIgnore
     float totalUTR;
 
     public PlayerPair(Player player1, Player player2) {
@@ -67,5 +70,9 @@ public class PlayerPair {
     @JsonIgnore
     public String getPairName() {
         return getPlayer1().getName() + "+" + getPlayer2().getName();
+    }
+
+    public String getPairInfo() {
+        return toString();
     }
 }

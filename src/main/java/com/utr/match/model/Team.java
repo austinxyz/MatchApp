@@ -3,21 +3,24 @@ package com.utr.match.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Team {
 
     String name;
     List<Player> players;
+
     @JsonIgnore
-    List<Line> lines;
+    Map<String, Line> lines;
 
     List<Lineup> preferedLineups;
 
     public Team(String name) {
         this.name = name;
         this.players = new ArrayList<>();
-        this.lines = new ArrayList<>();
+        this.lines = new HashMap<>();
     }
 
     public String getName() {
@@ -28,8 +31,28 @@ public class Team {
         return players;
     }
 
-    public List<Line> getLines() {
+    public Map<String, Line> getLines() {
         return lines;
+    }
+
+    public Line getD1() {
+        return lines.get("D1");
+    }
+
+    public Line getD2() {
+        return lines.get("D2");
+    }
+
+    public Line getD3() {
+        return lines.get("D3");
+    }
+
+    public Line getWD() {
+        return lines.get("WD");
+    }
+
+    public Line getMD() {
+        return lines.get("MD");
     }
 
     public List<Lineup> getPreferedLineups() {
@@ -38,19 +61,6 @@ public class Team {
 
     public void setPreferedLineups(List<Lineup> preferedLineups) {
         this.preferedLineups = preferedLineups;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("==================================\n");
-        sb.append("com.utr.match.model.Team ").append(this.name).append(":").append(this.players.size()).append("\n");
-
-        for (Line line: this.lines) {
-            sb.append(line.toString());
-        }
-
-        return sb.toString();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.utr.match;
 
+import com.utr.match.model.Lineup;
 import com.utr.match.model.Team;
 import com.utr.match.strategy.BaseTeamStrategy;
 import com.utr.match.strategy.TeamStrategyFactory;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class TeamController {
@@ -26,7 +29,7 @@ public class TeamController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/lineup")
-    public ResponseEntity<Team> analysis(@RequestParam(value="team", defaultValue = "ZJU_BYD") String teamName,
+    public ResponseEntity<List<Lineup>> analysis(@RequestParam(value="team", defaultValue = "ZJU_BYD") String teamName,
                                                  @RequestParam(value="strategy", defaultValue = "0") String strategyNo) {
 
         Team team = new TeamLoader().initTeam(teamName);
@@ -36,7 +39,7 @@ public class TeamController {
         strategy.analysisLineups(team);
 
         if (team.getPreferedLineups().size() > 0 ) {
-            return ResponseEntity.ok(team);
+            return ResponseEntity.ok(team.getPreferedLineups());
         } else {
             return ResponseEntity.notFound().build();
         }
