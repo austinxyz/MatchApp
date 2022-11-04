@@ -30,7 +30,6 @@ public class LinePair {
     public String getPairName() {
         return getPlayer1().toString() + "," + getPlayer2().toString();
     }
-
     @JsonIgnore
     public Line getLine() {
         return line;

@@ -15,7 +15,7 @@ public class Line {
     int femaleCount;
 
     @JsonIgnore
-    int count = 10;
+    int count = 12;
 
     @JsonIgnore
     List<PlayerPair> matchedPairs;

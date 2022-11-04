@@ -6,14 +6,17 @@ import com.utr.match.model.PlayerPair;
 import com.utr.match.model.Team;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class BaseTeamStrategy {
     int count = 5;
     String name = "Base Strategy";
 
+    int maxLineupNo = 3000;
+
     public void analysisLineups(Team team) {
-        List<Line> lines = new ArrayList<>(team.getLines().values());
+        List<Line> lines = prepareLines(team);
 
         List<Lineup> lineups = matchingLineup(0, lines, new ArrayList<>() );
 
@@ -21,6 +24,13 @@ public class BaseTeamStrategy {
 
         team.setPreferedLineups(getLineups(lineups));
 
+    }
+
+    protected List<Line> prepareLines(Team team) {
+        List<Line> res = new ArrayList<>(team.getLines().values());
+
+        res.sort(Comparator.comparingInt(o -> o.getMatchedPairs().size()));
+        return res;
     }
 
     public String getName() {
@@ -76,7 +86,7 @@ public class BaseTeamStrategy {
         Line line = lines.get(index);
 
         if (lineups.isEmpty()) {
-            for (PlayerPair pair: getTopNPairs(line)) {
+            for (PlayerPair pair: line.getMatchedPairs()) {
                 Lineup newLineup = new Lineup(this.getName());
                 newLineup.setLinePair(line, pair);
                 if (newLineup.isValid() && newLineup.completedPairNumber() == index+1) {
@@ -85,11 +95,14 @@ public class BaseTeamStrategy {
             }
         } else {
             for (Lineup lineup : lineups) {
-                for (PlayerPair pair : getTopNPairs(line)) {
+                for (PlayerPair pair : line.getMatchedPairs()) {
                     Lineup newLineup = lineup.clone();
                     newLineup.setLinePair(line, pair);
                     if (newLineup.isValid() && newLineup.completedPairNumber() == index + 1) {
                         newLineups.add(newLineup);
+                    }
+                    if (newLineups.size() > this.maxLineupNo) {
+                        break;
                     }
                 }
             }
@@ -98,7 +111,4 @@ public class BaseTeamStrategy {
         return matchingLineup(index+1, lines, newLineups);
     }
 
-    protected List<PlayerPair> getTopNPairs(Line line) {
-        return line.getTopNPairs(20);
-    }
 }

@@ -64,7 +64,7 @@ public class PlayerPair {
     @JsonIgnore
     public boolean has55Member() {
         return (player1.getGender().equals("F") && player1.getUTR() > 5.5) ||
-                (player2.getGender().equals("F") && player2.getUTR() > 5.5);
+               (player2.getGender().equals("F") && player2.getUTR() > 5.5);
     }
 
     public String getPairName() {

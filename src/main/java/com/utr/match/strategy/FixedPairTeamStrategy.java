@@ -2,9 +2,7 @@ package com.utr.match.strategy;
 
 import com.utr.match.model.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FixedPairTeamStrategy extends BaseTeamStrategy {
 
@@ -17,11 +15,20 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
     public void setFixedPairs(Map<String, Set<String>> fixedPairs) {
         this.fixedPairs = fixedPairs;
     }
-    protected List<PlayerPair> getTopNPairs(Line line) {
-        if (fixedPairs.get(line.getName()) != null) {
-            line.resetMatchedPairs(fixedPairs.get(line.getName()));
+
+    @Override
+    protected List<Line> prepareLines(Team team) {
+        List<Line> res = new ArrayList<>();
+
+        for (Line line: team.getLines().values()) {
+            if (fixedPairs.get(line.getName()) != null) {
+                line.resetMatchedPairs(fixedPairs.get(line.getName()));
+            }
+            res.add(line);
         }
-        return line.getTopNPairs(20);
+
+        res.sort(Comparator.comparingInt(o -> o.getMatchedPairs().size()));
+        return res;
     }
 
 }

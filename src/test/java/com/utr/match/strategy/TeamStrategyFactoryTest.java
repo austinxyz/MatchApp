@@ -19,7 +19,6 @@ class TeamStrategyFactoryTest {
 
         strategy.analysisLineups(team);
 
-        System.out.println(team.getPreferedLineups());
     }
 
     @Test

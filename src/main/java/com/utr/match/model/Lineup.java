@@ -166,19 +166,26 @@ public class Lineup {
         int utr7Number = getUTRNumber(d1)
                 + getUTRNumber(d2)
                 + getUTRNumber(d3)
-                + getUTRNumber(md);
-        boolean urt5Number = md != null && md.getPair().has55Member();
+                + getUTRNumber(md)
+                + getUTRNumber(wd);
+
+        int urt55Number = get55UTRNumber(md)
+                + get55UTRNumber(wd);
 
         float d1UTR = d1==null ? (float)100.0: d1.getPair().getTotalUTR();
         float d2UTR = d2==null ? d1UTR: d2.getPair().getTotalUTR();
         float d3UTR = d3==null ? d2UTR: d3.getPair().getTotalUTR();
 
-        boolean numberAllowed = utr7Number == 0 || (utr7Number == 1 && !urt5Number);
+        boolean numberAllowed = utr7Number == 0 || (utr7Number == 1 && urt55Number <= 1);
         return d1UTR >= d2UTR && d2UTR >= d3UTR && numberAllowed;
     }
 
     private int getUTRNumber(LinePair pair) {
         return pair == null ? 0 : (pair.getPair().has7Member() ? 1 : 0);
+    }
+
+    private int get55UTRNumber(LinePair pair) {
+        return pair == null ? 0 : (pair.getPair().has55Member() ? 1 : 0);
     }
 
     public int completedPairNumber() {
