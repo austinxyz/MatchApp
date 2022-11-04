@@ -34,10 +34,10 @@ public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy
     private boolean checkPairVariable(String lineName, List<Lineup> candidateLineups, Lineup newCandidateLineup) {
 
         if (fixedPairs.containsKey(lineName)) {
-            String pair = fixedPairs.get(lineName);
+            Set<String> pairs = fixedPairs.get(lineName);
             LinePair candidatePair = newCandidateLineup.getLinePair(lineName);
 
-            return pair.equals(candidatePair.getPair().getPairName());
+            return pairs.contains(candidatePair.getPair().getPairName());
         }
 
         int currentCandidateSize = candidateLineups.size();

@@ -67,9 +67,8 @@ public class PlayerPair {
                 (player2.getGender().equals("F") && player2.getUTR() > 5.5);
     }
 
-    @JsonIgnore
     public String getPairName() {
-        return getPlayer1().getName() + "+" + getPlayer2().getName();
+        return getPlayer1().getName() + "," + getPlayer2().getName();
     }
 
     public String getPairInfo() {

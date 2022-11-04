@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Line {
 
@@ -40,11 +41,11 @@ public class Line {
         return matchedPairs;
     }
 
-    public void resetMatchedPairs(String pairName) {
+    public void resetMatchedPairs(Set<String> pairNames) {
         List<PlayerPair> result = new ArrayList<>();
 
         for (PlayerPair pair: matchedPairs) {
-            if (pair.getPairName().equals(pairName)) {
+            if (pairNames.contains(pair.getPairName())) {
                 result.add(pair);
             }
         }

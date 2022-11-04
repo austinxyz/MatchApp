@@ -5,7 +5,9 @@ import com.utr.match.model.Team;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 class TeamStrategyFactoryTest {
 
@@ -23,8 +25,10 @@ class TeamStrategyFactoryTest {
     @Test
     void testFixedStrategy() {
         FixedPairTeamStrategy strategy = (FixedPairTeamStrategy) TeamStrategyFactory.getStrategy(3);
-        Map<String, String> pairs = new HashMap<>();
-        pairs.put("MD", "Xu  Peng+Tian Lu");
+        Map<String, Set<String>> pairs = new HashMap<>();
+        Set<String> mdPairs = new HashSet<>();
+        mdPairs.add("Xu  Peng,Tian Lu");
+        pairs.put("MD", mdPairs);
 
         strategy.setFixedPairs(pairs);
 
@@ -38,8 +42,14 @@ class TeamStrategyFactoryTest {
     @Test
     void testFixedMoreVarableStrategy() {
         FixedPairTeamStrategy strategy = (FixedPairWithMoreVariableTeamStrategy) TeamStrategyFactory.getStrategy(4);
-        Map<String, String> pairs = new HashMap<>();
-        pairs.put("MD", "Xu  Peng+Tian Lu");
+        Map<String, Set<String>> pairs = new HashMap<>();
+        Set<String> mdPairs = new HashSet<>();
+        mdPairs.add("Xu  Peng,Tian Lu");
+        pairs.put("MD", mdPairs);
+
+        Set<String> d2Pairs = new HashSet<>();
+        d2Pairs.add("Dai  Ian,Li Haoyang");
+        pairs.put("D2", d2Pairs);
 
         strategy.setFixedPairs(pairs);
 

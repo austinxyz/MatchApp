@@ -200,10 +200,10 @@ public class Lineup {
     @Override
     public String toString() {
         return "------------LINEUP-------------------" + "\n" +
-                "D1:" + d1.getPair() + "\n" +
-                "D2:" + d2.getPair() + "\n" +
-                "D3:" + d3.getPair() + "\n" +
-                "MD:" + md.getPair() + "\n" +
-                "WD:" + wd.getPair() + "\n";
+                "D1:" + (d1!=null? d1.getPair(): "") + "\n" +
+                "D2:" + (d2!=null? d2.getPair(): "") + "\n" +
+                "D3:" + (d3!=null? d3.getPair(): "") + "\n" +
+                "MD:" + (md!=null? md.getPair(): "") + "\n" +
+                "WD:" + (wd!=null? wd.getPair(): "") + "\n";
     }
 }

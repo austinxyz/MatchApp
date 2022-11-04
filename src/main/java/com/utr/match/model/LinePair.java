@@ -28,7 +28,7 @@ public class LinePair {
 
     @JsonIgnore
     public String getPairName() {
-        return getPlayer1().toString() + "+" + getPlayer2().toString();
+        return getPlayer1().toString() + "," + getPlayer2().toString();
     }
 
     @JsonIgnore
