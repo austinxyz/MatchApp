@@ -1,5 +1,6 @@
 package com.utr.match.strategy;
 
+import com.utr.match.model.Line;
 import com.utr.match.model.Lineup;
 import com.utr.match.model.PlayerPair;
 
@@ -46,5 +47,10 @@ public class MoreVariableTeamStrategy extends BaseTeamStrategy {
             return false;
         }
         return pairs.size() != 2 || currentCandidateSize != 4;
+    }
+
+    @Override
+    protected List<PlayerPair> getPairs(Line line) {
+        return line.getTopNPairs(20);
     }
 }

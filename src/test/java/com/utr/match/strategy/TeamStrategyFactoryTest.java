@@ -13,12 +13,13 @@ class TeamStrategyFactoryTest {
 
     @Test
     void getStrategy() {
-        BaseTeamStrategy strategy = TeamStrategyFactory.getStrategy(0);
+        BaseTeamStrategy strategy = TeamStrategyFactory.getStrategy(1);
 
         Team team = new TeamLoader().initTeam("ZJU_BYD");
 
         strategy.analysisLineups(team);
 
+        System.out.println(team.getPreferedLineups());
     }
 
     @Test

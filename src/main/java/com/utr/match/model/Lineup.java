@@ -3,7 +3,9 @@ package com.utr.match.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Lineup {
@@ -12,17 +14,9 @@ public class Lineup {
         return strategyName;
     }
 
+    private Map<String, LinePair> pairs = new HashMap<>();
+
     String strategyName;
-    @JsonProperty(value="D1")
-    LinePair d1;
-    @JsonProperty(value="D2")
-    LinePair d2;
-    @JsonProperty(value="D3")
-    LinePair d3;
-    @JsonProperty(value="MD")
-    LinePair md;
-    @JsonProperty(value="WD")
-    LinePair wd;
 
     @JsonIgnore
     boolean has7Member = false;
@@ -30,13 +24,9 @@ public class Lineup {
     @JsonIgnore
     Set<Player> players = new HashSet<>();
 
-    public Lineup(String strategyName, LinePair d1, LinePair d2, LinePair d3, LinePair md, LinePair wd, Set<Player> players, boolean has7Member) {
+    public Lineup(String strategyName, Map<String, LinePair> pairs, Set<Player> players, boolean has7Member) {
         this.strategyName = strategyName;
-        this.d1 = d1;
-        this.d2 = d2;
-        this.d3 = d3;
-        this.md = md;
-        this.wd = wd;
+        this.pairs = pairs;
         this.players = players;
         this.has7Member = has7Member;
     }
@@ -45,61 +35,25 @@ public class Lineup {
         this.strategyName = teamName;
     }
 
-    public void setD1(LinePair d1) {
-
-        if (addPlayerPair(d1)) {
-            this.d1 = d1;
-        }
-
-    }
-
     public LinePair getLinePair(String lineName) {
-        if (lineName.equals("D1")) {
-            return this.getD1();
-        }
-        if (lineName.equals("D2")) {
-            return this.getD2();
-        }
-        if (lineName.equals("D3")) {
-            return this.getD3();
-        }
-        if (lineName.equals("MD")) {
-            return this.getMd();
-        }
-        if (lineName.equals("WD")) {
-            return this.getWd();
-        }
-        return null;
+        return pairs.get(lineName);
     }
     public void setLinePair(Line line, PlayerPair pair) {
         LinePair linePair = new LinePair(line, pair);
-        if (line.getName().equals("D1")) {
-            this.setD1(linePair);
-        }
-        if (line.getName().equals("D2")) {
-            this.setD2(linePair);
-        }
-        if (line.getName().equals("D3")) {
-            this.setD3(linePair);
-        }
-        if (line.getName().equals("MD")) {
-            this.setMd(linePair);
-        }
-        if (line.getName().equals("WD")) {
-            this.setWd(linePair);
-        }
+        addPlayerPair(linePair);
     }
 
     public Lineup clone() {
-        LinePair d1 = (this.d1==null)? null: new LinePair(this.d1.getLine(), this.d1.getPair());
-        LinePair d2 = (this.d2==null)? null: new LinePair(this.d2.getLine(), this.d2.getPair());
-        LinePair d3 = (this.d3==null)? null: new LinePair(this.d3.getLine(), this.d3.getPair());
-        LinePair md = (this.md==null)? null: new LinePair(this.md.getLine(), this.md.getPair());
-        LinePair wd = (this.wd==null)? null: new LinePair(this.wd.getLine(), this.wd.getPair());
+
+        Map<String, LinePair> newPairs = new HashMap<>();
+        for (Map.Entry<String, LinePair> entry :this.pairs.entrySet()) {
+            LinePair pair = entry.getValue();
+            newPairs.put(entry.getKey(), new LinePair(pair.getLine(), pair.getPair()));
+        }
 
         Set<Player> players = new HashSet<>(this.players);
 
-        return new Lineup(strategyName, d1, d2, d3, md, wd, players, this.has7Member);
+        return new Lineup(strategyName, newPairs, players, this.has7Member);
     }
     private boolean addPlayerPair(LinePair pair) {
         if (players.contains(pair.getPlayer1())) {
@@ -114,63 +68,45 @@ public class Lineup {
 
         players.add(pair.getPlayer1());
         players.add(pair.getPlayer2());
+        pairs.put(pair.getLine().getName(), pair);
+
         return true;
     }
 
-    public void setD2(LinePair d2) {
-        if (addPlayerPair(d2)) {
-            this.d2 = d2;
-        }
-    }
-
-    public void setD3(LinePair d3) {
-        if (addPlayerPair(d3)) {
-            this.d3 = d3;
-        }
-    }
-
-    public void setMd(LinePair md) {
-        if (addPlayerPair(md)) {
-            this.md = md;
-        }
-    }
-
-    public void setWd(LinePair wd) {
-        if (addPlayerPair(wd)) {
-            this.wd = wd;
-        }
-    }
-
+    @JsonProperty(value="D1")
     public LinePair getD1() {
-        return d1;
+        return pairs.get("D1");
     }
 
+    @JsonProperty(value="D2")
     public LinePair getD2() {
-        return d2;
+        return pairs.get("D2");
     }
 
+    @JsonProperty(value="D3")
     public LinePair getD3() {
-        return d3;
+        return pairs.get("D3");
     }
 
+    @JsonProperty(value="MD")
     public LinePair getMd() {
-        return md;
+        return pairs.get("MD");
     }
 
+    @JsonProperty(value="WD")
     public LinePair getWd() {
-        return wd;
+        return pairs.get("WD");
     }
 
     @JsonIgnore
     public boolean isValid() {
-        int utr7Number = getUTRNumber(d1)
-                + getUTRNumber(d2)
-                + getUTRNumber(d3)
-                + getUTRNumber(md)
-                + getUTRNumber(wd);
+        int utr7Number = getUTR7Numbers();
 
-        int urt55Number = get55UTRNumber(md)
-                + get55UTRNumber(wd);
+        int urt55Number = getUTR55Numbers();
+
+        LinePair d1 = this.getD1();
+        LinePair d2 = this.getD2();
+        LinePair d3 = this.getD3();
 
         float d1UTR = d1==null ? (float)100.0: d1.getPair().getTotalUTR();
         float d2UTR = d2==null ? d1UTR: d2.getPair().getTotalUTR();
@@ -180,8 +116,22 @@ public class Lineup {
         return d1UTR >= d2UTR && d2UTR >= d3UTR && numberAllowed;
     }
 
-    private int getUTRNumber(LinePair pair) {
-        return pair == null ? 0 : (pair.getPair().has7Member() ? 1 : 0);
+    private int getUTR7Numbers() {
+        int number = 0;
+        for (LinePair pair: pairs.values()) {
+           number = number +  (pair.getPair().has7Member() ? 1 : 0 );
+        }
+        return number;
+    }
+
+    private int getUTR55Numbers() {
+        int number = 0;
+        for (LinePair pair: pairs.values()) {
+            if (pair.getLine().equals("MD") || pair.getPairName().equals("WD")) {
+                number = number +  (pair.getPair().has55Member() ? 1 : 0 );
+            }
+        }
+        return number;
     }
 
     private int get55UTRNumber(LinePair pair) {
@@ -189,28 +139,28 @@ public class Lineup {
     }
 
     public int completedPairNumber() {
-        return (d1!=null?1:0) +
-                (d2!=null?1:0) +
-                (d3!=null?1:0) +
-                (md!=null?1:0) +
-                (wd!=null?1:0);
+        return pairs.size();
     }
 
     @JsonIgnore
     public float getGAPs() {
-        if (completedPairNumber()==5) {
-            return d1.getGAP() + d2.getGAP() + d3.getGAP() + md.getGAP() + wd.getGAP();
+        float gaps = 0.0F;
+        for (LinePair pair : pairs.values()) {
+            gaps = gaps + pair.getGAP();
         }
-        return (float)-1;
+        return gaps;
+    }
+
+    private float getGap(LinePair pair) {
+        return pair==null? 0: pair.getGAP();
     }
 
     @Override
     public String toString() {
-        return "------------LINEUP-------------------" + "\n" +
-                "D1:" + (d1!=null? d1.getPair(): "") + "\n" +
-                "D2:" + (d2!=null? d2.getPair(): "") + "\n" +
-                "D3:" + (d3!=null? d3.getPair(): "") + "\n" +
-                "MD:" + (md!=null? md.getPair(): "") + "\n" +
-                "WD:" + (wd!=null? wd.getPair(): "") + "\n";
+        StringBuilder res = new StringBuilder("------------LINEUP-------------------\n");
+        for (LinePair pair: pairs.values()) {
+            res.append(pair.getLine().getName()).append(":").append(pair.getPair().toString()).append("\n");
+        }
+        return res.toString();
     }
 }

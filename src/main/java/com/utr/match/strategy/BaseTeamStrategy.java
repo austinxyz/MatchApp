@@ -13,7 +13,7 @@ public class BaseTeamStrategy {
     int count = 5;
     String name = "Base Strategy";
 
-    int maxLineupNo = 3000;
+    int maxLineupNo = 160000;
 
     public void analysisLineups(Team team) {
         List<Line> lines = prepareLines(team);
@@ -29,7 +29,7 @@ public class BaseTeamStrategy {
     protected List<Line> prepareLines(Team team) {
         List<Line> res = new ArrayList<>(team.getLines().values());
 
-        res.sort(Comparator.comparingInt(o -> o.getMatchedPairs().size()));
+        res.sort(Comparator.comparingInt(o -> getPairs(o).size()));
         return res;
     }
 
@@ -52,7 +52,7 @@ public class BaseTeamStrategy {
             candidateLineups.add(newCandidateLineup);
         }
 
-        return getLineups(lineups, candidateLineups, index + 1);
+        return getLineups(lineups, candidateLineups, index+1);
 
     }
 
@@ -62,8 +62,19 @@ public class BaseTeamStrategy {
 
     private List<Lineup> getLineups(List<Lineup> lineups) {
         List<Lineup> result = new ArrayList<>();
+        
+        int index = 0;
+        
+        while (result.size() < this.count && index < lineups.size()) {
+            
+            Lineup newCandidateLineup = lineups.get(index);
 
-        getLineups(lineups, result, 0);
+            if (isGoodCandidate(result, newCandidateLineup)) {
+                result.add(newCandidateLineup);
+            }
+
+            index++;
+        }
 
         return result;
     }
@@ -86,7 +97,7 @@ public class BaseTeamStrategy {
         Line line = lines.get(index);
 
         if (lineups.isEmpty()) {
-            for (PlayerPair pair: line.getMatchedPairs()) {
+            for (PlayerPair pair: getPairs(line)) {
                 Lineup newLineup = new Lineup(this.getName());
                 newLineup.setLinePair(line, pair);
                 if (newLineup.isValid() && newLineup.completedPairNumber() == index+1) {
@@ -95,7 +106,7 @@ public class BaseTeamStrategy {
             }
         } else {
             for (Lineup lineup : lineups) {
-                for (PlayerPair pair : line.getMatchedPairs()) {
+                for (PlayerPair pair : getPairs(line)) {
                     Lineup newLineup = lineup.clone();
                     newLineup.setLinePair(line, pair);
                     if (newLineup.isValid() && newLineup.completedPairNumber() == index + 1) {
@@ -109,6 +120,10 @@ public class BaseTeamStrategy {
         }
 
         return matchingLineup(index+1, lines, newLineups);
+    }
+
+    protected List<PlayerPair> getPairs(Line line) {
+        return line.getMatchedPairs();
     }
 
 }
