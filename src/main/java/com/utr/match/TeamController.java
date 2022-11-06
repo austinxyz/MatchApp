@@ -67,8 +67,6 @@ public class TeamController {
         initFixedPairs(md, fixedPairs, "MD");
         initFixedPairs(wd, fixedPairs, "WD");
 
-        System.out.println(fixedPairs);
-
         strategy.setFixedPairs(fixedPairs);
 
         strategy.analysisLineups(team);
