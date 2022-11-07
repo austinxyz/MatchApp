@@ -43,13 +43,11 @@ public class Line {
 
     public void resetMatchedPairs(Set<String> pairNames) {
         List<PlayerPair> result = new ArrayList<>();
-
         for (PlayerPair pair: matchedPairs) {
-            if (pairNames.contains(pair.getPairName())) {
+            if (pairNames.contains(pair.getPairName()) || pairNames.contains(pair.getSecondPairName())) {
                 result.add(pair);
             }
         }
-
         matchedPairs = result;
     }
     public List<PlayerPair> getTopNPairs(int number) {

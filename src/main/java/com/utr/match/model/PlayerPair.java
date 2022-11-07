@@ -71,6 +71,11 @@ public class PlayerPair {
         return getPlayer1().getName() + "," + getPlayer2().getName();
     }
 
+    @JsonIgnore
+    public String getSecondPairName() {
+        return getPlayer2().getName() + "," + getPlayer1().getName();
+    }
+
     public String getPairInfo() {
         return toString();
     }

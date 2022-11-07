@@ -37,7 +37,8 @@ public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy
             Set<String> pairs = fixedPairs.get(lineName);
             LinePair candidatePair = newCandidateLineup.getLinePair(lineName);
 
-            return pairs.contains(candidatePair.getPair().getPairName());
+            return pairs.contains(candidatePair.getPair().getPairName())
+                    || pairs.contains(candidatePair.getPair().getSecondPairName());
         }
 
         int currentCandidateSize = candidateLineups.size();

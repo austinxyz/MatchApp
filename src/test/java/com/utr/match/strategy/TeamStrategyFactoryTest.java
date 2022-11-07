@@ -27,7 +27,8 @@ class TeamStrategyFactoryTest {
         FixedPairTeamStrategy strategy = (FixedPairTeamStrategy) TeamStrategyFactory.getStrategy(3);
         Map<String, Set<String>> pairs = new HashMap<>();
         Set<String> mdPairs = new HashSet<>();
-        mdPairs.add("Xu  Peng,Tian Lu");
+        //mdPairs.add("Xu  Peng,Tian Lu");
+        mdPairs.add("Tian Lu,Xu  Peng");
         pairs.put("MD", mdPairs);
 
         strategy.setFixedPairs(pairs);
@@ -44,7 +45,8 @@ class TeamStrategyFactoryTest {
         FixedPairTeamStrategy strategy = (FixedPairWithMoreVariableTeamStrategy) TeamStrategyFactory.getStrategy(4);
         Map<String, Set<String>> pairs = new HashMap<>();
         Set<String> mdPairs = new HashSet<>();
-        mdPairs.add("Xu  Peng,Tian Lu");
+//        mdPairs.add("Xu  Peng,Tian Lu");
+        mdPairs.add("Tian Lu,Xu  Peng");
         pairs.put("MD", mdPairs);
 
         Set<String> d2Pairs = new HashSet<>();
