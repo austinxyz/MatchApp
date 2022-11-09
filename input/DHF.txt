@@ -1,5 +1,5 @@
 Chiu Frank,M,5.00,大华附UCSD
-Wong Jonathan T,M,4.75,大华附UCSD
+Wong Jonathan T,M,5.75,大华附UCSD
 Yao Michael,M,5.25,大华附UCSD
 Shih  Allen,M,7.47,大华附UCSD
 Yao Kevin,M,6.86,大华附UCSD

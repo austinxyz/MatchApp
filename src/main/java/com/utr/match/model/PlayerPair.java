@@ -1,6 +1,7 @@
 package com.utr.match.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ public class PlayerPair {
         this.totalUTR = player1.getUTR() + player2.getUTR();
     }
 
+    @JsonProperty
     public float getTotalUTR() {
         return totalUTR;
     }
