@@ -9,7 +9,7 @@ public class PlayerPair {
     Player player1;
     @JsonIgnore
     Player player2;
-    @JsonIgnore
+
     float totalUTR;
 
     public PlayerPair(Player player1, Player player2) {
