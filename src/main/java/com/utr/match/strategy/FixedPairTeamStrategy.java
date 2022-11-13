@@ -42,7 +42,7 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
                 result.add(pairName);
             } else {
                 for (PlayerPair pair: line.getMatchedPairs()) {
-                    if (pair.getPairName().indexOf(pairName) >= 0) {
+                    if (pair.getPairName().contains(pairName)) {
                         result.add(pair.getPairName());
                     }
                 }
