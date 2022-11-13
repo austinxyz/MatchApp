@@ -13,6 +13,7 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
     }
 
     public void setFixedPairs(Map<String, Set<String>> fixedPairs) {
+
         this.fixedPairs = fixedPairs;
     }
 
@@ -21,7 +22,9 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
         List<Line> res = new ArrayList<>();
 
         for (Line line: team.getLines().values()) {
-            if (fixedPairs.get(line.getName()) != null) {
+            Set<String> fixedPair = fixedPairs.get(line.getName());
+            if (fixedPair != null) {
+                fixedPairs.put(line.getName(), prepareFixedPairs(line, fixedPair));
                 line.resetMatchedPairs(fixedPairs.get(line.getName()));
             }
             res.add(line);
@@ -29,6 +32,23 @@ public class FixedPairTeamStrategy extends BaseTeamStrategy {
 
         res.sort(Comparator.comparingInt(o -> o.getMatchedPairs().size()));
         return res;
+    }
+
+    protected Set<String> prepareFixedPairs(Line line, Set<String> pairNames) {
+        Set<String> result = new HashSet<>();
+
+        for (String pairName: pairNames) {
+            if (pairName.indexOf(",") > 0) {
+                result.add(pairName);
+            } else {
+                for (PlayerPair pair: line.getMatchedPairs()) {
+                    if (pair.getPairName().indexOf(pairName) >= 0) {
+                        result.add(pair.getPairName());
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 }

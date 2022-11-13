@@ -50,6 +50,7 @@ public class Line {
         }
         matchedPairs = result;
     }
+
     public List<PlayerPair> getTopNPairs(int number) {
         List<PlayerPair> result = new ArrayList<>();
         getMatchedPairs();
