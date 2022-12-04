@@ -1,6 +1,7 @@
 package com.utr.match.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.utr.model.Player;
 
 public class LinePair {
     @JsonIgnore

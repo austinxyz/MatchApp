@@ -1,11 +1,10 @@
 package com.utr.match;
 
 import com.utr.match.model.Team;
+import com.utr.model.Division;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TeamLoaderTest {
 
@@ -18,9 +17,9 @@ class TeamLoaderTest {
 
     @Test
     void getTeams() {
-        List<Team> teams = TeamLoader.getInstance().getTeams();
+        List<Division> teams = TeamLoader.getInstance().getDivisions();
 
-        for (Team team: teams) {
+        for (Division team : teams) {
             System.out.println(team);
         }
     }

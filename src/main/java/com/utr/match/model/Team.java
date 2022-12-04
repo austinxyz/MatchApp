@@ -1,6 +1,7 @@
 package com.utr.match.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.utr.model.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,18 @@ public class Team {
 
     String name;
     List<Player> players;
+    String displayName;
+    @JsonIgnore
+    Map<String, Line> lines;
+    @JsonIgnore
+    String teamId;
+    List<Lineup> preferedLineups;
+
+    public Team(String name) {
+        this.name = name;
+        this.players = new ArrayList<>();
+        this.lines = new HashMap<>();
+    }
 
     public String getDisplayName() {
         return displayName;
@@ -20,28 +33,12 @@ public class Team {
         this.displayName = displayName;
     }
 
-    String displayName;
-
-    @JsonIgnore
-    Map<String, Line> lines;
-
     public String getTeamId() {
         return teamId;
     }
 
     public void setTeamId(String teamId) {
         this.teamId = teamId;
-    }
-
-    @JsonIgnore
-    String teamId;
-
-    List<Lineup> preferedLineups;
-
-    public Team(String name) {
-        this.name = name;
-        this.players = new ArrayList<>();
-        this.lines = new HashMap<>();
     }
 
     public String getName() {
@@ -85,7 +82,7 @@ public class Team {
     }
 
     public Player getPlayer(String playerName) {
-        for (Player player: this.players) {
+        for (Player player : this.players) {
             if (playerName.equals(player.getName())) {
                 return player;
             }

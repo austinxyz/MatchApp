@@ -1,4 +1,4 @@
-package com.utr.match.model;
+package com.utr.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -9,6 +9,19 @@ public class Player {
     String name;
     String gender;
     float UTR;
+    String id;
+    double dUTR;
+    @JsonIgnore
+    double sUTR;
+    String dUTRStatus;
+    @JsonIgnore
+    String sUTRStatus;
+
+    public Player(String name, String gender, String UTR) {
+        this.name = name;
+        this.gender = gender;
+        this.UTR = Float.parseFloat(UTR);
+    }
 
     public String getId() {
         return id;
@@ -17,14 +30,6 @@ public class Player {
     public void setId(String id) {
         this.id = id;
     }
-
-    @JsonIgnore
-    String id;
-
-    double dUTR;
-
-    @JsonIgnore
-    double sUTR;
 
     public double getdUTR() {
         return dUTR;
@@ -58,21 +63,6 @@ public class Player {
         this.sUTRStatus = sUTRStatus;
     }
 
-    String dUTRStatus;
-
-    @JsonIgnore
-    String sUTRStatus;
-
-    public Player(String name, String gender, String UTR) {
-        this.name = name;
-        this.gender = gender;
-        this.UTR = Float.parseFloat(UTR);
-    }
-
-    public void setUTR(String UTR) {
-        this.UTR = Float.parseFloat(UTR);
-    }
-
     public String getName() {
         return name;
     }
@@ -83,6 +73,10 @@ public class Player {
 
     public float getUTR() {
         return UTR;
+    }
+
+    public void setUTR(String UTR) {
+        this.UTR = Float.parseFloat(UTR);
     }
 
     @JsonIgnore

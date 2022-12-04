@@ -1,10 +1,9 @@
 package com.utr.match.parser;
 
-import com.utr.match.model.Event;
-import com.utr.match.model.Team;
+import com.utr.model.Division;
+import com.utr.model.Event;
+import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class UTRParserTest {
 
@@ -16,7 +15,7 @@ class UTRParserTest {
 
         System.out.println(event.getName());
 
-        for (Team team: event.getTeams()) {
+        for (Division team : event.getDivisions()) {
             System.out.println(team);
         }
 

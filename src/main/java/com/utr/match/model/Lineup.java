@@ -2,6 +2,7 @@ package com.utr.match.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.utr.model.Player;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -1,11 +1,11 @@
 package com.utr.match;
 
-import com.utr.match.model.Event;
 import com.utr.match.model.Lineup;
 import com.utr.match.model.Team;
 import com.utr.match.strategy.BaseTeamStrategy;
 import com.utr.match.strategy.FixedPairTeamStrategy;
 import com.utr.match.strategy.TeamStrategyFactory;
+import com.utr.model.Division;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +18,8 @@ import java.util.*;
 public class TeamController {
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
-    public ResponseEntity<List<Team>> teams() {
-        List<Team> teams = TeamLoader.getInstance().getTeams();
+    public ResponseEntity<List<Division>> teams() {
+        List<Division> teams = TeamLoader.getInstance().getDivisions();
 
         if (teams.size() > 0 ) {
             return ResponseEntity.ok(teams);
