@@ -12,8 +12,29 @@ public class Team {
     String name;
     List<Player> players;
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    String displayName;
+
     @JsonIgnore
     Map<String, Line> lines;
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
+    }
+
+    @JsonIgnore
+    String teamId;
 
     List<Lineup> preferedLineups;
 
@@ -63,4 +84,22 @@ public class Team {
         this.preferedLineups = preferedLineups;
     }
 
+    public Player getPlayer(String playerName) {
+        for (Player player: this.players) {
+            if (playerName.equals(player.getName())) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Team{" +
+                "name='" + name + '\'' +
+                ", players=" + players +
+                ", displayName='" + displayName + '\'' +
+                ", teamId='" + teamId + '\'' +
+                '}';
+    }
 }

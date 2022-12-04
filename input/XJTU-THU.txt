@@ -1,0 +1,17 @@
+Fan Gerry,M,6.00,西芹花椒
+Lin Jiang,M,4.00,西芹花椒
+Liu Jeff,M,3.75,西芹花椒
+Zhang Vae,M,3.75,西芹花椒
+Zhang Youfeng,M,3.75,西芹花椒
+Zhang Jin,M,4.50,西芹花椒
+Zheng Lei,M,5.38,西芹花椒
+Ren  Huan,M,5.25,西芹花椒
+Ma Yifan,M,5.11,西芹花椒
+Qu Peng Peter,M,4.70,西芹花椒
+Zhao George,M,4.70,西芹花椒
+Du Kevin,M,4.29,西芹花椒
+Yan Eric,M,3.76,西芹花椒
+Li Tj Tingjie,F,2.75,西芹花椒
+Xia Nan,F,2.69,西芹花椒
+Ren Joanne,F,3.26,西芹花椒
+Xie Lihui,F,3.04,西芹花椒

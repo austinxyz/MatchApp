@@ -1,0 +1,13 @@
+Chau Derek,M,5.50,华南虎
+Feng Fulton,M,3.75,华南虎
+Hui Bob,M,5.50,华南虎
+Lu David,M,5.50,华南虎
+Tang Roger,M,5.50,华南虎
+Yu Wei,M,5.00,华南虎
+Zhang  Long,M,3.75,华南虎
+Zhong Eric,M,4.25,华南虎
+Zhou Xin (Joe),M,3.75,华南虎
+Dong Li,F,3.00,华南虎
+Liu  Stella,F,2.50,华南虎
+Zhao Ye,F,2.50,华南虎
+Huang  Florence,F,3.36,华南虎

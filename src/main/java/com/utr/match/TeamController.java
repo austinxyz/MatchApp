@@ -1,5 +1,6 @@
 package com.utr.match;
 
+import com.utr.match.model.Event;
 import com.utr.match.model.Lineup;
 import com.utr.match.model.Team;
 import com.utr.match.strategy.BaseTeamStrategy;
@@ -15,11 +16,22 @@ import java.util.*;
 
 @RestController
 public class TeamController {
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams")
+    public ResponseEntity<List<Team>> teams() {
+        List<Team> teams = TeamLoader.getInstance().getTeams();
+
+        if (teams.size() > 0 ) {
+            return ResponseEntity.ok(teams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/team")
-    public ResponseEntity<Team> team(@RequestParam(value="team", defaultValue = "ZJU_BYD") String teamName) {
-        Team team = new TeamLoader().initTeam(teamName);
+    public ResponseEntity<Team> team(@RequestParam(value="team", defaultValue = "ZJU-BYD") String teamName) {
+        Team team = TeamLoader.getInstance().initTeam(teamName);
 
         if (team.getPlayers().size() > 0 ) {
             return ResponseEntity.ok(team);
@@ -30,10 +42,10 @@ public class TeamController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/lineup")
-    public ResponseEntity<List<Lineup>> analysis(@RequestParam(value="team", defaultValue = "ZJU_BYD") String teamName,
+    public ResponseEntity<List<Lineup>> analysis(@RequestParam(value="team", defaultValue = "ZJU-BYD") String teamName,
                                                  @RequestParam(value="strategy", defaultValue = "0") String strategyNo) {
 
-        Team team = new TeamLoader().initTeam(teamName);
+        Team team = TeamLoader.getInstance().initTeam(teamName);
 
         BaseTeamStrategy strategy = TeamStrategyFactory.getStrategy(Integer.parseInt(strategyNo));
 
@@ -48,7 +60,7 @@ public class TeamController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/fixedlineup")
-    public ResponseEntity<List<Lineup>> analysisFixed(@RequestParam(value="team", defaultValue = "ZJU_BYD") String teamName,
+    public ResponseEntity<List<Lineup>> analysisFixed(@RequestParam(value="team", defaultValue = "ZJU-BYD") String teamName,
                                                         @RequestParam(value="d1", defaultValue = "") String d1,
                                                         @RequestParam(value="d2", defaultValue = "") String d2,
                                                         @RequestParam(value="d3", defaultValue = "") String d3,
@@ -56,7 +68,7 @@ public class TeamController {
                                                         @RequestParam(value="wd", defaultValue = "") String wd
                                                       ) {
 
-        Team team = new TeamLoader().initTeam(teamName);
+        Team team = TeamLoader.getInstance().initTeam(teamName);
 
         FixedPairTeamStrategy strategy = (FixedPairTeamStrategy)TeamStrategyFactory.getStrategy(TeamStrategyFactory.FixedWithMoreVariable);
 
