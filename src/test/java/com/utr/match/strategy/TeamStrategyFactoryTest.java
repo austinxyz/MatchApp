@@ -69,29 +69,4 @@ class TeamStrategyFactoryTest {
         System.out.println(team.getPreferedLineups());
     }
 
-    @Test
-    void testRestAPI() throws JSONException {
-
-        RestTemplate restTemplate = new RestTemplate();
-        String fooResourceUrl
-                = "https://app.universaltennis.com/api/v1/tms/events/123233";
-        HttpHeaders headers = new HttpHeaders();
-        String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjIwODkxNCIsImVtYWlsIjoiemhvdXpob25neWkuc2hAZ21haWwuY29tIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMTI4NjAyNjMiLCJuYmYiOjE2Njg3MjQyMDAsImV4cCI6MTY3MTMxNjIwMCwiaWF0IjoxNjY4NzI0MjAwfQ.HxVRVfhpbSNqnVX1v_ZWTud1Nx0OVgG4KUnz67Ne1aU";
-        headers.set("Authorization", "Bearer " + accessToken); //accessToken can be the secret key you generate.
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String requestJson = "{}";
-        HttpEntity<String> entity = new HttpEntity <> (requestJson, headers);
-        ResponseEntity <String> response = restTemplate.exchange(fooResourceUrl, HttpMethod.GET, entity, String.class);
-
-        System.out.println(response.getBody());
-
-        Map<String, Object> object = JsonParserFactory.getJsonParser().parseMap(response.getBody());
-
-        System.out.println("---------------------------------------");
-
-        System.out.println(object.get("creatingMemberId"));
-
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
-    }
 }
