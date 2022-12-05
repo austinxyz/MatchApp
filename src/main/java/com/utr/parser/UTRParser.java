@@ -1,62 +1,46 @@
 package com.utr.parser;
 
-import com.utr.model.Division;
 import com.utr.model.Event;
-import com.utr.model.Player;
-import org.springframework.boot.json.JsonParserFactory;
+import com.utr.model.PlayerResult;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class UTRParser {
 
     public static final String EVENTS_URL = "https://app.universaltennis.com/api/v1/tms/events/";
+    public static final String PLAYER_RESULT = "https://app.universaltennis.com/api/v1/player/";
     public static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjIwODkxNCIsImVtYWlsIjoiemhvdXpob25neWkuc2hAZ21haWwuY29tIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMTI4NjAyNjMiLCJuYmYiOjE2Njg3MjQyMDAsImV4cCI6MTY3MTMxNjIwMCwiaWF0IjoxNjY4NzI0MjAwfQ.HxVRVfhpbSNqnVX1v_ZWTud1Nx0OVgG4KUnz67Ne1aU";
 
     public Event parseEvent(String eventId) {
-        Event event = new Event(eventId);
-
-        getEventJson(eventId, event);
-
-        return event;
+        EventParser eventParser = new EventParser(eventId);
+        return eventParser.buildEvent(getEventJson(eventId));
     }
 
-    private void getEventJson(String eventId, Event event) {
-        String response = getEvent(eventId);
+    public PlayerResult parsePlayerResult(String playerId) {
+        PlayerResultParser resultParser = new PlayerResultParser(playerId);
+        return resultParser.parseResult(getResultJson(playerId));
+    }
 
-        Map<String, Object> eventJson = JsonParserFactory.getJsonParser().parseMap(response);
+    private String getResultJson(String playerId) {
 
-        event.setName((String)eventJson.get("name"));
+        String getCallURL
+                = PLAYER_RESULT + playerId + "/results";
 
-        List divisions = (List)eventJson.get("eventDivisions");
-
-        for (Object devision : divisions) {
-            Map<String, Object> divJson = (Map<String, Object>)devision;
-            event.addDivision(parseDivision(divJson));
-        }
-
-        List players = (List)eventJson.get("registeredPlayers");
-
-        for (Object regPlayer: players) {
-            Map<String, Object> playerJson = (Map<String, Object>)regPlayer;
-            List playerDivs = (List) playerJson.get("registeredDivisions");
-            List<Division> playerTeams = parsePlayerDivisions(playerDivs, event);
-
-            Player player = parsePlayer(playerJson);
-            for (Division div: playerTeams) {
-                div.getPlayers().add(player);
-            }
-        }
+        return restGetCall(getCallURL);
 
     }
 
-    private String getEvent(String eventId) {
-        RestTemplate restTemplate = new RestTemplate();
-        String fooResourceUrl
+    private String getEventJson(String eventId) {
+
+        String getCallURL
                 = EVENTS_URL + eventId;
+
+        return restGetCall(getCallURL);
+
+    }
+
+    private static String restGetCall(String getCallURL) {
+        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         String accessToken = TOKEN;
         headers.set("Authorization", "Bearer " + accessToken);
@@ -64,48 +48,7 @@ public class UTRParser {
 
         String requestJson = "{}";
         HttpEntity<String> entity = new HttpEntity <> (requestJson, headers);
-        ResponseEntity<String> response = restTemplate.exchange(fooResourceUrl, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(getCallURL, HttpMethod.GET, entity, String.class);
         return response.getBody();
-    }
-
-    private Player parsePlayer(Map<String, Object> playerJson) {
-        String name = (String)playerJson.get("lastName")
-                +" " + (String)playerJson.get("firstName");
-        String gender = (String)playerJson.get("gender");
-        String utr = playerJson.get("myUtrDoubles").toString();
-        String id = playerJson.get("id").toString();
-
-        Player player = new Player(name, gender, utr);
-        player.setId(id);
-        player.setsUTR(getDoubleValue(playerJson, "singlesUtrDisplay"));
-        player.setdUTR(getDoubleValue(playerJson, "doublesUtrDisplay"));
-        player.setsUTRStatus((String)playerJson.get("ratingStatusSingles"));
-        player.setdUTRStatus((String)playerJson.get("ratingStatusDoubles"));
-        return player;
-    }
-
-    private double getDoubleValue(Map<String, Object> json, String name) {
-        Object v = json.get(name);
-        if (v==null) {
-            return 0.0d;
-        }
-        return Double.parseDouble((String)v);
-    }
-
-    private List<Division> parsePlayerDivisions(List playerDivs, Event event) {
-        List<Division> divisions = new ArrayList<>();
-        for (Object div: playerDivs) {
-            Map<String, Object> divJson = (Map<String, Object>)div;
-            String divId = divJson.get("divisionId").toString();
-            divisions.add(event.getDivision(divId));
-        }
-
-        return divisions;
-    }
-
-    private Division parseDivision(Map<String, Object> divisionJson) {
-        Division division = new Division(divisionJson.get("id").toString());
-        division.setName((String)divisionJson.get("name"));
-        return division;
     }
 }

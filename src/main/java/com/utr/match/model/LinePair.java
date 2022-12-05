@@ -38,7 +38,7 @@ public class LinePair {
 
     @JsonIgnore
     public float getGAP() {
-        return line.getUtrLimit() - pair.getTotalUTR();
+        return line.getUtrLimit() - (float)pair.getRealTotalUTR();
     }
 
     @Override

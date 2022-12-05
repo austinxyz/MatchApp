@@ -13,11 +13,17 @@ public class PlayerPair {
     Player player2;
 
     float totalUTR;
+    double realTotalUTR;
 
     public PlayerPair(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
         this.totalUTR = player1.getUTR() + player2.getUTR();
+        this.realTotalUTR = player1.getdUTR() + player2.getdUTR();
+    }
+
+    public double getRealTotalUTR() {
+        return realTotalUTR;
     }
 
     @JsonProperty
@@ -53,21 +59,22 @@ public class PlayerPair {
 
     @Override
     public String toString() {
-        return  player1 +
+        return player1 +
                 "+" +
                 player2 +
-                "=" + String.format("%.02f", totalUTR);
+                "=" + String.format("%.02f", totalUTR) +
+                "(" + String.format("%.02f", realTotalUTR) + ")";
     }
 
     @JsonIgnore
     public boolean has7Member() {
-        return player1.getUTR() > 7 || player2.getUTR()>7;
+        return player1.getUTR() > 7 || player2.getUTR() > 7;
     }
 
     @JsonIgnore
     public boolean has55Member() {
         return (player1.getGender().equals("F") && player1.getUTR() > 5.5) ||
-               (player2.getGender().equals("F") && player2.getUTR() > 5.5);
+                (player2.getGender().equals("F") && player2.getUTR() > 5.5);
     }
 
     public String getPairName() {
