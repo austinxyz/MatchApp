@@ -6,22 +6,31 @@ import com.utr.match.model.Team;
 import com.utr.model.Division;
 import com.utr.model.Event;
 import com.utr.model.Player;
+import com.utr.model.PlayerResult;
 import com.utr.parser.UTRParser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TeamLoader {
 
-    public static final String EVENT_ID = "123233";
-    Event event;
+    public static final String DEFAULT_EVENT_ID = "123233";
+    Map<String, Event> events;
+
+    Map<String, PlayerResult> playerResults;
+    UTRParser parser;
 
     private TeamLoader() {
-        UTRParser parser = new UTRParser();
-        event = parser.parseEvent(EVENT_ID);
+        parser = new UTRParser();
+        Event event = parser.parseEvent(DEFAULT_EVENT_ID);
         loadDataFromFile(event);
+        playerResults = new HashMap<>();
+        events = new HashMap<>();
+        events.put(DEFAULT_EVENT_ID, event);
     }
 
     public static TeamLoader getInstance() {
@@ -30,16 +39,16 @@ public class TeamLoader {
 
     private void loadDataFromFile(Event event) {
         for (Division div : event.getDivisions()) {
-            updateTeamFromFile(div);
+            updateTeamFromFile(div, event.getId());
         }
     }
 
-    private void updateTeamFromFile(Division div) {
+    private void updateTeamFromFile(Division div, String eventId) {
 
         BufferedReader reader;
 
         try {
-            reader = new BufferedReader(new FileReader("input/" + EVENT_ID + "/" +
+            reader = new BufferedReader(new FileReader("input/" + eventId + "/" +
                     div.getName() + ".txt"));
             String line = reader.readLine();
             while (line != null) {
@@ -67,10 +76,29 @@ public class TeamLoader {
     }
 
     public List<Division> getDivisions() {
+        return getDivisions(DEFAULT_EVENT_ID);
+    }
+
+    public List<Division> getDivisions(String eventId) {
+        Event event = getOrFetchEvent(eventId);
+
         return event.getDivisions();
     }
 
+    private Event getOrFetchEvent(String eventId) {
+        Event event = null;
+
+        if (events.containsKey(eventId)) {
+            event = events.get(eventId);
+        } else {
+            event = parser.parseEvent(eventId);
+            events.put(eventId, event);
+        }
+        return event;
+    }
+
     public Team initTeam(String teamName) {
+        Event event = getOrFetchEvent(DEFAULT_EVENT_ID);
 
         Division div = event.getDivisionByName(teamName);
 
@@ -81,6 +109,35 @@ public class TeamLoader {
         }
 
         return team;
+    }
+
+    public Team initTeam(String teamId, String eventId) {
+
+        Event event = getOrFetchEvent(eventId);
+
+        Division div = event.getDivision(teamId);
+
+        if (div == null) {
+            return null;
+        }
+
+        Team team = createTeam(div);
+
+        for (Player player : div.getPlayers()) {
+            createPlayer(team, player);
+        }
+
+        return team;
+    }
+
+    public PlayerResult searchPlayerResult(String playerId) {
+        if (playerResults.containsKey(playerId)) {
+            return playerResults.get(playerId);
+        }
+
+        PlayerResult result = parser.parsePlayerResult(playerId);
+        playerResults.put(playerId, result);
+        return result;
     }
 
     private void createPlayer(Team team, Player teamPlayer) {

@@ -1,7 +1,8 @@
-package com.utr.match.parser;
+package com.utr.parser;
 
 import com.utr.model.Division;
 import com.utr.model.Event;
+import com.utr.model.PlayerResult;
 import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
 
@@ -19,5 +20,16 @@ class UTRParserTest {
             System.out.println(team);
         }
 
+    }
+
+    @Test
+    void parsePlayerResult() {
+
+        UTRParser parser = new UTRParser();
+        PlayerResult result = parser.parsePlayerResult("1316122");
+
+        System.out.println(result.getWinsNumber());
+        System.out.println(result.getLossesNumber());
+        System.out.println(result.getWithdrawsNumber());
     }
 }

@@ -6,16 +6,38 @@ import com.utr.match.strategy.BaseTeamStrategy;
 import com.utr.match.strategy.FixedPairTeamStrategy;
 import com.utr.match.strategy.TeamStrategyFactory;
 import com.utr.model.Division;
+import com.utr.model.PlayerResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController
 public class TeamController {
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/event/{eventId}/teams")
+    public ResponseEntity<List<Division>> eventTeams(@PathVariable("eventId") String eventId) {
+        List<Division> teams = TeamLoader.getInstance().getDivisions(eventId);
+
+        if (teams.size() > 0 ) {
+            return ResponseEntity.ok(teams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/event/{eventId}/team/{teamId}")
+    public ResponseEntity<Team> eventTeam(@PathVariable("eventId") String eventId, @PathVariable("teamId") String teamId) {
+        Team team = TeamLoader.getInstance().initTeam(teamId, eventId);
+
+        if (team != null && team.getPlayers().size() > 0 ) {
+            return ResponseEntity.ok(team);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
     public ResponseEntity<List<Division>> teams() {
@@ -35,6 +57,18 @@ public class TeamController {
 
         if (team.getPlayers().size() > 0 ) {
             return ResponseEntity.ok(team);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/playerresult")
+    public ResponseEntity<PlayerResult> playerResult(@RequestParam(value="id", defaultValue = "1316122") String id) {
+        PlayerResult player = TeamLoader.getInstance().searchPlayerResult(id);
+
+        if (player != null ) {
+            return ResponseEntity.ok(player);
         } else {
             return ResponseEntity.notFound().build();
         }

@@ -52,7 +52,7 @@ public class EventParser {
         String name = (String)playerJson.get("lastName")
                 +" " + (String)playerJson.get("firstName");
         String gender = (String)playerJson.get("gender");
-        String utr = playerJson.get("myUtrDoubles").toString();
+        String utr = playerJson.get("doublesUtrDisplay").toString();
         String id = playerJson.get("id").toString();
 
         Player player = new Player(name, gender, utr);
