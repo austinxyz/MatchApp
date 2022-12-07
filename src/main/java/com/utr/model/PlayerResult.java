@@ -20,6 +20,15 @@ public class PlayerResult {
         return playerEvents;
     }
 
+    public PlayerEvent getEventByName(String name) {
+        for (PlayerEvent event: playerEvents) {
+            if (event.getName().equals(name)) {
+                return event;
+            }
+        }
+        return null;
+    }
+
     public int getWinsNumber() {
         return winsNumber;
     }

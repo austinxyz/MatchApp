@@ -30,23 +30,29 @@ public class PlayerResultParser {
        List events = (List)resultJson.get("events");
 
        for (Object eventJson: events) {
-           PlayerEvent event = parsePlayerEvent((Map<String, Object>)eventJson);
-
-           if (event !=null) {
-               result.getPlayerEvents().add(event);
-           }
+           parsePlayerEvent((Map<String, Object>)eventJson, result);
        }
 
        return result;
     }
 
-    private PlayerEvent parsePlayerEvent(Map<String, Object> eventJson) {
+    private PlayerEvent parsePlayerEvent(Map<String, Object> eventJson, PlayerResult result) {
 
         if (eventJson.get("id") == null) {
             return null;
         }
 
-        PlayerEvent event = new PlayerEvent(((Integer)eventJson.get("id")).toString(), (String)eventJson.get("name"));
+        String eventName = (String)eventJson.get("name");
+
+        PlayerEvent event = null;
+        if (eventName!= null && eventName.startsWith("USTA")) {
+            event = result.getEventByName(eventName);
+        }
+
+        if (event == null) {
+            event = new PlayerEvent(((Integer) eventJson.get("id")).toString(), eventName);
+            result.getPlayerEvents().add(event);
+        }
 
         List<Map<String, Object>> draws = (List<Map<String, Object>>)eventJson.get("draws");
 
