@@ -95,9 +95,11 @@ public class PlayerResultParser {
             if (scoreRound != null) {
                 Integer tiebreak = (Integer) scoreRound.get("tiebreak");
                 Integer winnerTiebreak = (Integer) scoreRound.get("winnerTiebreak");
+                Integer winner = (Integer) scoreRound.get("winner");
+                Integer loser = (Integer)scoreRound.get("loser");
                 score.addRound(
-                        (Integer)scoreRound.get("winner"),
-                        (Integer)scoreRound.get("loser"),
+                        winner== null? -1: winner.intValue(),
+                        loser == null? -1: loser.intValue(),
                         tiebreak==null? -1:tiebreak.intValue(),
                         winnerTiebreak==null? -1:winnerTiebreak.intValue()
                 );

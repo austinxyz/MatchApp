@@ -85,6 +85,12 @@ public class TeamLoader {
         return event.getDivisions();
     }
 
+    public Event getEvent(String eventId) {
+        Event event = getOrFetchEvent(eventId);
+
+        return event;
+    }
+
     private Event getOrFetchEvent(String eventId) {
         Event event = null;
 

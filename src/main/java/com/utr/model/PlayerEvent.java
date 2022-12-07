@@ -1,11 +1,14 @@
 package com.utr.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerEvent {
     String id;
     String name;
+
 
     public String getId() {
         return id;
@@ -26,4 +29,9 @@ public class PlayerEvent {
     }
 
     List<MatchResult> results;
+
+    @JsonProperty
+    public boolean isUsta() {
+        return name.startsWith("USTA");
+    }
 }

@@ -6,6 +6,7 @@ import com.utr.match.strategy.BaseTeamStrategy;
 import com.utr.match.strategy.FixedPairTeamStrategy;
 import com.utr.match.strategy.TeamStrategyFactory;
 import com.utr.model.Division;
+import com.utr.model.Event;
 import com.utr.model.PlayerResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,12 @@ import java.util.*;
 public class TeamController {
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/event/{eventId}/teams")
-    public ResponseEntity<List<Division>> eventTeams(@PathVariable("eventId") String eventId) {
-        List<Division> teams = TeamLoader.getInstance().getDivisions(eventId);
+    @GetMapping("/event/{eventId}")
+    public ResponseEntity<Event> event(@PathVariable("eventId") String eventId) {
+        Event event = TeamLoader.getInstance().getEvent(eventId);
 
-        if (teams.size() > 0 ) {
-            return ResponseEntity.ok(teams);
+        if (event != null ) {
+            return ResponseEntity.ok(event);
         } else {
             return ResponseEntity.notFound().build();
         }
