@@ -31,13 +31,21 @@ public class PlayerResultParser {
 
        for (Object eventJson: events) {
            PlayerEvent event = parsePlayerEvent((Map<String, Object>)eventJson);
-           result.getPlayerEvents().add(event);
+
+           if (event !=null) {
+               result.getPlayerEvents().add(event);
+           }
        }
 
        return result;
     }
 
     private PlayerEvent parsePlayerEvent(Map<String, Object> eventJson) {
+
+        if (eventJson.get("id") == null) {
+            return null;
+        }
+
         PlayerEvent event = new PlayerEvent(((Integer)eventJson.get("id")).toString(), (String)eventJson.get("name"));
 
         List<Map<String, Object>> draws = (List<Map<String, Object>>)eventJson.get("draws");

@@ -11,10 +11,9 @@ public class Player {
     float UTR;
     String id;
     double dUTR;
-    @JsonIgnore
+
     double sUTR;
     String dUTRStatus;
-    @JsonIgnore
     String sUTRStatus;
 
     public Player(String name, String gender, String UTR) {

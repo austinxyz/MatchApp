@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MatchResult {
     String name; //draw.name + round.name
+    @JsonIgnore
     LocalDateTime matchTime;
 
     String type; // single or double
@@ -24,6 +26,11 @@ public class MatchResult {
 
     public String getName() {
         return name;
+    }
+
+    @JsonProperty
+    public String getMatchDate() {
+        return matchTime.format(DateTimeFormatter.ISO_DATE);
     }
 
     public LocalDateTime getMatchTime() {
