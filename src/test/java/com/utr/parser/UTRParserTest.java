@@ -2,9 +2,12 @@ package com.utr.parser;
 
 import com.utr.model.Division;
 import com.utr.model.Event;
+import com.utr.model.Player;
 import com.utr.model.PlayerResult;
 import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 class UTRParserTest {
 
@@ -31,5 +34,14 @@ class UTRParserTest {
         System.out.println(result.getWinsNumber());
         System.out.println(result.getLossesNumber());
         System.out.println(result.getWithdrawsNumber());
+    }
+
+    @Test
+    void searchPlayer() {
+
+        UTRParser parser = new UTRParser();
+        List<Player> results = parser.searchPlayers("yanzhao xu", 5);
+
+        System.out.println(results);
     }
 }

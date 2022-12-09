@@ -75,6 +75,10 @@ public class TeamLoader {
         div.getPlayers().sort((o1, o2) -> Float.compare(o2.getUTR(), o1.getUTR()));
     }
 
+    public List<Player> queryPlayer(String query, int top) {
+        return parser.searchPlayers(query, top);
+    }
+
     public List<Division> getDivisions() {
         return getDivisions(DEFAULT_EVENT_ID);
     }

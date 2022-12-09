@@ -27,6 +27,6 @@ public class MatchScore {
             builder.append(round.toString()).append(" ");
         }
 
-        return builder.toString();
+        return builder.isEmpty()? "default":builder.toString();
     }
 }

@@ -74,7 +74,7 @@ public class PlayerResultParser {
             Map<String, Object> roundJson = (Map<String, Object>)resultJson.get("round");
             LocalDateTime date = LocalDateTime.parse((String)resultJson.get("date"), formatter);
             String name = drawName + " " + (roundJson==null? "":(String)roundJson.get("name"));
-            MatchResult result = new MatchResult(name, date);
+            MatchResult result = new MatchResult(name, date, this.playerId);
 
             Map<String, Object> playersJson = (Map<String, Object>)resultJson.get("players");
 

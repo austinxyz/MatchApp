@@ -11,7 +11,7 @@ public class MatchResult {
     @JsonIgnore
     LocalDateTime matchTime;
 
-    String type; // single or double
+
     Player winner1;
     Player winner2;
     Player loser1;
@@ -19,9 +19,57 @@ public class MatchResult {
     @JsonIgnore
     MatchScore score;
 
-    public MatchResult(String name, LocalDateTime matchTime) {
+    String ownerId;
+
+    public MatchResult(String name, LocalDateTime matchTime, String ownerId) {
         this.name = name;
         this.matchTime = matchTime;
+        this.ownerId = ownerId;
+    }
+
+    @JsonProperty
+    public boolean isWinner() {
+        return (winner1 != null && winner1.getId().equals(ownerId)) || (winner2 != null && winner2.getId().equals(ownerId));
+    }
+
+    @JsonProperty
+    public String getLoserInfo() {
+        StringBuilder builder = new StringBuilder();
+
+        if (this.getType().equals("single")) {
+            builder.append(loser1.getName()).append("-")
+                    .append(loser1.getsUTR())
+                    .append("(").append(loser1.getsUTRStatus().charAt(0)).append(")");
+        } else {
+            builder.append(loser1.getName()).append("-")
+                    .append(loser1.getdUTR())
+                    .append("(").append(loser1.getdUTRStatus().charAt(0)).append(")");
+            builder.append("+");
+            builder.append(loser2.getName()).append("-")
+                    .append(loser2.getdUTR())
+                    .append("(").append(loser2.getdUTRStatus().charAt(0)).append(")");
+        }
+        return builder.toString();
+    }
+
+    @JsonProperty
+    public String getWinnerInfo() {
+        StringBuilder builder = new StringBuilder();
+
+        if (this.getType().equals("single")) {
+            builder.append(winner1.getName()).append("-")
+                    .append(winner1.getsUTR())
+                    .append("(").append(winner1.getsUTRStatus().charAt(0)).append(")");
+        } else {
+            builder.append(winner1.getName()).append("-")
+                    .append(winner1.getdUTR())
+                    .append("(").append(winner1.getdUTRStatus().charAt(0)).append(")");
+            builder.append("+");
+            builder.append(winner2.getName()).append("-")
+                    .append(winner2.getdUTR())
+                    .append("(").append(winner2.getdUTRStatus().charAt(0)).append(")");
+        }
+        return builder.toString();
     }
 
     public String getName() {
@@ -83,6 +131,6 @@ public class MatchResult {
 
     @JsonProperty
     public String getMatchScore() {
-        return this.score== null? "": score.toString();
+        return this.score== null? "default": score.toString();
     }
 }

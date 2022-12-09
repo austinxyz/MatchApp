@@ -7,6 +7,7 @@ import com.utr.match.strategy.FixedPairTeamStrategy;
 import com.utr.match.strategy.TeamStrategyFactory;
 import com.utr.model.Division;
 import com.utr.model.Event;
+import com.utr.model.Player;
 import com.utr.model.PlayerResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,17 @@ import java.util.*;
 
 @RestController
 public class TeamController {
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/search/players")
+    public ResponseEntity<List<Player>> searchPlayer(@RequestParam(value="query", defaultValue = "Yanzhao Xu") String query,
+                                                     @RequestParam(value="top", defaultValue = "5") int top) {
+
+        List<Player> players = TeamLoader.getInstance().queryPlayer(query, top);
+
+        return ResponseEntity.ok(players);
+
+    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/event/{eventId}")
