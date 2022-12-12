@@ -1,9 +1,6 @@
 package com.utr.parser;
 
-import com.utr.model.Division;
-import com.utr.model.Event;
-import com.utr.model.Player;
-import com.utr.model.PlayerResult;
+import com.utr.model.*;
 import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
 
@@ -43,5 +40,23 @@ class UTRParserTest {
         List<Player> results = parser.searchPlayers("yanzhao xu", 5);
 
         System.out.println(results);
+    }
+
+    @Test
+    void searchClubEvents() {
+
+        UTRParser parser = new UTRParser();
+        List<Event> results = parser.getClubEvents("3156");
+
+        System.out.println(results);
+    }
+
+    @Test
+    void getClub() {
+
+        UTRParser parser = new UTRParser();
+        Club club = parser.getClub("3156");
+
+        System.out.println(club);
     }
 }

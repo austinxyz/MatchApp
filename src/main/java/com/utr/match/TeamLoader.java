@@ -3,10 +3,7 @@ package com.utr.match;
 import com.utr.match.model.Line;
 import com.utr.match.model.PlayerPair;
 import com.utr.match.model.Team;
-import com.utr.model.Division;
-import com.utr.model.Event;
-import com.utr.model.Player;
-import com.utr.model.PlayerResult;
+import com.utr.model.*;
 import com.utr.parser.UTRParser;
 
 import java.io.BufferedReader;
@@ -19,7 +16,9 @@ import java.util.Map;
 public class TeamLoader {
 
     public static final String DEFAULT_EVENT_ID = "123233";
+    public static final String DEFAULT_CLUB_ID = "3156";
     Map<String, Event> events;
+    Map<String, Club> clubs;
 
     Map<String, PlayerResult> playerResults;
     UTRParser parser;
@@ -31,6 +30,9 @@ public class TeamLoader {
         playerResults = new HashMap<>();
         events = new HashMap<>();
         events.put(DEFAULT_EVENT_ID, event);
+        clubs = new HashMap<>();
+        Club club = parser.getClub(DEFAULT_CLUB_ID);
+        clubs.put(DEFAULT_CLUB_ID, club);
     }
 
     public static TeamLoader getInstance() {
@@ -83,6 +85,10 @@ public class TeamLoader {
         return getDivisions(DEFAULT_EVENT_ID);
     }
 
+    public Club getClub(String clubId) {
+        return getOrFetchClub(clubId);
+    }
+
     public List<Division> getDivisions(String eventId) {
         Event event = getOrFetchEvent(eventId);
 
@@ -107,6 +113,17 @@ public class TeamLoader {
         return event;
     }
 
+    private Club getOrFetchClub(String clubId) {
+        Club club = null;
+
+        if (clubs.containsKey(clubId)) {
+            club = clubs.get(clubId);
+        } else {
+            club = parser.getClub(clubId);
+            clubs.put(clubId, club);
+        }
+        return club;
+    }
     public Team initTeam(String teamName) {
         Event event = getOrFetchEvent(DEFAULT_EVENT_ID);
 

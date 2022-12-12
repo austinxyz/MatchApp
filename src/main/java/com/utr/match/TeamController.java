@@ -5,10 +5,7 @@ import com.utr.match.model.Team;
 import com.utr.match.strategy.BaseTeamStrategy;
 import com.utr.match.strategy.FixedPairTeamStrategy;
 import com.utr.match.strategy.TeamStrategyFactory;
-import com.utr.model.Division;
-import com.utr.model.Event;
-import com.utr.model.Player;
-import com.utr.model.PlayerResult;
+import com.utr.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +13,18 @@ import java.util.*;
 
 @RestController
 public class TeamController {
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/club/{clubId}")
+    public ResponseEntity<Club> club(@PathVariable("clubId") String clubId) {
+        Club club = TeamLoader.getInstance().getClub(clubId);
+
+        if (club != null ) {
+            return ResponseEntity.ok(club);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search/players")

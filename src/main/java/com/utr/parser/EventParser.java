@@ -5,20 +5,20 @@ import com.utr.model.Event;
 import com.utr.model.Player;
 import org.springframework.boot.json.JsonParserFactory;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class EventParser {
 
-    String eventId;
-
-    public EventParser(String eventId) {
-        this.eventId = eventId;
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    public EventParser() {
     }
 
-    public Event buildEvent(String eventJsonString) {
-        Event event = new Event(this.eventId);
+    public Event buildEvent(String eventJsonString, String eventId) {
+        Event event = new Event(eventId);
 
         Map<String, Object> eventJson = JsonParserFactory.getJsonParser().parseMap(eventJsonString);
 
@@ -89,4 +89,28 @@ public class EventParser {
         return division;
     }
 
+    public List<Event> buildEvents(String clubEventsJson) {
+        List eventsJson = JsonParserFactory.getJsonParser().parseList(clubEventsJson);
+
+        List<Event> events = new ArrayList<>();
+
+        for (Object eventJsonObject: eventsJson) {
+            Map<String, Object> eventJson = (Map<String, Object>)eventJsonObject;
+            String eventId = ((Integer)(eventJson.get("id"))).toString();
+            Event event = new Event(eventId);
+            event.setName((String)eventJson.get("name"));
+
+            Map<String, Object> eventScheduleJson = (Map<String, Object>)eventJson.get("eventSchedule");
+
+            LocalDateTime date = LocalDateTime.parse((String)eventScheduleJson.get("eventStartUtc"), formatter);
+
+            event.setStartDate(date);
+            event.setDuration(eventScheduleJson.get("eventDatesLong").toString());
+
+            events.add(event);
+        }
+        events.sort((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()));
+
+        return events;
+    }
 }
