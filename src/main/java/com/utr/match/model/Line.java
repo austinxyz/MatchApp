@@ -37,7 +37,7 @@ public class Line {
 
     @JsonIgnore
     public List<PlayerPair> getMatchedPairs() {
-        matchedPairs.sort((o1, o2) -> Float.compare(o2.getTotalUTR(), o1.getTotalUTR()));
+
         return matchedPairs;
     }
 
@@ -73,6 +73,7 @@ public class Line {
     public void addMatchedPair(PlayerPair pair) {
         if (isMatch(pair)) {
             this.matchedPairs.add(pair);
+            matchedPairs.sort((o1, o2) -> Float.compare(o2.getTotalUTR(), o1.getTotalUTR()));
         }
     }
 

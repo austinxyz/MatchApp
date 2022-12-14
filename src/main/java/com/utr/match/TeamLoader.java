@@ -31,8 +31,8 @@ public class TeamLoader {
         events = new HashMap<>();
         events.put(DEFAULT_EVENT_ID, event);
         clubs = new HashMap<>();
-        Club club = parser.getClub(DEFAULT_CLUB_ID);
-        clubs.put(DEFAULT_CLUB_ID, club);
+        //Club club = parser.getClub(DEFAULT_CLUB_ID);
+        //clubs.put(DEFAULT_CLUB_ID, club);
     }
 
     public static TeamLoader getInstance() {
@@ -89,6 +89,10 @@ public class TeamLoader {
         return getOrFetchClub(clubId);
     }
 
+    public Club getClub() {
+        return getOrFetchClub(DEFAULT_CLUB_ID);
+    }
+
     public List<Division> getDivisions(String eventId) {
         Event event = getOrFetchEvent(eventId);
 
@@ -96,13 +100,11 @@ public class TeamLoader {
     }
 
     public Event getEvent(String eventId) {
-        Event event = getOrFetchEvent(eventId);
-
-        return event;
+        return getOrFetchEvent(eventId);
     }
 
     private Event getOrFetchEvent(String eventId) {
-        Event event = null;
+        Event event;
 
         if (events.containsKey(eventId)) {
             event = events.get(eventId);
@@ -114,7 +116,7 @@ public class TeamLoader {
     }
 
     private Club getOrFetchClub(String clubId) {
-        Club club = null;
+        Club club;
 
         if (clubs.containsKey(clubId)) {
             club = clubs.get(clubId);

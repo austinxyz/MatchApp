@@ -41,6 +41,10 @@ public class LinePair {
         return line.getUtrLimit() - (float)pair.getRealTotalUTR();
     }
 
+    public float getGAPByGranted() {
+        return line.getUtrLimit() - pair.getTotalUTR();
+    }
+
     @Override
     public String toString() {
         return getPairName() + ":" + String.format("%.02f", getPair().getTotalUTR());

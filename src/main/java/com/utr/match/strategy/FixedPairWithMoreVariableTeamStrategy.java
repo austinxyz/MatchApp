@@ -8,11 +8,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy{
+public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy {
+
+    boolean useGrantUTR = true;
 
     public FixedPairWithMoreVariableTeamStrategy() {
         this.name = "Fixed Pairs with More Variable";
     }
+
+    public void setUseGrantUTR(boolean useGrantUTR) {
+        this.useGrantUTR = useGrantUTR;
+    }
+
+    @Override
+    protected float getScore(Lineup lineup) {
+        return useGrantUTR ? lineup.getGAPByGrants() : lineup.getGAPs();
+    }
+
     @Override
     protected boolean isGoodCandidate(List<Lineup> candidateLineups, Lineup newCandidateLineup) {
 
@@ -33,7 +45,7 @@ public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy
 
     private boolean checkPairVariable(String lineName, List<Lineup> candidateLineups, Lineup newCandidateLineup) {
 
-        if (fixedPairs.containsKey(lineName) ) {
+        if (fixedPairs.containsKey(lineName)) {
             Set<String> pairs = fixedPairs.get(lineName);
             LinePair candidatePair = newCandidateLineup.getLinePair(lineName);
 
@@ -47,13 +59,13 @@ public class FixedPairWithMoreVariableTeamStrategy extends FixedPairTeamStrategy
 
         Set<PlayerPair> pairs = new HashSet<>();
 
-        for (Lineup lineup: candidateLineups) {
+        for (Lineup lineup : candidateLineups) {
             pairs.add(lineup.getLinePair(lineName).getPair());
         }
 
         pairs.add(newCandidateLineup.getLinePair(lineName).getPair());
 
-        if (pairs.size() == 1 && currentCandidateSize >= 3 ) {
+        if (pairs.size() == 1 && currentCandidateSize >= 3) {
             return false;
         }
         return pairs.size() != 2 || currentCandidateSize != 4;

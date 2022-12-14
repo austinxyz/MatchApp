@@ -13,7 +13,7 @@ public class BaseTeamStrategy {
     int count = 5;
     String name = "Base Strategy";
 
-    int maxLineupNo = 160000;
+    int maxLineupNo = 1600000;
 
     public void analysisLineups(Team team) {
         List<Line> lines = prepareLines(team);
@@ -35,25 +35,6 @@ public class BaseTeamStrategy {
 
     public String getName() {
         return name;
-    }
-
-    private boolean getLineups(List<Lineup> lineups, List<Lineup> candidateLineups, int index) {
-        if (candidateLineups.size() == this.count) {
-            return true;
-        }
-
-        if (lineups.size() == index) {
-            return true;
-        }
-
-        Lineup newCandidateLineup = lineups.get(index);
-
-        if (isGoodCandidate(candidateLineups, newCandidateLineup)) {
-            candidateLineups.add(newCandidateLineup);
-        }
-
-        return getLineups(lineups, candidateLineups, index+1);
-
     }
 
     protected boolean isGoodCandidate(List<Lineup> candidateLineups, Lineup newCandidateLineup){
@@ -84,7 +65,8 @@ public class BaseTeamStrategy {
     }
 
     protected float getScore(Lineup lineup) {
-        return lineup.getGAPs();
+        return lineup.getGAPByGrants();
+        //return lineup.getGAPs();
     }
 
     private List<Lineup> matchingLineup(int index, List<Line> lines, List<Lineup> lineups) {

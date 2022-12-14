@@ -128,7 +128,7 @@ public class Lineup {
     private int getUTR55Numbers() {
         int number = 0;
         for (LinePair pair: pairs.values()) {
-            if (pair.getLine().equals("MD") || pair.getPairName().equals("WD")) {
+            if (pair.getLine().getName().equals("MD") || pair.getPairName().equals("WD")) {
                 number = number +  (pair.getPair().has55Member() ? 1 : 0 );
             }
         }
@@ -152,6 +152,14 @@ public class Lineup {
         return gaps;
     }
 
+    @JsonIgnore
+    public float getGAPByGrants() {
+        float gaps = 0.0F;
+        for (LinePair pair : pairs.values()) {
+            gaps = gaps + pair.getGAPByGranted();
+        }
+        return gaps;
+    }
     private float getGap(LinePair pair) {
         return pair==null? 0: pair.getGAP();
     }

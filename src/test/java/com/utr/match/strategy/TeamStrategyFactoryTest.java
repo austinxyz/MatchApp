@@ -2,12 +2,7 @@ package com.utr.match.strategy;
 
 import com.utr.match.TeamLoader;
 import com.utr.match.model.Team;
-import org.json.JSONException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.HashSet;
