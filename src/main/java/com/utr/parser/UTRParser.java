@@ -15,6 +15,7 @@ import java.util.List;
 public class UTRParser {
 
     public static final String EVENTS_URL = "https://app.universaltennis.com/api/v1/tms/events/";
+
     public static final String PLAYER_RESULT = "https://app.universaltennis.com/api/v1/player/";
 
     public static final String PLAYER_SEARCH = "https://app.universaltennis.com/api/v2/search/players?query=";
@@ -23,7 +24,7 @@ public class UTRParser {
 
     public static final String CLUB_URL = "https://app.universaltennis.com/api/v1/club/%s";
 
-    public static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjIwODkxNCIsImVtYWlsIjoiemhvdXpob25neWkuc2hAZ21haWwuY29tIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMTI4NjAyNjMiLCJuYmYiOjE2Njg3MjQyMDAsImV4cCI6MTY3MTMxNjIwMCwiaWF0IjoxNjY4NzI0MjAwfQ.HxVRVfhpbSNqnVX1v_ZWTud1Nx0OVgG4KUnz67Ne1aU";
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjIwODkxNCIsImVtYWlsIjoiemhvdXpob25neWkuc2hAZ21haWwuY29tIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMTMxNTY3OTYiLCJuYmYiOjE2NzEzMzk2NDAsImV4cCI6MTY3MzkzMTY0MCwiaWF0IjoxNjcxMzM5NjQwfQ.1lt7quHKMeSl8dbmw_UWQAhekyTJbVe4SU7J_QTvLp0";
 
     public List<Event> getClubEvents(String clubId) {
         EventParser eventParser = new EventParser();

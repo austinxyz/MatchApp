@@ -5,8 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MatchResult {
+    public static final String DOUBLE = "double";
+    public static final String SINGLE = "single";
     String name; //draw.name + round.name
     @JsonIgnore
     LocalDateTime matchTime;
@@ -27,9 +31,43 @@ public class MatchResult {
         this.ownerId = ownerId;
     }
 
+    public Player getOwner() {
+        if (winner1.getId().equals(ownerId)) {
+            return winner1;
+        }
+        if (winner2!=null && winner2.getId().equals(ownerId)) {
+            return winner2;
+        }
+        if (loser1.getId().equals(ownerId)) {
+            return loser1;
+        }
+        if (loser2!=null && loser2.getId().equals(ownerId)) {
+            return loser2;
+        }
+        return null;
+    }
+
     @JsonProperty
     public boolean isWinner() {
         return (winner1 != null && winner1.getId().equals(ownerId)) || (winner2 != null && winner2.getId().equals(ownerId));
+    }
+
+    public List<Player> getOpponents() {
+        List<Player> result = new ArrayList<>();
+
+        if (isWinner()) {
+            result.add(loser1);
+
+            if (loser2 != null) {
+                result.add(loser2);
+            }
+        } else {
+            result.add(winner1);
+            if (winner2 !=null) {
+                result.add(winner2);
+            }
+        }
+        return result;
     }
 
     @JsonProperty
@@ -86,7 +124,7 @@ public class MatchResult {
     }
 
     public String getType() {
-        return winner2!=null? "double":"single";
+        return winner2!=null? DOUBLE : SINGLE;
     }
 
     public Player getWinner1() {

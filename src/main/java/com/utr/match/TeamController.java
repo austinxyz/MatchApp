@@ -6,6 +6,8 @@ import com.utr.match.strategy.BaseTeamStrategy;
 import com.utr.match.strategy.FixedPairWithMoreVariableTeamStrategy;
 import com.utr.match.strategy.TeamStrategyFactory;
 import com.utr.model.*;
+import com.utr.player.PlayerAnalyser;
+import com.utr.player.SingleAnalysisResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,20 @@ public class TeamController {
                 pairs.add(pairNames);
             }
             fixedPairs.put(lineName, pairs);
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/analysis/single/player1/{player1}/player2/{player2}")
+    public ResponseEntity<SingleAnalysisResult> singleAnalysis(@PathVariable("player1") String player1,
+                                                @PathVariable("player2") String player2
+                                                ) {
+        SingleAnalysisResult result = PlayerAnalyser.getInstance().compareSingle(player1, player2);
+
+        if (result != null) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
