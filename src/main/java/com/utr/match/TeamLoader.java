@@ -9,6 +9,7 @@ import com.utr.parser.UTRParser;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,25 @@ public class TeamLoader {
     }
 
     public List<Player> queryPlayer(String query, int top) {
+        if (isPlayerId(query)) {
+            PlayerResult result = parser.parsePlayerResult(query);
+            List<Player> players = new ArrayList<>();
+            players.add(result.getPlayer());
+            return players;
+        }
         return parser.searchPlayers(query, top);
+    }
+
+    private boolean isPlayerId(String query) {
+
+        if (query == null || query.length() <1) {
+            return false;
+        }
+
+        char c = query.charAt(0);
+
+        return c>= '1' && c<='9';
+
     }
 
     public List<Division> getDivisions() {
