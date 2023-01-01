@@ -1,5 +1,7 @@
 package com.utr.match;
 
+import com.utr.match.entity.PlayerEntity;
+import com.utr.match.entity.PlayerRepository;
 import com.utr.match.model.Lineup;
 import com.utr.match.model.Team;
 import com.utr.match.strategy.BaseTeamStrategy;
@@ -8,6 +10,7 @@ import com.utr.match.strategy.TeamStrategyFactory;
 import com.utr.model.*;
 import com.utr.player.PlayerAnalyser;
 import com.utr.player.SingleAnalysisResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +18,9 @@ import java.util.*;
 
 @RestController
 public class TeamController {
+
+    @Autowired
+    PlayerRepository playerRepo;
 
     private static void initFixedPairs(String pairNames, Map<String, Set<String>> fixedPairs, String lineName) {
         if (!pairNames.equals("")) {
@@ -26,6 +32,24 @@ public class TeamController {
             }
             fixedPairs.put(lineName, pairs);
         }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/players")
+    public ResponseEntity<List<PlayerEntity>> players(
+    ) {
+        List<PlayerEntity> players = playerRepo.findAll();
+
+        if (players.size() > 0) {
+            return ResponseEntity.ok(players);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/players")
+    public PlayerEntity createPlayer(@RequestBody PlayerEntity player) {
+        return playerRepo.save(player);
     }
 
     @CrossOrigin(origins = "*")

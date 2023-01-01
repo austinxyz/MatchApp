@@ -1,20 +1,26 @@
 package com.utr.player;
 
 import com.utr.model.MatchResult;
-import com.utr.model.Player;
 import com.utr.model.PlayerResult;
 import com.utr.parser.UTRParser;
 
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PlayerAnalyser {
 
     private final UTRParser parser;
     private Map<String, PlayerResult> players;
 
+    private Map<String, Timestamp> fetchedTimes;
+
     public PlayerAnalyser() {
         parser = new UTRParser();
         players = new HashMap<>();
+        fetchedTimes = new HashMap<>();
     }
 
     private static class SingletonHolder {
@@ -71,11 +77,21 @@ public class PlayerAnalyser {
 
     private PlayerResult getPlayer(String playerId) {
         PlayerResult player;
+
+        if (fetchedTimes.containsKey(playerId)) {
+            Timestamp fetchTime = fetchedTimes.get(playerId);
+
+            if (System.currentTimeMillis() - fetchTime.getTime() > (long)24*60*60*1000 ) {
+                players.remove(playerId);
+            }
+        }
+
         if (players.containsKey(playerId)) {
             player = players.get(playerId);
         } else {
             player = parser.parsePlayerResult(playerId);
             players.put(playerId, player);
+            fetchedTimes.put(playerId, new Timestamp(System.currentTimeMillis()));
         }
 
         return player;
