@@ -3,6 +3,7 @@ package com.utr.match.entity;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="event")
@@ -24,7 +25,7 @@ public class EventEntity {
     @Column(name="status")
     private String status;
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<DivisionEntity> divisions;
 
     public EventEntity(String name, String type, String eventId) {
