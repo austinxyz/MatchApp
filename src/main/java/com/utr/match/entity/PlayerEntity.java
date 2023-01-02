@@ -98,4 +98,52 @@ public class PlayerEntity {
     public String getMemo() {
         return memo;
     }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setBirthYear(int birthYear) {
+        this.birthYear = birthYear;
+    }
+
+    public void setBirthMonth(int birthMonth) {
+        this.birthMonth = birthMonth;
+    }
+
+    public void setUtrId(String utrId) {
+        this.utrId = utrId;
+    }
+
+    public void setUstaId(String ustaId) {
+        this.ustaId = ustaId;
+    }
+
+    public void setUstaRating(String ustaRating) {
+        this.ustaRating = ustaRating;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setLefty(boolean lefty) {
+        this.lefty = lefty;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 }
