@@ -19,9 +19,6 @@ import java.util.*;
 @RestController
 public class TeamController {
 
-    @Autowired
-    PlayerRepository playerRepo;
-
     private static void initFixedPairs(String pairNames, Map<String, Set<String>> fixedPairs, String lineName) {
         if (!pairNames.equals("")) {
             Set<String> pairs = new HashSet<>();
@@ -34,23 +31,6 @@ public class TeamController {
         }
     }
 
-    @CrossOrigin(origins = "*")
-    @GetMapping("/players")
-    public ResponseEntity<List<PlayerEntity>> players(
-    ) {
-        List<PlayerEntity> players = playerRepo.findAll();
-
-        if (players.size() > 0) {
-            return ResponseEntity.ok(players);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/players")
-    public PlayerEntity createPlayer(@RequestBody PlayerEntity player) {
-        return playerRepo.save(player);
-    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/analysis/single/player1/{player1}/player2/{player2}")
