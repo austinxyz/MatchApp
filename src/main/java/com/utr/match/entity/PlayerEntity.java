@@ -1,9 +1,8 @@
 package com.utr.match.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="player")
@@ -46,6 +45,9 @@ public class PlayerEntity {
 
     @Column(name="memo")
     private String memo;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<EventUTR> utrs;
 
     public long getId() {
         return id;
@@ -145,5 +147,13 @@ public class PlayerEntity {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public PlayerEntity() {
+        this.utrs = new ArrayList<>();
+    }
+
+    public List<EventUTR> getUtrs() {
+        return utrs;
     }
 }

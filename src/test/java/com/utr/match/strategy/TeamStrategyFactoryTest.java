@@ -3,19 +3,25 @@ package com.utr.match.strategy;
 import com.utr.match.TeamLoader;
 import com.utr.match.model.Team;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@SpringBootTest
 class TeamStrategyFactoryTest {
+
+    @Autowired
+    TeamLoader loader;
 
     @Test
     void getStrategy() {
         BaseTeamStrategy strategy = TeamStrategyFactory.getStrategy(1);
 
-        Team team = TeamLoader.getInstance().initTeam("ZJU-BYD");
+        Team team = loader.initTeam("ZJU-BYD");
 
         strategy.analysisLineups(team);
 
@@ -34,7 +40,7 @@ class TeamStrategyFactoryTest {
 
         strategy.setFixedPairs(pairs);
 
-        Team team = TeamLoader.getInstance().initTeam("ZJU-BYD");
+        Team team = loader.initTeam("ZJU-BYD");
 
         strategy.analysisLineups(team);
 
@@ -57,7 +63,7 @@ class TeamStrategyFactoryTest {
 
         strategy.setFixedPairs(pairs);
 
-        Team team = TeamLoader.getInstance().initTeam("ZJU-BYD");
+        Team team = loader.initTeam("ZJU-BYD");
 
         strategy.analysisLineups(team);
 

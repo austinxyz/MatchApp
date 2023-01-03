@@ -10,6 +10,9 @@ public class DivisionEntity {
     @Id
     private long id;
 
+    @Column(name="div_id")
+    private String divisionId;
+
     @Column(name="name")
     private String name;
 
@@ -73,5 +76,13 @@ public class DivisionEntity {
 
     public void setEnglishName(String englishName) {
         this.englishName = englishName;
+    }
+
+    public String getDivisionId() {
+        return divisionId;
+    }
+
+    public void setDivisionId(String divisionId) {
+        this.divisionId = divisionId;
     }
 }

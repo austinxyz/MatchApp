@@ -5,6 +5,7 @@ import com.utr.model.Event;
 import com.utr.model.Player;
 import com.utr.model.PlayerResult;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
@@ -12,7 +13,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class UTRParser {
+
+    public UTRParser() {
+    }
 
     public static final String EVENTS_URL = "https://app.universaltennis.com/api/v1/tms/events/";
 

@@ -5,21 +5,26 @@ import com.utr.model.Division;
 import com.utr.model.Player;
 import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
+@SpringBootTest
 class TeamLoaderTest {
 
+    @Autowired
+    TeamLoader loader;
     @Test
     void initTeam() {
-        Team team = TeamLoader.getInstance().initTeam("ZJU-BYD");
+        Team team = loader.initTeam("ZJU-BYD");
 
         System.out.println(team);
     }
 
     @Test
     void getTeams() {
-        List<Division> teams = TeamLoader.getInstance().getDivisions();
+        List<Division> teams = loader.getDivisions();
 
         for (Division team : teams) {
             System.out.println(team);
@@ -28,7 +33,7 @@ class TeamLoaderTest {
     @Test
     void searchPlayer() {
 
-        List<Player> results = TeamLoader.getInstance().queryPlayer("1316122", 5);
+        List<Player> results = loader.queryPlayer("1316122", 5);
 
         System.out.println(results);
     }
@@ -36,7 +41,7 @@ class TeamLoaderTest {
     @Test
     void searchPlayer2() {
 
-        List<Player> results = TeamLoader.getInstance().queryPlayer("yanzhao xu", 5);
+        List<Player> results = loader.queryPlayer("yanzhao xu", 5);
 
         System.out.println(results);
     }
