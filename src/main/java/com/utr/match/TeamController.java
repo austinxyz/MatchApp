@@ -19,6 +19,9 @@ import java.util.*;
 @RestController
 public class TeamController {
 
+    @Autowired
+    TeamLoader loader;
+
     private static void initFixedPairs(String pairNames, Map<String, Set<String>> fixedPairs, String lineName) {
         if (!pairNames.equals("")) {
             Set<String> pairs = new HashSet<>();
@@ -49,7 +52,7 @@ public class TeamController {
     @CrossOrigin(origins = "*")
     @GetMapping("/club/{clubId}")
     public ResponseEntity<Club> club(@PathVariable("clubId") String clubId) {
-        Club club = TeamLoader.getInstance().getClub(clubId);
+        Club club = loader.getClub(clubId);
 
         if (club != null) {
             return ResponseEntity.ok(club);
@@ -63,7 +66,7 @@ public class TeamController {
     public ResponseEntity<List<Player>> searchPlayer(@RequestParam(value = "query", defaultValue = "Yanzhao Xu") String query,
                                                      @RequestParam(value = "top", defaultValue = "5") int top) {
 
-        List<Player> players = TeamLoader.getInstance().queryPlayer(query, top);
+        List<Player> players = loader.queryPlayer(query, top);
 
         return ResponseEntity.ok(players);
 
@@ -72,7 +75,7 @@ public class TeamController {
     @CrossOrigin(origins = "*")
     @GetMapping("/event/{eventId}")
     public ResponseEntity<Event> event(@PathVariable("eventId") String eventId) {
-        Event event = TeamLoader.getInstance().getEvent(eventId);
+        Event event = loader.getEvent(eventId);
 
         if (event != null) {
             return ResponseEntity.ok(event);
@@ -84,7 +87,7 @@ public class TeamController {
     @CrossOrigin(origins = "*")
     @GetMapping("/event/{eventId}/team/{teamId}")
     public ResponseEntity<Team> eventTeam(@PathVariable("eventId") String eventId, @PathVariable("teamId") String teamId) {
-        Team team = TeamLoader.getInstance().initTeam(teamId, eventId);
+        Team team = loader.initTeam(teamId, eventId);
 
         if (team != null && team.getPlayers().size() > 0) {
             return ResponseEntity.ok(team);
@@ -96,7 +99,7 @@ public class TeamController {
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
     public ResponseEntity<List<Division>> teams() {
-        List<Division> teams = TeamLoader.getInstance().getDivisions();
+        List<Division> teams = loader.getDivisions();
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -108,7 +111,7 @@ public class TeamController {
     @CrossOrigin(origins = "*")
     @GetMapping("/team")
     public ResponseEntity<Team> team(@RequestParam(value = "team", defaultValue = "ZJU-BYD") String teamName) {
-        Team team = TeamLoader.getInstance().initTeam(teamName);
+        Team team = loader.initTeam(teamName);
 
         if (team.getPlayers().size() > 0) {
             return ResponseEntity.ok(team);
@@ -120,7 +123,7 @@ public class TeamController {
     @CrossOrigin(origins = "*")
     @GetMapping("/playerresult")
     public ResponseEntity<PlayerResult> playerResult(@RequestParam(value = "id", defaultValue = "1316122") String id) {
-        PlayerResult player = TeamLoader.getInstance().searchPlayerResult(id);
+        PlayerResult player = loader.searchPlayerResult(id);
 
         if (player != null) {
             return ResponseEntity.ok(player);
@@ -134,7 +137,7 @@ public class TeamController {
     public ResponseEntity<List<Lineup>> analysis(@RequestParam(value = "team", defaultValue = "ZJU-BYD") String teamName,
                                                  @RequestParam(value = "strategy", defaultValue = "0") String strategyNo) {
 
-        Team team = TeamLoader.getInstance().initTeam(teamName);
+        Team team = loader.initTeam(teamName);
 
         BaseTeamStrategy strategy = TeamStrategyFactory.getStrategy(Integer.parseInt(strategyNo));
 
@@ -158,7 +161,7 @@ public class TeamController {
                                                       @RequestParam(value = "grantUTR", defaultValue = "true") String grantUTR
     ) {
 
-        Team team = TeamLoader.getInstance().initTeam(teamName);
+        Team team = loader.initTeam(teamName);
 
         FixedPairWithMoreVariableTeamStrategy strategy = (FixedPairWithMoreVariableTeamStrategy) TeamStrategyFactory.getStrategy(TeamStrategyFactory.FixedWithMoreVariable);
 

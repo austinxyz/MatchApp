@@ -13,7 +13,8 @@ class MatchAppApplicationTests {
 	@Test
 	void contextLoads() {
 		//System.out.println(controller.analysis("ZJU-BYD", "0").toString());
-		System.out.println(controller.analysisFixed("ZJU-BYD", "", "Dai  Ian,Li Haoyang_Dai  Ian,Teoh  Ian", "", "", "", "true").toString());
+		System.out.println(controller.analysisFixed("ZJU-BYD", "",
+				"Dai  Ian,Li Haoyang_Dai  Ian,Teoh  Ian", "", "", "", "true").toString());
 	}
 
 }
