@@ -4,11 +4,10 @@ import com.utr.model.*;
 import org.springframework.boot.json.JsonParserFactory;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.time.format.DateTimeFormatter;
 
 public class PlayerResultParser {
 
@@ -20,20 +19,20 @@ public class PlayerResultParser {
     }
 
     PlayerResult parseResult(String resultJsonString) {
-       PlayerResult result = new PlayerResult(playerId);
-       Map<String, Object> resultJson = JsonParserFactory.getJsonParser().parseMap(resultJsonString);
+        PlayerResult result = new PlayerResult(playerId);
+        Map<String, Object> resultJson = JsonParserFactory.getJsonParser().parseMap(resultJsonString);
 
-       result.setWinsNumber((Integer) resultJson.get("wins"));
-       result.setLossesNumber((Integer) resultJson.get("losses"));
-       result.setWithdrawsNumber((Integer) resultJson.get("withdrawls"));
+        result.setWinsNumber((Integer) resultJson.get("wins"));
+        result.setLossesNumber((Integer) resultJson.get("losses"));
+        result.setWithdrawsNumber((Integer) resultJson.get("withdrawls"));
 
-       List events = (List)resultJson.get("events");
+        List events = (List) resultJson.get("events");
 
-       for (Object eventJson: events) {
-           parsePlayerEvent((Map<String, Object>)eventJson, result);
-       }
+        for (Object eventJson : events) {
+            parsePlayerEvent((Map<String, Object>) eventJson, result);
+        }
 
-       return result;
+        return result;
     }
 
     private PlayerEvent parsePlayerEvent(Map<String, Object> eventJson, PlayerResult result) {
@@ -42,10 +41,10 @@ public class PlayerResultParser {
             return null;
         }
 
-        String eventName = (String)eventJson.get("name");
+        String eventName = (String) eventJson.get("name");
 
         PlayerEvent event = null;
-        if (eventName!= null && eventName.startsWith("USTA")) {
+        if (eventName != null && eventName.startsWith("USTA")) {
             event = result.getEventByName(eventName);
         }
 
@@ -54,7 +53,7 @@ public class PlayerResultParser {
             result.getPlayerEvents().add(event);
         }
 
-        List<Map<String, Object>> draws = (List<Map<String, Object>>)eventJson.get("draws");
+        List<Map<String, Object>> draws = (List<Map<String, Object>>) eventJson.get("draws");
 
         for (Map<String, Object> draw : draws) {
             event.getResults().addAll(parsePlayerResults(draw));
@@ -66,24 +65,24 @@ public class PlayerResultParser {
     private List<MatchResult> parsePlayerResults(Map<String, Object> drawJson) {
         List<MatchResult> results = new ArrayList<>();
 
-        String drawName = (String)drawJson.get("name");
+        String drawName = (String) drawJson.get("name");
 
-        List<Map<String, Object>> resultsJson = (List<Map<String, Object>>)drawJson.get("results");
+        List<Map<String, Object>> resultsJson = (List<Map<String, Object>>) drawJson.get("results");
 
-        for (Map<String, Object> resultJson: resultsJson) {
-            Map<String, Object> roundJson = (Map<String, Object>)resultJson.get("round");
-            LocalDateTime date = LocalDateTime.parse((String)resultJson.get("date"), formatter);
-            String name = drawName + " " + (roundJson==null? "":(String)roundJson.get("name"));
+        for (Map<String, Object> resultJson : resultsJson) {
+            Map<String, Object> roundJson = (Map<String, Object>) resultJson.get("round");
+            LocalDateTime date = LocalDateTime.parse((String) resultJson.get("date"), formatter);
+            String name = drawName + " " + (roundJson == null ? "" : (String) roundJson.get("name"));
             MatchResult result = new MatchResult(name, date, this.playerId);
 
-            Map<String, Object> playersJson = (Map<String, Object>)resultJson.get("players");
+            Map<String, Object> playersJson = (Map<String, Object>) resultJson.get("players");
 
-            result.setWinner1(parsePlayer((Map<String, Object>)playersJson.get("winner1")));
-            result.setWinner2(parsePlayer((Map<String, Object>)playersJson.get("winner2")));
-            result.setLoser1(parsePlayer((Map<String, Object>)playersJson.get("loser1")));
-            result.setLoser2(parsePlayer((Map<String, Object>)playersJson.get("loser2")));
+            result.setWinner1(parsePlayer((Map<String, Object>) playersJson.get("winner1")));
+            result.setWinner2(parsePlayer((Map<String, Object>) playersJson.get("winner2")));
+            result.setLoser1(parsePlayer((Map<String, Object>) playersJson.get("loser1")));
+            result.setLoser2(parsePlayer((Map<String, Object>) playersJson.get("loser2")));
 
-            result.setScore(parseScore((Map<String, Object>)resultJson.get("score")));
+            result.setScore(parseScore((Map<String, Object>) resultJson.get("score")));
 
             results.add(result);
         }
@@ -95,19 +94,19 @@ public class PlayerResultParser {
 
         MatchScore score = new MatchScore();
 
-        for (int i=1; i <= scoreJson.size(); i++) {
-            Map<String, Object> scoreRound = (Map<String, Object>)scoreJson.get(String.valueOf(i));
+        for (int i = 1; i <= scoreJson.size(); i++) {
+            Map<String, Object> scoreRound = (Map<String, Object>) scoreJson.get(String.valueOf(i));
 
             if (scoreRound != null) {
                 Integer tiebreak = (Integer) scoreRound.get("tiebreak");
                 Integer winnerTiebreak = (Integer) scoreRound.get("winnerTiebreak");
                 Integer winner = (Integer) scoreRound.get("winner");
-                Integer loser = (Integer)scoreRound.get("loser");
+                Integer loser = (Integer) scoreRound.get("loser");
                 score.addRound(
-                        winner== null? -1: winner.intValue(),
-                        loser == null? -1: loser.intValue(),
-                        tiebreak==null? -1:tiebreak.intValue(),
-                        winnerTiebreak==null? -1:winnerTiebreak.intValue()
+                        winner == null ? -1 : winner,
+                        loser == null ? -1 : loser,
+                        tiebreak == null ? -1 : tiebreak,
+                        winnerTiebreak == null ? -1 : winnerTiebreak
                 );
             }
         }
@@ -120,17 +119,18 @@ public class PlayerResultParser {
             return null;
         }
 
-        String name = (String)playerJson.get("firstName") + " " + (String)playerJson.get("lastName");
-        String gender = (String)playerJson.get("gender");
-        String UTR = (String)playerJson.get("doublesUtrDisplay");
+        String firstName = (String) playerJson.get("firstName");
+        String lastName = (String) playerJson.get("lastName");
+        String gender = (String) playerJson.get("gender");
+        String UTR = (String) playerJson.get("doublesUtrDisplay");
 
-        Player player = new Player(name, gender, UTR);
+        Player player = new Player(firstName, lastName, gender, UTR);
 
-        player.setId((String)playerJson.get("id"));
-        player.setdUTR((Double)playerJson.get("doublesUtr"));
-        player.setsUTR((Double)playerJson.get("singlesUtr"));
-        player.setdUTRStatus((String)playerJson.get("ratingStatusDoubles"));
-        player.setsUTRStatus((String)playerJson.get("ratingStatusSingles"));
+        player.setId((String) playerJson.get("id"));
+        player.setdUTR((Double) playerJson.get("doublesUtr"));
+        player.setsUTR((Double) playerJson.get("singlesUtr"));
+        player.setdUTRStatus((String) playerJson.get("ratingStatusDoubles"));
+        player.setsUTRStatus((String) playerJson.get("ratingStatusSingles"));
 
         return player;
     }

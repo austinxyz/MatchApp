@@ -1,5 +1,7 @@
 package com.utr.match.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,9 @@ public class PlayerEntity {
 
     @Column(name="last_name")
     private String lastName;
+
+    @Column(name="full_name")
+    private String name;
 
     @Column(name="birth_year")
     private int birthYear;
@@ -46,6 +51,7 @@ public class PlayerEntity {
     @Column(name="memo")
     private String memo;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<EventUTR> utrs;
 
@@ -155,5 +161,13 @@ public class PlayerEntity {
 
     public List<EventUTR> getUtrs() {
         return utrs;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
