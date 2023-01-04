@@ -16,8 +16,13 @@ public class Player {
     String dUTRStatus;
     String sUTRStatus;
 
-    public Player(String name, String gender, String UTR) {
-        this.name = name;
+    String firstName;
+    String lastName;
+
+    public Player(String firstName, String lastName, String gender, String UTR) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.name = lastName + " " + firstName;
         this.gender = gender;
         this.UTR = Float.parseFloat(UTR);
     }
@@ -94,6 +99,14 @@ public class Player {
     @Override
     public int hashCode() {
         return Objects.hash(name, gender, UTR);
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     @Override

@@ -49,13 +49,13 @@ public class EventParser {
 
 
     private Player parsePlayer(Map<String, Object> playerJson) {
-        String name = (String)playerJson.get("lastName")
-                +" " + (String)playerJson.get("firstName");
+        String lastName = (String)playerJson.get("lastName");
+        String firstName = (String)playerJson.get("firstName");
         String gender = (String)playerJson.get("gender");
         String utr = playerJson.get("doublesUtrDisplay").toString();
         String id = playerJson.get("id").toString();
 
-        Player player = new Player(name, gender, utr);
+        Player player = new Player(firstName, lastName, gender, utr);
         player.setId(id);
         player.setsUTR(getDoubleValue(playerJson, "singlesUtrDisplay"));
         player.setdUTR(getDoubleValue(playerJson, "doublesUtrDisplay"));

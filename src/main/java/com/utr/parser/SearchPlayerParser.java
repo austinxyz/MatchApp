@@ -31,11 +31,12 @@ public class SearchPlayerParser {
     }
 
     private static Player parsePlayer(Map<String, Object> source) {
-        String name = (String) source.get("firstName") + " " + (String) source.get("lastName");
+        String firstName = (String) source.get("firstName");
+        String lastName = (String) source.get("lastName");
         String gender = ((String) source.get("gender")).equals("Male")? "M":"F";
         String UTR = (String) source.get("doublesUtrDisplay");
 
-        Player player = new Player(name, gender, UTR);
+        Player player = new Player(firstName, lastName, gender, UTR);
 
         player.setId(((Integer) source.get("id")).toString());
         player.setdUTR((Double) source.get("doublesUtr"));

@@ -7,18 +7,16 @@ import com.utr.match.model.Team;
 import com.utr.model.*;
 import com.utr.parser.UTRParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
+@Scope("singleton")
 public class TeamLoader {
 
     public static final String DEFAULT_EVENT_ID = "123233";
@@ -53,13 +51,13 @@ public class TeamLoader {
 
     private boolean isPlayerId(String query) {
 
-        if (query == null || query.length() <1) {
+        if (query == null || query.length() < 1) {
             return false;
         }
 
         char c = query.charAt(0);
 
-        return c>= '1' && c<='9';
+        return c >= '1' && c <= '9';
 
     }
 
@@ -113,6 +111,7 @@ public class TeamLoader {
         }
         return club;
     }
+
     public Team initTeam(String teamName) {
         Event event = getOrFetchEvent(DEFAULT_EVENT_ID);
 
