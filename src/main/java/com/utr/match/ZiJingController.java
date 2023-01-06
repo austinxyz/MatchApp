@@ -1,7 +1,5 @@
 package com.utr.match;
 
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.PlayerRepository;
 import com.utr.match.model.Lineup;
 import com.utr.match.model.Team;
 import com.utr.match.strategy.BaseTeamStrategy;
@@ -17,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-public class TeamController {
+public class ZiJingController {
 
     @Autowired
     TeamLoader loader;
