@@ -1,6 +1,6 @@
 package com.utr;
 
-import com.utr.match.TeamController;
+import com.utr.match.ZiJingController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class MatchAppApplicationTests {
 
 	@Autowired
-	private TeamController controller;
+	private ZiJingController controller;
 
 	@Test
 	void contextLoads() {

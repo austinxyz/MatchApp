@@ -22,10 +22,10 @@ public class PlayerEntity {
     private String name;
 
     @Column(name="birth_year")
-    private int birthYear;
+    private Integer birthYear;
 
     @Column(name="birth_month")
-    private int birthMonth;
+    private Integer birthMonth;
 
     @Column(name="utr_id")
     private String utrId;
@@ -43,7 +43,7 @@ public class PlayerEntity {
     private String gender;
 
     @Column(name="lefty")
-    private boolean lefty;
+    private Boolean lefty;
 
     @Column(name="summary")
     private String summary;
@@ -52,7 +52,7 @@ public class PlayerEntity {
     private String memo;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EventUTR> utrs;
 
     public long getId() {
@@ -68,11 +68,11 @@ public class PlayerEntity {
     }
 
     public int getBirthYear() {
-        return birthYear;
+        return birthYear==null? 0:birthYear.intValue();
     }
 
     public int getBirthMonth() {
-        return birthMonth;
+        return birthMonth==null? 0:birthMonth.intValue();
     }
 
     public String getUtrId() {
@@ -96,7 +96,7 @@ public class PlayerEntity {
     }
 
     public boolean isLefty() {
-        return lefty;
+        return lefty==null? false:lefty.booleanValue();
     }
 
     public String getSummary() {
@@ -169,5 +169,16 @@ public class PlayerEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerEntity{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", name='" + name + '\'' +
+                ", utrId='" + utrId + '\'' +
+                ", gender='" + gender + '\'' +
+                '}';
     }
 }
