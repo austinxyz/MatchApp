@@ -24,6 +24,9 @@ public class USTATeam {
     @Column(name = "flight")
     private String flight;
 
+    @Column(name = "link")
+    private String link;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usta_division_id")
@@ -101,10 +104,17 @@ public class USTATeam {
 
     @JsonProperty
     public String getDivisionName() {
-        if (this.division!=null) {
+        if (this.division != null) {
             return division.getName() + " " + division.getLevel();
         }
         return "";
     }
 
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
 }
