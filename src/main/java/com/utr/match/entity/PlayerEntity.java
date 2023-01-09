@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -35,6 +36,12 @@ public class PlayerEntity {
 
     @Column(name="usta_rating")
     private String ustaRating;
+
+    @Column(name="usta_noncal_link")
+    private String noncalLink;
+
+    @Column(name="usta_tennisrecord_link")
+    private String tennisRecordLink;
 
     @Column(name="registered_area")
     private String area;
@@ -169,6 +176,27 @@ public class PlayerEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonProperty
+    public String getTennisLinkURL() {
+        return "https://tennislink.usta.com/Leagues/Main/StatsAndStandings.aspx?t=R-17&search=" + this.utrId;
+    }
+
+    public String getNoncalLink() {
+        return noncalLink;
+    }
+
+    public void setNoncalLink(String noncalLink) {
+        this.noncalLink = noncalLink;
+    }
+
+    public String getTennisRecordLink() {
+        return tennisRecordLink;
+    }
+
+    public void setTennisRecordLink(String tennisRecordLink) {
+        this.tennisRecordLink = tennisRecordLink;
     }
 
     @Override

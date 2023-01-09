@@ -105,7 +105,7 @@ public class USTATeam {
     @JsonProperty
     public String getDivisionName() {
         if (this.division != null) {
-            return division.getName() + " " + division.getLevel();
+            return division.getName();
         }
         return "";
     }
@@ -116,5 +116,10 @@ public class USTATeam {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    @JsonProperty
+    public String getTennisRecordLink() {
+        return "https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=" + this.name + "&year="+ this.division.getLeague().getYear();
     }
 }

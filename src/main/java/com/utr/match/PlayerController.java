@@ -55,8 +55,11 @@ public class PlayerController {
     ) {
         String likeString = "%" + name + "%";
         List<PlayerEntity> players = playerRepo.findByNameLike(likeString);
-        likeString = "%" + reverseName(name) + "%";
-        players.addAll(playerRepo.findByNameLike(likeString));
+        String reverseString = "%" + reverseName(name) + "%";
+
+        if (!likeString.equals(reverseString)) {
+            players.addAll(playerRepo.findByNameLike(reverseString));
+        }
 
         if (players.size() > 0) {
             return ResponseEntity.ok(players);
