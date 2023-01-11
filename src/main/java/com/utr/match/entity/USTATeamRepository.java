@@ -8,6 +8,8 @@ public interface USTATeamRepository extends CrudRepository<USTATeam, Long> {
 
     List<USTATeam> findByNameLike(String name);
 
+    USTATeam findByName(String name);
+
     List<USTATeam> findAll();
 
 }

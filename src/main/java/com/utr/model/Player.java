@@ -27,6 +27,9 @@ public class Player {
         this.UTR = Float.parseFloat(UTR);
     }
 
+    public Player() {
+    }
+
     public String getId() {
         return id;
     }

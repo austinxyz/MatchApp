@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,9 +46,11 @@ public class USTATeam {
     public USTATeam(String name, USTADivision division) {
         this.name = name;
         this.division = division;
+        this.players = new ArrayList<>();
     }
 
     public USTATeam() {
+        this.players = new ArrayList<>();
     }
 
     public long getId() {

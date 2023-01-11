@@ -3,12 +3,14 @@ package com.utr.entity;
 import com.utr.match.TeamLoader;
 import com.utr.match.entity.*;
 import com.utr.model.Player;
+import com.utr.util.JsoupUtil;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,4 +96,42 @@ class USTATeamRepositoryTest {
 
     }
 
+    @Test
+    void updateTeam() {
+
+        JsoupUtil util = new JsoupUtil();
+        try {
+            String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96702";
+            USTATeam team = util.parseUSTATeam(teamURL);
+
+            USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
+
+            if (existTeam != null) {
+                System.out.println("team " + team.getName() + " is existed" );
+            } else {
+                USTATeam newTeam = new USTATeam();
+                newTeam.setName(team.getName());
+                newTeam.setAlias(team.getAlias());
+                newTeam.setLink(teamURL);
+                existTeam = ustaTeamRepository.save(newTeam);
+            }
+
+            for (PlayerEntity player: team.getPlayers()) {
+                List<PlayerEntity> existedPlayer = playerRepository.findByNameLike(player.getName());
+
+                if (existedPlayer.size() > 0) {
+                    System.out.println(player.getName() + " is existed");
+                    existTeam.getPlayers().add(existedPlayer.get(0));
+                } else {
+                    playerRepository.save(player);
+                    player = playerRepository.findByNameLike(player.getName()).get(0);
+                    existTeam.getPlayers().add(player);
+                }
+            }
+            ustaTeamRepository.save(existTeam);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
