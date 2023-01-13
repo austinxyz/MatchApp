@@ -37,7 +37,7 @@ class UTRParserTest {
     void searchPlayer() {
 
         UTRParser parser = new UTRParser();
-        List<Player> results = parser.searchPlayers("yanzhao xu", 5);
+        List<Player> results = parser.searchPlayers("Baker Caitlin", 5);
 
         System.out.println(results);
     }
@@ -58,5 +58,13 @@ class UTRParserTest {
         Club club = parser.getClub("3156");
 
         System.out.println(club);
+    }
+
+    @Test
+    void parsePlayer() {
+        UTRParser parser = new UTRParser();
+        Player player = parser.parsePlayer("2547696");
+
+        System.out.println(player);
     }
 }

@@ -37,11 +37,13 @@ public class USTATeam {
     @JoinTable(name = "usta_team_player",
             joinColumns = {@JoinColumn(name = "usta_team_id")},
             inverseJoinColumns = {@JoinColumn(name = "player_id")})
-    private List<PlayerEntity> players;
+    private final List<PlayerEntity> players;
 
     @ManyToOne
     @JoinColumn(name = "captain_id")
     private PlayerEntity captain;
+    @Transient
+    private String divisionName;
 
     public USTATeam(String name, USTADivision division) {
         this.name = name;
@@ -93,6 +95,10 @@ public class USTATeam {
         return division;
     }
 
+    public void setDivision(USTADivision division) {
+        this.division = division;
+    }
+
     public List<PlayerEntity> getPlayers() {
         return players;
     }
@@ -108,9 +114,13 @@ public class USTATeam {
     @JsonProperty
     public String getDivisionName() {
         if (this.division != null) {
-            return division.getName();
+            this.divisionName = division.getName();
         }
-        return "";
+        return divisionName;
+    }
+
+    public void setDivisionName(String divisionName) {
+        this.divisionName = divisionName;
     }
 
     public String getLink() {
@@ -123,6 +133,25 @@ public class USTATeam {
 
     @JsonProperty
     public String getTennisRecordLink() {
-        return "https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=" + this.name + "&year="+ this.division.getLeague().getYear();
+        return "https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=" + this.name + "&year=" + this.division.getLeague().getYear();
+    }
+
+    public PlayerEntity getPlayer(String name) {
+        for (PlayerEntity player : this.players) {
+            if (player.getName().equals(name)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "USTATeam{" +
+                "name='" + name + '\'' +
+                ", alias='" + alias + '\'' +
+                ", link='" + link + '\'' +
+                ", divisionName='" + divisionName + '\'' +
+                '}';
     }
 }

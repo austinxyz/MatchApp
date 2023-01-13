@@ -19,12 +19,22 @@ public class Player {
     String firstName;
     String lastName;
 
+    String location;
+
+    String dynamicRating;
+
+    float successRate;
+
     public Player(String firstName, String lastName, String gender, String UTR) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = lastName + " " + firstName;
         this.gender = gender;
-        this.UTR = Float.parseFloat(UTR);
+        if (UTR.indexOf("x") >0) {
+            this.UTR = Float.parseFloat(UTR.substring(0, UTR.indexOf('.')));
+        } else {
+            this.UTR = Float.parseFloat(UTR);
+        }
     }
 
     public Player() {
@@ -110,6 +120,30 @@ public class Player {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getDynamicRating() {
+        return dynamicRating;
+    }
+
+    public void setDynamicRating(String dynamicRating) {
+        this.dynamicRating = dynamicRating;
+    }
+
+    public float getSuccessRate() {
+        return successRate;
+    }
+
+    public void setSuccessRate(float successRate) {
+        this.successRate = successRate;
     }
 
     @Override

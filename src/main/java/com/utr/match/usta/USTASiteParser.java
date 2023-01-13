@@ -1,26 +1,37 @@
-package com.utr.util;
+package com.utr.match.usta;
 
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTATeam;
-import com.utr.model.Player;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-public class JsoupUtil {
+@Component
+public class USTASiteParser {
+
+    private static final Logger logger = LoggerFactory.getLogger(USTASiteParser.class);
+
+    public USTASiteParser() {
+    }
 
     public USTATeam parseUSTATeam(String teamURL) throws IOException {
         Document doc = Jsoup.connect(teamURL).get();
         String title = doc.title();
-        System.out.println(title);
         USTATeam team = new USTATeam();
         team.setName(getName(title));
         team.setAlias(getAlias(title));
+        team.setLink(teamURL);
 
-        System.out.println("team " + team.getName() + " alias " + team.getAlias());
+        String divisionName = getDivisionName(doc);
+        team.setDivisionName(divisionName);
+
+        logger.debug(team.toString());
 
         Elements links = doc.select("a[href]");
         for (Element link : links) {
@@ -45,18 +56,62 @@ public class JsoupUtil {
 
                     team.getPlayers().add(playerEntity);
 
-                    System.out.println(playerEntity.getName() + " " +
-                            playerEntity.getFirstName() + " "
-                            + playerEntity.getLastName() + " "
-                            + playerEntity.getArea() + " "
-                            + playerEntity.getGender() + " "
-                            + playerEntity.getUstaRating() + " "
-                            + playerEntity.getNoncalLink());
+                    logger.debug(playerEntity.getName() + "|"
+                            + playerEntity.getFirstName() + "|"
+                            + playerEntity.getLastName() + "|"
+                            + playerEntity.getArea() + "|"
+                            + playerEntity.getGender() + "|"
+                            + playerEntity.getUstaRating() + "|"
+                            + playerEntity.getNoncalLink() + " | "
+                            + playerEntity.getTennisRecordLink());
                 }
             }
         }
 
         return team;
+    }
+
+    private String getDivisionName(Document doc) {
+        Element ele = doc.body().children().get(6);
+        String divisionName = ele.children().get(0).children().get(0).children().get(1).children().get(0).text();
+        logger.debug(divisionName);
+        return divisionName;
+    }
+
+    public String parseUSTANumber(String noncalLink) throws IOException {
+        Document doc = Jsoup.connect(noncalLink).get();
+        Elements playerInfos = doc.getElementsByClass("PlayerInfo");
+        String ustaNubmer="";
+        for (Element playerInfo: playerInfos) {
+            ustaNubmer = playerInfo.children().get(0).text();
+
+            int start = ustaNubmer.indexOf("#:");
+            if (start > 0) {
+                ustaNubmer = ustaNubmer.substring(start+2).trim();
+            }
+
+            int end = ustaNubmer.indexOf(" ");
+            ustaNubmer = ustaNubmer.substring(0, end);
+        }
+        return ustaNubmer;
+    }
+
+    public String getDynamicRating(String tennisRecordLink) throws IOException {
+        Document doc = Jsoup.connect(tennisRecordLink).get();
+        Elements trs = doc.select("*[style*='height:60px; border-top:1px solid #ddd;']");
+        String dr = "";
+        for(Element tr: trs) {
+            String label = tr.children().get(0).text();
+            if (label.equals("Estimated Dynamic Rating")) {
+                dr = tr.children().get(1).text();
+
+                int index = dr.indexOf(" ");
+                dr = dr.substring(0, index);
+                return dr;
+            }
+        }
+
+        return dr;
     }
 
     private String getLastName(String name) {
@@ -91,6 +146,8 @@ public class JsoupUtil {
         String alias = title;
         if (i > 0) {
             alias = title.substring(i + 1);
+        } else {
+            return "";
         }
         int index = alias.indexOf("]");
         if (index > 0) {

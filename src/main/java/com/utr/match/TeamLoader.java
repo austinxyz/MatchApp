@@ -26,6 +26,8 @@ public class TeamLoader {
 
     Map<String, PlayerResult> playerResults;
 
+    Map<String, Player> players;
+
     @Autowired
     UTRParser parser;
 
@@ -37,13 +39,26 @@ public class TeamLoader {
         playerResults = new HashMap<>();
         events = new HashMap<>();
         clubs = new HashMap<>();
+        players = new HashMap<>();
+
+    }
+
+    public Player getPlayer(String utrId) {
+        Player player = null;
+        if (players.containsKey(utrId)) {
+            player = players.get(utrId);
+        } else {
+            player = parser.parsePlayer(utrId);
+            players.put(player.getId(), player);
+        }
+        return player;
     }
 
     public List<Player> queryPlayer(String query, int top) {
         if (isPlayerId(query)) {
-            PlayerResult result = parser.parsePlayerResult(query);
+            Player player = getPlayer(query);
             List<Player> players = new ArrayList<>();
-            players.add(result.getPlayer());
+            players.add(player);
             return players;
         }
         return parser.searchPlayers(query, top);
@@ -152,6 +167,17 @@ public class TeamLoader {
 
         PlayerResult result = parser.parsePlayerResult(playerId);
         playerResults.put(playerId, result);
+
+        Player player = null;
+        if (!players.containsKey(playerId)) {
+            player = result.getPlayer();
+            players.put(player.getId(), player);
+        } else {
+            player = players.get(playerId);
+        }
+        player.setSuccessRate(
+                (float)result.getWinsNumber()/(float)(result.getLossesNumber()+result.getWinsNumber()));
+
         return result;
     }
 

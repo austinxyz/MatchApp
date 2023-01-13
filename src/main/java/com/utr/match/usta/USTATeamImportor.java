@@ -1,22 +1,31 @@
-package com.utr.entity;
+package com.utr.match.usta;
 
-import com.utr.match.TeamLoader;
 import com.utr.match.entity.*;
+import com.utr.model.Division;
+import com.utr.model.Event;
 import com.utr.model.Player;
 import com.utr.parser.UTRParser;
-import com.utr.match.usta.USTASiteParser;
-import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-@SpringBootTest
-class USTATeamRepositoryTest {
+@Component
+@Scope("singleton")
+public class USTATeamImportor {
 
+    private static final Logger logger = LoggerFactory.getLogger(USTATeamImportor.class);
+
+    @Autowired
+    EventRepository eventRepo;
+
+    @Autowired
+    USTASiteParser ustaParser;
 
     @Autowired
     private USTADivisionRepository divisionRepository;
@@ -27,87 +36,25 @@ class USTATeamRepositoryTest {
     @Autowired
     private PlayerRepository playerRepository;
 
-    @Autowired
-    private TeamLoader loader;
-
-    @Test
-    void createTeam() {
-        Optional<USTADivision> division = divisionRepository.findById(1L);
-
-        if (division.isPresent()) {
-
-            USTATeam team = new USTATeam("VALLEY CHURCH 40AM3.5A", division.get());
-
-            team.setAlias("Federoar");
-            team.setArea("South Bay");
-            team.setFlight("2");
-
-            ustaTeamRepository.save(team);
-
-        }
-
+    public USTATeamImportor() {
     }
 
-    @Test
-    void addPlayer() {
-
-        String playerName = "3695913";
-
-        List<PlayerEntity> players = playerRepository.findByNameLike(playerName);
-
-        USTATeam team = ustaTeamRepository.findById(1L).get();
-
-        PlayerEntity player = null;
-        if (!players.isEmpty()) {
-            player = players.get(0);
-        } else {
-            List<Player> utrPlayers = loader.queryPlayer(playerName, 5);
-
-            if (!utrPlayers.isEmpty()) {
-                Player utrPlayer = utrPlayers.get(0);
-                player = new PlayerEntity();
-                player.setFirstName(utrPlayer.getFirstName());
-                player.setLastName(utrPlayer.getLastName());
-                player.setName(utrPlayer.getName());
-                player.setGender(utrPlayer.getGender());
-                player.setUtrId(utrPlayer.getId());
-            }
-
-            player = playerRepository.save(player);
-        }
-
-        if (player != null) {
-            //Hibernate.initialize(team.getPlayers());
-            team.getPlayers().add(player);
-            ustaTeamRepository.save(team);
-            System.out.println(player);
-        }
+    public void importUSTATeam(String teamURL) {
+        USTATeam team = createTeamAndAddPlayers(teamURL);
+        updateTeamPlayerUTRID(team.getName());
+        updatePlayerUSTANumber(teamURL);
     }
 
-    @Test
-    void getTeam() {
-        USTATeam team = ustaTeamRepository.findById(1L).get();
-
-        for (PlayerEntity player : team.getPlayers()) {
-
-            System.out.println(player.getName() + ": update player set usta_noncal_link='https://www.ustanorcal.com/playermatches.asp?id=', usta_tennisrecord_link='https://www.tennisrecord.com/adult/profile.aspx?playername=' where id=" + player.getId());
-
-        }
-
-    }
-
-    @Test
-    void createTeamAndAddPlayers() {
+    private USTATeam createTeamAndAddPlayers(String teamURL) {
 
         USTASiteParser util = new USTASiteParser();
         try {
-            String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96701";
             USTATeam team = util.parseUSTATeam(teamURL);
 
             USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
 
             if (existTeam != null) {
-                System.out.println("team " + team.getName() + " is existed");
+                logger.debug("team " + team.getName() + " is existed");
             } else {
                 USTATeam newTeam = new USTATeam();
                 newTeam.setName(team.getName());
@@ -119,7 +66,7 @@ class USTATeamRepositoryTest {
                 }
                 ustaTeamRepository.save(newTeam);
                 existTeam = ustaTeamRepository.findByName(newTeam.getName());
-                System.out.println("new team " + team.getName() + " is created");
+                logger.debug("new team " + team.getName() + " is created");
             }
 
             for (PlayerEntity player : team.getPlayers()) {
@@ -132,34 +79,35 @@ class USTATeamRepositoryTest {
                     existedPlayer.setArea(player.getArea());
                     existedPlayer.setUstaRating(player.getUstaRating());
                     playerRepository.save(existedPlayer);
-                    System.out.println(player.getName() + " is existed, update USTA info");
+                    logger.debug(player.getName() + " is existed, update USTA info");
                 } else {
                     playerRepository.save(player);
                     existedPlayer = playerRepository.findByNameLike(player.getName()).get(0);
-                    System.out.println("new player" + player.getName() + " is created");
+                    logger.debug("new player" + player.getName() + " is created");
                 }
 
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
                     existTeam.getPlayers().add(existedPlayer);
-                    System.out.println(" add player " + player.getName() + " into team");
+                    logger.debug(" add player " + player.getName() + " into team");
                 }
             }
             ustaTeamRepository.save(existTeam);
+            return existTeam;
         } catch (IOException e) {
+            logger.error(e.toString());
             throw new RuntimeException(e);
         }
 
     }
 
-    @Test
-    void updateTeamPlayerUTRID() {
+    private void updateTeamPlayerUTRID(String teamName) {
 
         UTRParser parser = new UTRParser();
 
-        USTATeam existTeam = ustaTeamRepository.findById(3L).get();
+        USTATeam existTeam = ustaTeamRepository.findByName(teamName);
 
         if (existTeam == null) {
-            System.out.println("team " + existTeam.getName() + " is not existed");
+            logger.debug("team " + existTeam.getName() + " is not existed");
             return;
         }
 
@@ -172,9 +120,9 @@ class USTATeamRepositoryTest {
                 if (candidateUTRId != null) {
                     player.setUtrId(candidateUTRId);
                     playerRepository.save(player);
-                    System.out.println("Player:" + player.getName() + " utr: " + player.getUtrId() + " Saved ");
+                    logger.debug("Player:" + player.getName() + " utr: " + player.getUtrId() + " Saved ");
                 } else {
-                    System.out.println("Player:" + player.getName() + " has no UTRId");
+                    logger.debug("Player:" + player.getName() + " has no UTRId");
                 }
 
             }
@@ -209,12 +157,10 @@ class USTATeamRepositoryTest {
         return candidateUTRIds.size() > 0 ? candidateUTRIds.get(0) : "";
     }
 
-    @Test
-    void updatePlayerUSTANumber() {
+    private void updatePlayerUSTANumber(String teamURL) {
 
         USTASiteParser util = new USTASiteParser();
         try {
-            String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96701";
             USTATeam team = util.parseUSTATeam(teamURL);
 
             USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
@@ -233,22 +179,19 @@ class USTATeamRepositoryTest {
 
                 if (player.getNoncalLink() != null) {
                     player.setUstaId(util.parseUSTANumber(player.getNoncalLink()));
-                    player.setTennisRecordLink(getTennisRecordLink(player));
+                    player.getTennisRecordLink();
                 }
 
                 playerRepository.save(player);
-                System.out.println("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
-
+                logger.debug("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
             }
 
         } catch (IOException e) {
+            logger.error(e.toString());
             throw new RuntimeException(e);
         }
 
     }
 
-    private String getTennisRecordLink(PlayerEntity player) {
-        return "https://www.tennisrecord.com/adult/profile.aspx?playername=" + player.getFirstName()
-                + "%20" + player.getLastName();
-    }
+
 }
