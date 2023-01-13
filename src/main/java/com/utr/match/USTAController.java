@@ -24,6 +24,8 @@ public class USTAController {
 
     @Autowired
     USTASiteParser parser;
+    @Autowired
+    private USTADivisionRepository divisionRepository;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
@@ -53,13 +55,16 @@ public class USTAController {
 
     private USTATeam prepareUTRData(USTATeam ustaTeam) {
         for (PlayerEntity player: ustaTeam.getPlayers()) {
+            if (player.getUtrId() == null || player.getUtrId().trim().equals("")) {
+                continue;
+            }
             Player utrPlayer = loader.getPlayer(player.getUtrId());
             player.setdUTR(utrPlayer.getdUTR());
             player.setsUTR(utrPlayer.getsUTR());
             player.setdUTRStatus(utrPlayer.getdUTRStatus());
             player.setsUTRStatus(utrPlayer.getsUTRStatus());
             player.setSuccessRate(utrPlayer.getSuccessRate());
-            if (utrPlayer.getDynamicRating() == null) {
+/*            if (utrPlayer.getDynamicRating() == null) {
                 try {
                     String dr = parser.getDynamicRating(player.getTennisRecordLink());
                     utrPlayer.setDynamicRating(dr);
@@ -67,7 +72,7 @@ public class USTAController {
                     throw new RuntimeException(e);
                 }
             }
-            player.setDynamicRating(utrPlayer.getDynamicRating());
+            player.setDynamicRating(utrPlayer.getDynamicRating());*/
         }
         return ustaTeam;
     }
@@ -94,6 +99,20 @@ public class USTAController {
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/divisions/")
+    public ResponseEntity<List<USTADivision>> getDivisions(
+    ) {
+
+        List<USTADivision> divisions = divisionRepository.findAll();
+
+        if (divisions.size() > 0) {
+            return ResponseEntity.ok(divisions);
         } else {
             return ResponseEntity.notFound().build();
         }

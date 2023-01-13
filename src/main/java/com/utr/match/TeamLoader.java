@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,8 @@ public class TeamLoader {
 
     Map<String, Player> players;
 
+    private Map<String, Timestamp> fetchedTimes;
+
     @Autowired
     UTRParser parser;
 
@@ -40,16 +43,27 @@ public class TeamLoader {
         events = new HashMap<>();
         clubs = new HashMap<>();
         players = new HashMap<>();
+        fetchedTimes = new HashMap<>();
 
     }
 
     public Player getPlayer(String utrId) {
         Player player = null;
+
+        if (fetchedTimes.containsKey(utrId)) {
+            Timestamp fetchTime = fetchedTimes.get(utrId);
+
+            if (System.currentTimeMillis() - fetchTime.getTime() > (long)24*60*60*1000 ) {
+                players.remove(utrId);
+            }
+        }
+
         if (players.containsKey(utrId)) {
             player = players.get(utrId);
         } else {
             player = parser.parsePlayer(utrId);
             players.put(player.getId(), player);
+            fetchedTimes.put(utrId, new Timestamp(System.currentTimeMillis()));
         }
         return player;
     }
@@ -174,10 +188,13 @@ public class TeamLoader {
             players.put(player.getId(), player);
         } else {
             player = players.get(playerId);
+            player.setsUTR(result.getPlayer().getsUTR());
+            player.setdUTR(result.getPlayer().getdUTR());
         }
-        player.setSuccessRate(
-                (float)result.getWinsNumber()/(float)(result.getLossesNumber()+result.getWinsNumber()));
-
+        if (result.getWinsNumber() + result.getLossesNumber() > 0) {
+            player.setSuccessRate(
+                    (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber()));
+        }
         return result;
     }
 
