@@ -43,6 +43,13 @@ public class SearchPlayerParser {
         player.setsUTR((Double) source.get("singlesUtr"));
         player.setdUTRStatus((String) source.get("ratingStatusDoubles"));
         player.setsUTRStatus((String) source.get("ratingStatusSingles"));
+
+        Map<String, Object> location = (Map<String, Object>)source.get("location");
+
+        if (location !=null) {
+            player.setLocation((String) location.get("display"));
+        }
+
         return player;
     }
 }

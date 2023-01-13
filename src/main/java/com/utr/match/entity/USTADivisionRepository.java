@@ -8,4 +8,5 @@ public interface USTADivisionRepository extends CrudRepository<USTADivision, Lon
 
     List<USTADivision> findByNameLike(String name);
 
+    USTADivision findByName(String name);
 }

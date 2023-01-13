@@ -62,6 +62,61 @@ public class PlayerEntity {
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EventUTR> utrs;
 
+    @Transient
+    double dUTR;
+    @Transient
+    double sUTR;
+    @Transient
+    String dUTRStatus;
+    @Transient
+    String sUTRStatus;
+
+    @Transient
+    String dynamicRating;
+
+    @Transient
+    float successRate;
+
+    public double getdUTR() {
+        return dUTR;
+    }
+
+    public void setdUTR(double dUTR) {
+        this.dUTR = dUTR;
+    }
+
+    public double getsUTR() {
+        return sUTR;
+    }
+
+    public void setsUTR(double sUTR) {
+        this.sUTR = sUTR;
+    }
+
+    public String getdUTRStatus() {
+        return dUTRStatus;
+    }
+
+    public void setdUTRStatus(String dUTRStatus) {
+        this.dUTRStatus = dUTRStatus;
+    }
+
+    public String getsUTRStatus() {
+        return sUTRStatus;
+    }
+
+    public void setsUTRStatus(String sUTRStatus) {
+        this.sUTRStatus = sUTRStatus;
+    }
+
+    public String getDynamicRating() {
+        return dynamicRating;
+    }
+
+    public void setDynamicRating(String dynamicRating) {
+        this.dynamicRating = dynamicRating;
+    }
+
     public long getId() {
         return id;
     }
@@ -192,11 +247,24 @@ public class PlayerEntity {
     }
 
     public String getTennisRecordLink() {
+        if (tennisRecordLink == null) {
+            tennisRecordLink = "https://www.tennisrecord.com/adult/profile.aspx?playername="
+                    + this.firstName
+                    + "%20" + this.lastName;
+        }
         return tennisRecordLink;
     }
 
     public void setTennisRecordLink(String tennisRecordLink) {
         this.tennisRecordLink = tennisRecordLink;
+    }
+
+    public float getSuccessRate() {
+        return successRate;
+    }
+
+    public void setSuccessRate(float successRate) {
+        this.successRate = successRate;
     }
 
     @Override
@@ -209,4 +277,5 @@ public class PlayerEntity {
                 ", gender='" + gender + '\'' +
                 '}';
     }
+
 }

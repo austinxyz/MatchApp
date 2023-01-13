@@ -8,9 +8,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -89,7 +86,28 @@ public class UTRParser {
         return restGetCall(getCallURL);
 
     }
+    public Player parsePlayer(String playerId) {
+        PlayerParser resultParser = new PlayerParser(playerId);
+        Player player = resultParser.parseResult(getPlayerJson(playerId));
 
+        List<Player> players = searchPlayers(player.getName(), 10);
+
+        for (Player qPlayer: players) {
+            if (qPlayer.getId().equals(player.getId())) {
+                return qPlayer;
+            }
+        }
+        return player;
+    }
+
+    private String getPlayerJson(String playerId) {
+
+        String getCallURL
+                = PLAYER_RESULT + playerId;
+
+        return restGetCall(getCallURL);
+
+    }
     private String getEventJson(String eventId) {
 
         String getCallURL
