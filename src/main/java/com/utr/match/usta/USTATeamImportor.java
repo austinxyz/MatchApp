@@ -41,7 +41,6 @@ public class USTATeamImportor {
 
     public void importUSTATeam(String teamURL) {
         USTATeam team = createTeamAndAddPlayers(teamURL);
-        updateTeamPlayerUTRID(team.getName());
         updatePlayerUSTANumber(teamURL);
     }
 
@@ -100,7 +99,7 @@ public class USTATeamImportor {
 
     }
 
-    private void updateTeamPlayerUTRID(String teamName) {
+    public void updateTeamPlayerUTRID(String teamName) {
 
         UTRParser parser = new UTRParser();
 

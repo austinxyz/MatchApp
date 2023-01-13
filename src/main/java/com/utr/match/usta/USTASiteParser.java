@@ -74,6 +74,10 @@ public class USTASiteParser {
     private String getDivisionName(Document doc) {
         Element ele = doc.body().children().get(6);
         String divisionName = ele.children().get(0).children().get(0).children().get(1).children().get(0).text();
+        if (!divisionName.endsWith(".0")) {
+            int end = divisionName.indexOf(".0");
+            divisionName = divisionName.substring(0, end+2);
+        }
         logger.debug(divisionName);
         return divisionName;
     }

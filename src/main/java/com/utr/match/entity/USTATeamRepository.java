@@ -15,6 +15,5 @@ public interface USTATeamRepository extends CrudRepository<USTATeam, Long> {
 
     List<USTATeam> findByDivision_Id(long id);
 
-   // List<USTATeam> findByDivision(String divisionId);
 
 }

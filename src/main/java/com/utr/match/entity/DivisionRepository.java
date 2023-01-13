@@ -10,4 +10,5 @@ public interface DivisionRepository extends CrudRepository<DivisionEntity, Long>
 
     List<DivisionEntity> findByNameLike(String name);
 
+
 }

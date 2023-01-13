@@ -33,7 +33,7 @@ class TeamLoaderTest {
     @Test
     void searchPlayer() {
 
-        List<Player> results = loader.queryPlayer("1316122", 5);
+        List<Player> results = loader.queryPlayer("3412468", 5);
 
         System.out.println(results);
     }
