@@ -45,6 +45,9 @@ public class USTATeam {
     @Transient
     private String divisionName;
 
+    @Transient
+    private String captainName;
+
     public USTATeam(String name, USTADivision division) {
         this.name = name;
         this.division = division;
@@ -123,6 +126,17 @@ public class USTATeam {
         this.divisionName = divisionName;
     }
 
+    public String getCaptainName() {
+        if (this.captain != null) {
+            this.captainName = captain.getName();
+        }
+        return captainName;
+    }
+
+    public void setCaptainName(String captainName) {
+        this.captainName = captainName;
+    }
+
     public String getLink() {
         return link;
     }
@@ -152,6 +166,9 @@ public class USTATeam {
                 ", alias='" + alias + '\'' +
                 ", link='" + link + '\'' +
                 ", divisionName='" + divisionName + '\'' +
+                ", captainName='" + captainName + '\'' +
+                ", area='" + area + '\'' +
+                ", flight='" + flight + '\'' +
                 '}';
     }
 }

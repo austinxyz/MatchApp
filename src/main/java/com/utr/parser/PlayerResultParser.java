@@ -20,6 +20,11 @@ public class PlayerResultParser {
 
     PlayerResult parseResult(String resultJsonString) {
         PlayerResult result = new PlayerResult(playerId);
+
+        if (resultJsonString == null || resultJsonString.equals("")) {
+            return result;
+        }
+
         Map<String, Object> resultJson = JsonParserFactory.getJsonParser().parseMap(resultJsonString);
 
         result.setWinsNumber((Integer) resultJson.get("wins"));

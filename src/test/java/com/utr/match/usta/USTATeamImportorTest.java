@@ -14,11 +14,11 @@ class USTATeamImportorTest {
 
     @Test
     void importUSTATeam() {
-        importor.importUSTATeam("https://www.ustanorcal.com/Teaminfo.asp?id=96443");
+        importor.importUSTATeam("https://www.ustanorcal.com/Teaminfo.asp?id=96427");
     }
 
     @Test
     void updateUTRId() {
-        importor.updateTeamPlayerUTRID("SUNNYVALE TC/SUNNYVALE MTC 40AM3.5B");
+        importor.updateTeamPlayerUTRID("SUNNYVALE MTC 18MX6.0C");
     }
 }

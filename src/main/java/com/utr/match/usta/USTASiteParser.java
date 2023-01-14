@@ -28,15 +28,13 @@ public class USTASiteParser {
         team.setAlias(getAlias(title));
         team.setLink(teamURL);
 
-        String divisionName = getDivisionName(doc);
-        team.setDivisionName(divisionName);
-
-        logger.debug(team.toString());
+        parseDivisionInfo(doc, team);
 
         Elements links = doc.select("a[href]");
         for (Element link : links) {
             String href = link.attr("href");
             if (href.startsWith("playermatches")) {
+
                 Element tr = link.parent().parent();
                 if (tr.tagName().equals("tr")) {
                     Elements player = tr.children();
@@ -64,22 +62,65 @@ public class USTASiteParser {
                             + playerEntity.getUstaRating() + "|"
                             + playerEntity.getNoncalLink() + " | "
                             + playerEntity.getTennisRecordLink());
+                } else {
+                    String captainInfo = tr.text();
+                    if (captainInfo.trim().startsWith("Captain:")) {
+                        String name = getCaptainName(captainInfo);
+                        team.setCaptainName(name);
+                        parseAreaInfo(tr, team);
+                    }
                 }
             }
         }
-
+        logger.debug(team.toString());
         return team;
     }
 
-    private String getDivisionName(Document doc) {
+    private void parseAreaInfo(Element tr, USTATeam team) {
+        Element parent = tr.parent().parent();
+        Element td = parent.children().get(1);
+        String text = td.text();
+        int start = text.indexOf("Area:") + 5;
+        int hindex = text.indexOf("Home");
+        int orgIndex = text.indexOf("Org");
+        int end = hindex;
+        if (orgIndex != -1 && orgIndex < hindex) {
+            end = orgIndex;
+        }
+        String area = text.substring(start, end).trim();
+        team.setArea(area);
+    }
+
+    private String getCaptainName(String text) {
+        int start = text.indexOf("Captain:") + 8;
+        int end = text.indexOf("Email");
+        String name = text.substring(start, end).trim();
+        if (name.indexOf(',') > 0) {
+            String[] names = name.split(",");
+            return names[0].trim() + " " + names[1].trim();
+        }
+        return name;
+    }
+
+    private void parseDivisionInfo(Document doc, USTATeam team) {
         Element ele = doc.body().children().get(6);
         String divisionName = ele.children().get(0).children().get(0).children().get(1).children().get(0).text();
-        if (!divisionName.endsWith(".0")) {
+        String flight = "1";
+        if (!divisionName.endsWith(".0") && !divisionName.endsWith(".5") ) {
             int end = divisionName.indexOf(".0");
-            divisionName = divisionName.substring(0, end+2);
+
+            if (end == -1) {
+                end = divisionName.indexOf(".5");
+            }
+
+            if (end != -1) {
+                flight = divisionName.substring(end+2, divisionName.length()).trim();
+                divisionName = divisionName.substring(0, end + 2);
+            }
         }
-        logger.debug(divisionName);
-        return divisionName;
+        team.setDivisionName(divisionName);
+        team.setFlight(flight);
+        logger.debug("Division Name: " + divisionName + " Flight: " + flight);
     }
 
     public String parseUSTANumber(String noncalLink) throws IOException {

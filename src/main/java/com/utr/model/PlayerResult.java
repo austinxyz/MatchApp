@@ -1,7 +1,11 @@
 package com.utr.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PlayerResult {
 
@@ -100,5 +104,29 @@ public class PlayerResult {
         }
         return result;
 
+    }
+
+    @JsonIgnore
+    public List<Player> getAllPlayers() {
+        Map<String, Player> playerMap = new HashMap<>();
+
+        for (PlayerEvent event: this.playerEvents) {
+            for (MatchResult result: event.getResults()) {
+                addPlayer(playerMap, result.getWinner1());
+                addPlayer(playerMap, result.getWinner2());
+                addPlayer(playerMap, result.getLoser1());
+                addPlayer(playerMap, result.getLoser2());
+            }
+        }
+
+        return new ArrayList<>(playerMap.values());
+    }
+
+    private static void addPlayer(Map<String, Player> playerMap, Player player) {
+        if (player != null ) {
+            if (!playerMap.containsKey(player.getId())) {
+                playerMap.put(player.getId(), player);
+            }
+        }
     }
 }
