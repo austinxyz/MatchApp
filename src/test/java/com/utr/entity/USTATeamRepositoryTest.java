@@ -251,4 +251,33 @@ class USTATeamRepositoryTest {
         return "https://www.tennisrecord.com/adult/profile.aspx?playername=" + player.getFirstName()
                 + "%20" + player.getLastName();
     }
+
+    @Test
+    void updateCaptainArea() {
+
+        USTASiteParser util = new USTASiteParser();
+        try {
+
+
+            List<USTATeam> existTeams = ustaTeamRepository.findAll();
+
+            for (USTATeam existTeam : existTeams) {
+               if (existTeam.getArea() == null || existTeam.getArea().equals("")) {
+                   USTATeam team = util.parseUSTATeam(existTeam.getLink());
+                   existTeam.setArea(team.getArea());
+                   existTeam.setFlight(team.getFlight());
+                   List<PlayerEntity> captains = playerRepository.findByNameLike(team.getCaptainName());
+                   if (captains.size() > 0) {
+                       existTeam.setCaptain(captains.get(0));
+                   }
+                   ustaTeamRepository.save(existTeam);
+               }
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 }

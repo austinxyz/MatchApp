@@ -34,4 +34,5 @@ public class PlayerEvent {
     public boolean isUsta() {
         return name.startsWith("USTA");
     }
+
 }

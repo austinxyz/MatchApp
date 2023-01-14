@@ -19,11 +19,11 @@ class USTASiteParserTest {
         USTATeam team = null;
 
         try {
-            team = util.parseUSTATeam("https://www.ustanorcal.com/teaminfo.asp?id=96953");
+            team = util.parseUSTATeam("https://www.ustanorcal.com/Teaminfo.asp?id=97084");
 
-            for (PlayerEntity player: team.getPlayers()) {
+/*            for (PlayerEntity player: team.getPlayers()) {
                 System.out.println(player.getName() + "'s DR =  " + util.getDynamicRating(player.getTennisRecordLink()));
-            }
+            }*/
 
         } catch (IOException e) {
             e.printStackTrace();

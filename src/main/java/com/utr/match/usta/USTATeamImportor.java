@@ -4,6 +4,7 @@ import com.utr.match.entity.*;
 import com.utr.model.Division;
 import com.utr.model.Event;
 import com.utr.model.Player;
+import com.utr.model.PlayerEvent;
 import com.utr.parser.UTRParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,10 +60,17 @@ public class USTATeamImportor {
                 newTeam.setName(team.getName());
                 newTeam.setAlias(team.getAlias());
                 newTeam.setLink(teamURL);
+                newTeam.setArea(team.getArea());
+                newTeam.setFlight(team.getFlight());
                 USTADivision division = divisionRepository.findByName(team.getDivisionName());
                 if (division!=null) {
                     newTeam.setDivision(division);
                 }
+                List<PlayerEntity> captains = playerRepository.findByNameLike(team.getCaptainName());
+                if (captains.size() > 0) {
+                    newTeam.setCaptain(captains.get(0));
+                }
+
                 ustaTeamRepository.save(newTeam);
                 existTeam = ustaTeamRepository.findByName(newTeam.getName());
                 logger.debug("new team " + team.getName() + " is created");

@@ -182,20 +182,29 @@ public class TeamLoader {
         PlayerResult result = parser.parsePlayerResult(playerId);
         playerResults.put(playerId, result);
 
-        Player player = null;
-        if (!players.containsKey(playerId)) {
-            player = result.getPlayer();
-            players.put(player.getId(), player);
-        } else {
-            player = players.get(playerId);
-            player.setsUTR(result.getPlayer().getsUTR());
-            player.setdUTR(result.getPlayer().getdUTR());
+        for (Player player: result.getAllPlayers()) {
+            refreshUTR(player);
         }
+
+        Player player = players.get(playerId);
         if (result.getWinsNumber() + result.getLossesNumber() > 0) {
             player.setSuccessRate(
                     (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber()));
         }
         return result;
+    }
+
+    private Player refreshUTR(Player newPlayer) {
+        Player player = null;
+        if (!players.containsKey(newPlayer.getId())) {
+            players.put(newPlayer.getId(), newPlayer);
+            player = newPlayer;
+        } else {
+            player = players.get(newPlayer.getId());
+            player.setsUTR(newPlayer.getsUTR());
+            player.setdUTR(newPlayer.getdUTR());
+        }
+        return player;
     }
 
     private void createPlayer(Team team, Player teamPlayer) {

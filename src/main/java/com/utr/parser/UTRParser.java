@@ -6,6 +6,7 @@ import com.utr.model.Player;
 import com.utr.model.PlayerResult;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -117,16 +118,21 @@ public class UTRParser {
 
     }
 
-    private static String restGetCall(String getCallURL) {
+    private String restGetCall(String getCallURL) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         String accessToken = TOKEN;
         headers.set("Authorization", "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String requestJson = "{}";
-        HttpEntity<String> entity = new HttpEntity <> (requestJson, headers);
-        ResponseEntity<String> response = restTemplate.exchange(getCallURL, HttpMethod.GET, entity, String.class);
-        return response.getBody();
+        try {
+            String requestJson = "{}";
+            HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+            ResponseEntity<String> response = restTemplate.exchange(getCallURL, HttpMethod.GET, entity, String.class);
+            return response.getBody();
+        } catch (HttpServerErrorException ex) {
+            ex.printStackTrace();
+        }
+        return "";
     }
 }
