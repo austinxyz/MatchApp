@@ -15,7 +15,7 @@ class USTATeamImportorTest {
 
     final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96400";
     final String teamName = "BAY CLUB SANTA CLARA 40AM3.5A";
-    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=17840:2605&r=L";
+    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17731:2606&r=L";
 
 
     @Test

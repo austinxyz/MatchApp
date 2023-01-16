@@ -264,7 +264,7 @@ class USTATeamRepositoryTest {
             List<USTATeam> existTeams = ustaTeamRepository.findAll();
 
             for (USTATeam existTeam : existTeams) {
-               if (existTeam.getArea() == null || existTeam.getArea().equals("")) {
+               if (existTeam.getCaptain() == null ) {
                    USTATeam team = util.parseUSTATeam(existTeam.getLink());
                    existTeam.setArea(team.getArea());
                    existTeam.setFlight(team.getFlight());
