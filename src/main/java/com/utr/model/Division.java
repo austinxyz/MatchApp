@@ -49,6 +49,15 @@ public class Division {
         return null;
     }
 
+    public Player getPlayerByUTRId(String utrId) {
+        for (Player player : this.players) {
+            if (utrId.equals(player.getId())) {
+                return player;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Division{" +

@@ -21,6 +21,8 @@ public class UTRParser {
 
     public static final String PLAYER_RESULT = "https://app.universaltennis.com/api/v1/player/";
 
+    public static final String PLAYER_PROFILE = "https://app.universaltennis.com/api/v1/player/%s/profile";
+
     public static final String PLAYER_SEARCH = "https://app.universaltennis.com/api/v2/search/players?query=";
 
     public static final String CLUB_EVENTS = "https://app.universaltennis.com/api/v1/club/%s/events";
@@ -76,35 +78,38 @@ public class UTRParser {
 
     public PlayerResult parsePlayerResult(String playerId) {
         PlayerResultParser resultParser = new PlayerResultParser(playerId);
-        return resultParser.parseResult(getResultJson(playerId));
+        return resultParser.parseResult(getResultJson(playerId, true));
     }
 
-    private String getResultJson(String playerId) {
+    public PlayerResult parsePlayerResult(String playerId, boolean latest) {
+        PlayerResultParser resultParser = new PlayerResultParser(playerId);
+        return resultParser.parseResult(getResultJson(playerId, latest));
+    }
+
+    private String getResultJson(String playerId, boolean latest) {
 
         String getCallURL
                 = PLAYER_RESULT + playerId + "/results";
 
+        if (latest) {
+            getCallURL = getCallURL + "?year=last";
+        }
+
         return restGetCall(getCallURL);
 
     }
+
     public Player parsePlayer(String playerId) {
         PlayerParser resultParser = new PlayerParser(playerId);
         Player player = resultParser.parseResult(getPlayerJson(playerId));
 
-        List<Player> players = searchPlayers(player.getName(), 10);
-
-        for (Player qPlayer: players) {
-            if (qPlayer.getId().equals(player.getId())) {
-                return qPlayer;
-            }
-        }
         return player;
     }
 
     private String getPlayerJson(String playerId) {
 
         String getCallURL
-                = PLAYER_RESULT + playerId;
+                = String.format(PLAYER_PROFILE, playerId);
 
         return restGetCall(getCallURL);
 

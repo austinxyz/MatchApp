@@ -6,11 +6,26 @@ import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class USTASiteParserTest {
 
+    @Test
+    void parseUSTAFlight() {
+        USTASiteParser util = new USTASiteParser();
+
+        List<String> teams = null;
+
+        try {
+            teams = util.parseUSTAFlight("https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=17840:2605&r=L");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     @Test
     void parseUSTATeam() {
         USTASiteParser util = new USTASiteParser();
@@ -47,6 +62,18 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
         try {
             util.getDynamicRating("https://www.tennisrecord.com/adult/profile.aspx?playername=YANZHAO%20XU");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getTeamDynamicRating() {
+        USTASiteParser util = new USTASiteParser();
+        try {
+            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=RINCONADA%20PK%2018AM3.5A&year=2022");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------");
+            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=RINCONADA%20PK%2018MX7.0B&year=2022");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

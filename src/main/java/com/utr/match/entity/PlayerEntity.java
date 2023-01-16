@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,23 +63,32 @@ public class PlayerEntity {
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EventUTR> utrs;
 
-    @Transient
-    double dUTR;
-    @Transient
-    double sUTR;
-    @Transient
+    @Column(name="dutr")
+    Double dUTR;
+    @Column(name="sutr")
+    Double sUTR;
+    @Column(name="dutr_status")
     String dUTRStatus;
-    @Transient
+    @Column(name="sutr_status")
     String sUTRStatus;
 
-    @Transient
-    String dynamicRating;
+    @Column(name="dynamic_rating")
+    Double dynamicRating;
 
-    @Transient
-    float successRate;
+    @Column(name="utr_win_ratio_latest")
+    Float successRate;
+
+    @Column(name="utr_win_ratio")
+    Float wholeSuccessRate;
+
+    @Column(name="utr_fetched_time")
+    Timestamp utrFetchedTime;
+
+    @Column(name="dr_fetched_time")
+    Timestamp drFetchedTime;
 
     public double getdUTR() {
-        return dUTR;
+        return dUTR==null? 0.0d: dUTR.doubleValue();
     }
 
     public void setdUTR(double dUTR) {
@@ -86,7 +96,7 @@ public class PlayerEntity {
     }
 
     public double getsUTR() {
-        return sUTR;
+        return sUTR==null? 0.0d: sUTR.doubleValue();
     }
 
     public void setsUTR(double sUTR) {
@@ -109,11 +119,11 @@ public class PlayerEntity {
         this.sUTRStatus = sUTRStatus;
     }
 
-    public String getDynamicRating() {
+    public Double getDynamicRating() {
         return dynamicRating;
     }
 
-    public void setDynamicRating(String dynamicRating) {
+    public void setDynamicRating(Double dynamicRating) {
         this.dynamicRating = dynamicRating;
     }
 
@@ -235,7 +245,7 @@ public class PlayerEntity {
 
     @JsonProperty
     public String getTennisLinkURL() {
-        return "https://tennislink.usta.com/Leagues/Main/StatsAndStandings.aspx?t=R-17&search=" + this.utrId;
+        return "https://tennislink.usta.com/Leagues/Main/StatsAndStandings.aspx?t=R-17&search=" + this.ustaId;
     }
 
     public String getNoncalLink() {
@@ -260,11 +270,19 @@ public class PlayerEntity {
     }
 
     public float getSuccessRate() {
-        return successRate;
+        return successRate == null? 0.0f: successRate.floatValue();
     }
 
     public void setSuccessRate(float successRate) {
         this.successRate = successRate;
+    }
+
+    public float getWholeSuccessRate() {
+        return wholeSuccessRate == null? 0.0f:wholeSuccessRate.floatValue();
+    }
+
+    public void setWholeSuccessRate(float wholeSuccessRate) {
+        this.wholeSuccessRate = wholeSuccessRate;
     }
 
     @Override
@@ -278,4 +296,25 @@ public class PlayerEntity {
                 '}';
     }
 
+    public Timestamp getUtrFetchedTime() {
+        return utrFetchedTime;
+    }
+
+    public void setUtrFetchedTime(Timestamp utrFetchedTime) {
+        this.utrFetchedTime = utrFetchedTime;
+    }
+
+    public Timestamp getDrFetchedTime() {
+        return drFetchedTime;
+    }
+
+    public void setDrFetchedTime(Timestamp drFetchedTime) {
+        this.drFetchedTime = drFetchedTime;
+    }
+
+    @JsonProperty
+    public boolean isRefreshedUTR() {
+        return this.utrFetchedTime != null &&
+                (System.currentTimeMillis() - this.getUtrFetchedTime().getTime()) < (long)24*60*60*1000 ;
+    }
 }

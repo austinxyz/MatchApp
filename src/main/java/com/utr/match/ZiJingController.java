@@ -120,12 +120,13 @@ public class ZiJingController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/playerresult")
-    public ResponseEntity<PlayerResult> playerResult(@RequestParam(value = "id") String id) {
+    public ResponseEntity<PlayerResult> playerResult(@RequestParam(value = "id") String id,
+                                                     @RequestParam(value = "year", defaultValue = "latest") String year) {
         if (id == null || id.trim().equals("")) {
             return ResponseEntity.notFound().build();
         }
 
-        PlayerResult player = loader.searchPlayerResult(id);
+        PlayerResult player = loader.searchPlayerResult(id, year.equals("latest"));
 
         if (player != null) {
             return ResponseEntity.ok(player);

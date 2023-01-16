@@ -3,12 +3,15 @@ package com.utr.match;
 
 import com.utr.match.entity.*;
 import com.utr.match.usta.USTASiteParser;
+import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +29,11 @@ public class USTAController {
     USTASiteParser parser;
     @Autowired
     private USTADivisionRepository divisionRepository;
+    @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
+    private USTATeamImportor importor;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
@@ -58,21 +66,29 @@ public class USTAController {
             if (player.getUtrId() == null || player.getUtrId().trim().equals("")) {
                 continue;
             }
+
+            if (player.isRefreshedUTR()) {
+                continue;
+            }
             Player utrPlayer = loader.getPlayer(player.getUtrId());
+
+            if (player.getUtrFetchedTime() != null && utrPlayer.getUtrFetchedTime().before(player.getUtrFetchedTime())) {
+                //the time get utr info from utr website is early the time stored in db, no need to refresh from utr website.
+                continue;
+            }
             player.setdUTR(utrPlayer.getdUTR());
             player.setsUTR(utrPlayer.getsUTR());
             player.setdUTRStatus(utrPlayer.getdUTRStatus());
             player.setsUTRStatus(utrPlayer.getsUTRStatus());
-            player.setSuccessRate(utrPlayer.getSuccessRate());
-/*            if (utrPlayer.getDynamicRating() == null) {
-                try {
-                    String dr = parser.getDynamicRating(player.getTennisRecordLink());
-                    utrPlayer.setDynamicRating(dr);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+
+            if (utrPlayer.getSuccessRate() > 0.0) {
+                player.setSuccessRate(utrPlayer.getSuccessRate());
             }
-            player.setDynamicRating(utrPlayer.getDynamicRating());*/
+            if (utrPlayer.getWholeSuccessRate() > 0.0) {
+                player.setWholeSuccessRate(utrPlayer.getWholeSuccessRate());
+            }
+            //player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+
         }
         return ustaTeam;
     }
@@ -95,7 +111,7 @@ public class USTAController {
     public ResponseEntity<List<USTATeam>> getTeamsByDivision(@PathVariable("divId") String divId
     ) {
 
-        List<USTATeam> teams = teamRepository.findByDivision_Id(Long.valueOf(divId));
+        List<USTATeam> teams = teamRepository.findByDivision_IdOrderByAreaAsc(Long.valueOf(divId));
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -116,5 +132,26 @@ public class USTAController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams/{id}/utrs")
+    public ResponseEntity<USTATeam> updatePlayersUTRId(@PathVariable("id") String id,
+                                                        @RequestParam("action") String action
+    ) {
+
+        if (action.equals("refresh")) {
+
+            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+
+            if (team.isPresent()) {
+                importor.updateTeamPlayersUTRID(team.get());
+
+                return new ResponseEntity<>(team.get(), HttpStatus.OK);
+            }
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

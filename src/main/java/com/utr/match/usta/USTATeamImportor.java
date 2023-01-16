@@ -1,5 +1,6 @@
 package com.utr.match.usta;
 
+import com.utr.match.TeamLoader;
 import com.utr.match.entity.*;
 import com.utr.model.Division;
 import com.utr.model.Event;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +39,33 @@ public class USTATeamImportor {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Autowired
+    private TeamLoader loader;
+
     public USTATeamImportor() {
     }
 
-    public void importUSTATeam(String teamURL) {
+    public USTATeam importUSTATeam(String teamURL) {
         USTATeam team = createTeamAndAddPlayers(teamURL);
         updatePlayerUSTANumber(teamURL);
+        return team;
+    }
+
+    public List<USTATeam> importUSTAFlight(String flightURL) {
+
+        USTASiteParser util = new USTASiteParser();
+        List<USTATeam> teams = new ArrayList<>();
+
+        try {
+            for (String teamURL: util.parseUSTAFlight(flightURL)) {
+                teams.add(importUSTATeam(teamURL));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        return teams;
     }
 
     private USTATeam createTeamAndAddPlayers(String teamURL) {
@@ -66,10 +89,6 @@ public class USTATeamImportor {
                 if (division!=null) {
                     newTeam.setDivision(division);
                 }
-                List<PlayerEntity> captains = playerRepository.findByNameLike(team.getCaptainName());
-                if (captains.size() > 0) {
-                    newTeam.setCaptain(captains.get(0));
-                }
 
                 ustaTeamRepository.save(newTeam);
                 existTeam = ustaTeamRepository.findByName(newTeam.getName());
@@ -90,12 +109,19 @@ public class USTATeamImportor {
                 } else {
                     playerRepository.save(player);
                     existedPlayer = playerRepository.findByNameLike(player.getName()).get(0);
-                    logger.debug("new player" + player.getName() + " is created");
+                    logger.debug("new player " + player.getName() + " is created");
                 }
 
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
                     existTeam.getPlayers().add(existedPlayer);
                     logger.debug(" add player " + player.getName() + " into team");
+                }
+            }
+
+            if (existTeam.getCaptain() == null) {
+                List<PlayerEntity> captains = playerRepository.findByNameLike(team.getCaptainName());
+                if (captains.size() > 0) {
+                    existTeam.setCaptain(captains.get(0));
                 }
             }
             ustaTeamRepository.save(existTeam);
@@ -109,8 +135,6 @@ public class USTATeamImportor {
 
     public void updateTeamPlayerUTRID(String teamName) {
 
-        UTRParser parser = new UTRParser();
-
         USTATeam existTeam = ustaTeamRepository.findByName(teamName);
 
         if (existTeam == null) {
@@ -118,9 +142,15 @@ public class USTATeamImportor {
             return;
         }
 
+        updateTeamPlayersUTRID(existTeam);
+
+
+    }
+
+    public void updateTeamPlayersUTRID(USTATeam existTeam) {
         for (PlayerEntity player : existTeam.getPlayers()) {
 
-            List<Player> utrplayers = parser.searchPlayers(player.getName(), 5);
+            List<Player> utrplayers = loader.queryPlayer(player.getName(), 5);
 
             if (player.getUtrId() == null) {
                 String candidateUTRId = findUTRID(utrplayers, player);
@@ -133,6 +163,58 @@ public class USTATeamImportor {
                 }
 
             }
+
+        }
+    }
+
+    public void updateTeamUTRInfo(String teamName) {
+
+        USTATeam existTeam = ustaTeamRepository.findByName(teamName);
+
+        if (existTeam == null) {
+            logger.debug("team " + existTeam.getName() + " is not existed");
+            return;
+        }
+
+        for (PlayerEntity player : existTeam.getPlayers()) {
+
+            if (player.isRefreshedUTR()) {
+                logger.debug(player.getName() + " has latest UTR, skip");
+                continue;
+            }
+
+            String utrId = player.getUtrId();
+
+            if (utrId == null || utrId.equals("")) {
+                logger.debug(player.getName() + " has no UTR, no need to refresh");
+                continue;
+            }
+
+            logger.debug(player.getName() + " start to query utr and win ratio" );
+
+            loader.searchPlayerResult(utrId, false);
+
+            loader.searchPlayerResult(utrId, true);
+
+            Player utrplayer = loader.getPlayer(utrId);
+
+            if (utrplayer == null) {
+                continue;
+            }
+
+
+            player.setsUTR(utrplayer.getsUTR());
+            player.setdUTR(utrplayer.getdUTR());
+            player.setsUTRStatus(utrplayer.getsUTRStatus());
+            player.setdUTRStatus(utrplayer.getdUTRStatus());
+            player.setSuccessRate(utrplayer.getSuccessRate());
+            player.setWholeSuccessRate(utrplayer.getWholeSuccessRate());
+            player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+
+            playerRepository.save(player);
+
+            logger.debug(player.getName() + " utr is updated" );
+
 
         }
 

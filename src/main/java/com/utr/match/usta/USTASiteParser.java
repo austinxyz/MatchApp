@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class USTASiteParser {
@@ -18,6 +20,25 @@ public class USTASiteParser {
     private static final Logger logger = LoggerFactory.getLogger(USTASiteParser.class);
 
     public USTASiteParser() {
+    }
+
+    public List<String> parseUSTAFlight(String flightURL) throws IOException {
+
+        List<String> teams = new ArrayList<>();
+
+        Document doc = Jsoup.connect(flightURL).get();
+
+        Elements links = doc.select("a[href]");
+        for (Element link : links) {
+            String href = link.attr("href");
+            if (href.startsWith("TeamInfo.asp")) {
+
+                String teamURL = "https://www.ustanorcal.com/" + href;
+
+                teams.add(teamURL);
+            }
+        }
+        return teams;
     }
 
     public USTATeam parseUSTATeam(String teamURL) throws IOException {
@@ -106,7 +127,7 @@ public class USTASiteParser {
         Element ele = doc.body().children().get(6);
         String divisionName = ele.children().get(0).children().get(0).children().get(1).children().get(0).text();
         String flight = "1";
-        if (!divisionName.endsWith(".0") && !divisionName.endsWith(".5") ) {
+        if (!divisionName.endsWith(".0") && !divisionName.endsWith(".5")) {
             int end = divisionName.indexOf(".0");
 
             if (end == -1) {
@@ -114,7 +135,7 @@ public class USTASiteParser {
             }
 
             if (end != -1) {
-                flight = divisionName.substring(end+2, divisionName.length()).trim();
+                flight = divisionName.substring(end + 2).trim();
                 divisionName = divisionName.substring(0, end + 2);
             }
         }
@@ -126,13 +147,13 @@ public class USTASiteParser {
     public String parseUSTANumber(String noncalLink) throws IOException {
         Document doc = Jsoup.connect(noncalLink).get();
         Elements playerInfos = doc.getElementsByClass("PlayerInfo");
-        String ustaNubmer="";
-        for (Element playerInfo: playerInfos) {
+        String ustaNubmer = "";
+        for (Element playerInfo : playerInfos) {
             ustaNubmer = playerInfo.children().get(0).text();
 
             int start = ustaNubmer.indexOf("#:");
             if (start > 0) {
-                ustaNubmer = ustaNubmer.substring(start+2).trim();
+                ustaNubmer = ustaNubmer.substring(start + 2).trim();
             }
 
             int end = ustaNubmer.indexOf(" ");
@@ -145,7 +166,7 @@ public class USTASiteParser {
         Document doc = Jsoup.connect(tennisRecordLink).get();
         Elements trs = doc.select("*[style*='height:60px; border-top:1px solid #ddd;']");
         String dr = "";
-        for(Element tr: trs) {
+        for (Element tr : trs) {
             String label = tr.children().get(0).text();
             if (label.equals("Estimated Dynamic Rating")) {
                 dr = tr.children().get(1).text();
@@ -157,6 +178,44 @@ public class USTASiteParser {
         }
 
         return dr;
+    }
+
+    public List<PlayerEntity> getTeamDynamicRating(String teamTennisRecordLink) throws IOException {
+        List<PlayerEntity> players = new ArrayList<>();
+        Document doc = Jsoup.connect(teamTennisRecordLink).get();
+        Elements links = doc.select("a[href]");
+        for (Element link : links) {
+            String href = link.attr("href");
+            if (href.startsWith("/adult/profile.aspx?playername")) {
+                Element tr = link.parent().parent();
+                if (tr.parent().parent().parent().parent().className().equals("large")) {
+                    continue;
+                }
+                String dr = tr.children().get(5).text();
+                if (dr.trim().equals("") || dr.indexOf("-") > 0) {
+                    if (tr.children().size() > 8) {
+                        // try to get #7.
+                        dr = tr.children().get(7).text();
+
+                        if ((dr.trim().equals("") || dr.indexOf("-") > 0)) {
+                            continue;
+                        }
+                    }
+                }
+                PlayerEntity player = new PlayerEntity();
+                String name = link.text();
+                player.setDynamicRating(Double.parseDouble(dr));
+                player.setName(name);
+                player.setArea(tr.children().get(1).text());
+                player.setTennisRecordLink("https://www.tennisrecord.com/" + href);
+
+                System.out.println(player.getName() + "|" + player.getArea() + "|" + player.getDynamicRating()
+                        + "|" + player.getTennisRecordLink());
+                players.add(player);
+            }
+        }
+
+        return players;
     }
 
     private String getLastName(String name) {
@@ -181,7 +240,7 @@ public class USTASiteParser {
         }
         int index = teamName.indexOf("[");
         if (index > 0) {
-            teamName = teamName.substring(0, index-1 );
+            teamName = teamName.substring(0, index - 1);
         }
         return teamName.trim();
     }
@@ -196,7 +255,7 @@ public class USTASiteParser {
         }
         int index = alias.indexOf("]");
         if (index > 0) {
-            alias = alias.substring(0, index );
+            alias = alias.substring(0, index);
         }
         return alias;
     }

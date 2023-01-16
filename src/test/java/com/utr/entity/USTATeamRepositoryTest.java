@@ -88,6 +88,8 @@ class USTATeamRepositoryTest {
     void getTeam() {
         USTATeam team = ustaTeamRepository.findById(1L).get();
 
+        System.out.println(team.getAreaCode());
+
         for (PlayerEntity player : team.getPlayers()) {
 
             System.out.println(player.getName() + ": update player set usta_noncal_link='https://www.ustanorcal.com/playermatches.asp?id=', usta_tennisrecord_link='https://www.tennisrecord.com/adult/profile.aspx?playername=' where id=" + player.getId());

@@ -13,7 +13,7 @@ public interface USTATeamRepository extends CrudRepository<USTATeam, Long> {
 
     List<USTATeam> findAll();
 
-    List<USTATeam> findByDivision_Id(long id);
+    List<USTATeam> findByDivision_IdOrderByAreaAsc(long id);
 
 
 }
