@@ -37,6 +37,7 @@ public class USTATeam {
     @JoinTable(name = "usta_team_player",
             joinColumns = {@JoinColumn(name = "usta_team_id")},
             inverseJoinColumns = {@JoinColumn(name = "player_id")})
+    @OrderBy(" dutr DESC ")
     private final List<PlayerEntity> players;
 
     @ManyToOne
@@ -47,6 +48,9 @@ public class USTATeam {
 
     @Transient
     private String captainName;
+
+    @Transient
+    private String areaCode;
 
     public USTATeam(String name, USTADivision division) {
         this.name = name;
@@ -143,6 +147,26 @@ public class USTATeam {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String getAreaCode() {
+
+        if (this.areaCode != null && !this.areaCode.equals("")) {
+            return areaCode;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String code: area.split(" ") ) {
+            code = code.trim();
+            if (code.length() > 0) {
+                char c = code.charAt(0);
+                if (c!='-') {
+                    sb.append(c);
+                }
+            }
+        }
+        areaCode = sb.toString();
+        return areaCode;
     }
 
     @JsonProperty

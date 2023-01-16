@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MatchResult {
     public static final String DOUBLE = "double";
@@ -15,10 +17,13 @@ public class MatchResult {
     @JsonIgnore
     LocalDateTime matchTime;
 
-
+    @JsonIgnore
     Player winner1;
+    @JsonIgnore
     Player winner2;
+    @JsonIgnore
     Player loser1;
+    @JsonIgnore
     Player loser2;
     @JsonIgnore
     MatchScore score;
@@ -52,6 +57,7 @@ public class MatchResult {
         return (winner1 != null && winner1.getId().equals(ownerId)) || (winner2 != null && winner2.getId().equals(ownerId));
     }
 
+    @JsonIgnore
     public List<Player> getOpponents() {
         List<Player> result = new ArrayList<>();
 
@@ -71,43 +77,67 @@ public class MatchResult {
     }
 
     @JsonProperty
-    public String getLoserInfo() {
+    public List<Map<String, String>> getLoserInfo() {
+        List<Map<String, String>> result=new ArrayList<>();
         StringBuilder builder = new StringBuilder();
 
         if (this.getType().equals("single")) {
             builder.append(loser1.getName()).append("-")
                     .append(loser1.getsUTR())
                     .append("(").append(loser1.getsUTRStatus().charAt(0)).append(")");
+            Map<String, String> player = getPlayerInfoMap(builder.toString(), loser1);
+            result.add(player);
         } else {
             builder.append(loser1.getName()).append("-")
                     .append(loser1.getdUTR())
                     .append("(").append(loser1.getdUTRStatus().charAt(0)).append(")");
-            builder.append("+");
+            Map<String, String> player = getPlayerInfoMap(builder.toString(), loser1);
+            result.add(player);
+
+            builder = new StringBuilder();
             builder.append(loser2.getName()).append("-")
                     .append(loser2.getdUTR())
                     .append("(").append(loser2.getdUTRStatus().charAt(0)).append(")");
+            Map<String, String> player2 = getPlayerInfoMap(builder.toString(), loser2);
+            result.add(player2);
         }
-        return builder.toString();
+        return result;
     }
 
     @JsonProperty
-    public String getWinnerInfo() {
+    public List<Map<String, String>> getWinnerInfo() {
+        List<Map<String, String>> result=new ArrayList<>();
         StringBuilder builder = new StringBuilder();
 
         if (this.getType().equals("single")) {
             builder.append(winner1.getName()).append("-")
                     .append(winner1.getsUTR())
                     .append("(").append(winner1.getsUTRStatus().charAt(0)).append(")");
+            Map<String, String> player = getPlayerInfoMap(builder.toString(), winner1);
+            result.add(player);
         } else {
             builder.append(winner1.getName()).append("-")
                     .append(winner1.getdUTR())
                     .append("(").append(winner1.getdUTRStatus().charAt(0)).append(")");
-            builder.append("+");
+            Map<String, String> player = getPlayerInfoMap(builder.toString(), winner1);
+            result.add(player);
+
+            builder = new StringBuilder();
             builder.append(winner2.getName()).append("-")
                     .append(winner2.getdUTR())
                     .append("(").append(winner2.getdUTRStatus().charAt(0)).append(")");
+            Map<String, String> player2 = getPlayerInfoMap(builder.toString(), winner2);
+            result.add(player2);
         }
-        return builder.toString();
+        return result;
+    }
+
+    private Map<String, String> getPlayerInfoMap(String info, Player player) {
+        Map<String, String> playerInfo = new HashMap<>();
+        playerInfo.put("info", info);
+        playerInfo.put("utrId", player.getId());
+        playerInfo.put("name", player.getName());
+        return playerInfo;
     }
 
     public String getName() {

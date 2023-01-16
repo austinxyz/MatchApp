@@ -89,7 +89,7 @@ public class PlayerAnalyser {
         if (players.containsKey(playerId)) {
             player = players.get(playerId);
         } else {
-            player = parser.parsePlayerResult(playerId);
+            player = parser.parsePlayerResult(playerId, false);
             players.put(playerId, player);
             fetchedTimes.put(playerId, new Timestamp(System.currentTimeMillis()));
         }

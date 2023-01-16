@@ -36,14 +36,12 @@ public class EventDBLoader {
     private void convertDivision(DivisionEntity divisionEntity, Division div) {
 
         for (PlayerEntity playerEntity: divisionEntity.getPlayers()) {
-            String playerName = getPlayerName(playerEntity);
-            //System.out.println(playerName);
 
-            Player player = div.getPlayer(playerName);
+            Player player = div.getPlayerByUTRId(playerEntity.getUtrId());
             if (player !=null) {
                 player.setUTR(getUtr(playerEntity));
             } else {
-                System.out.println(playerName);
+                System.out.println(playerEntity.getName() + " can not find in div " + div.getName());
             }
         }
 

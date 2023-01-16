@@ -174,27 +174,41 @@ public class TeamLoader {
         return team;
     }
 
-    public PlayerResult searchPlayerResult(String playerId) {
-        if (playerResults.containsKey(playerId)) {
-            return playerResults.get(playerId);
+    public PlayerResult searchPlayerResult(String playerId, boolean latest) {
+
+        if (playerId == null || playerId.equals("")) {
+            return null;
         }
 
-        PlayerResult result = parser.parsePlayerResult(playerId);
-        playerResults.put(playerId, result);
+        String key = playerId + (latest? "T":"F");
 
-        for (Player player: result.getAllPlayers()) {
-            refreshUTR(player);
+        if (playerResults.containsKey(key)) {
+            return playerResults.get(key);
         }
 
-        Player player = players.get(playerId);
-        if (result.getWinsNumber() + result.getLossesNumber() > 0) {
-            player.setSuccessRate(
-                    (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber()));
+        PlayerResult result = parser.parsePlayerResult(playerId, latest);
+        playerResults.put(key, result);
+
+        Player player = refreshUTR(result.getPlayer());
+
+
+        if (player !=null && (result.getWinsNumber() + result.getLossesNumber()) > 0) {
+            float successRate = (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber());
+            if (latest) {
+                player.setSuccessRate(successRate);
+            } else {
+                player.setWholeSuccessRate(successRate);
+            }
         }
+
         return result;
     }
 
     private Player refreshUTR(Player newPlayer) {
+        if (newPlayer == null) {
+            return null;
+        }
+
         Player player = null;
         if (!players.containsKey(newPlayer.getId())) {
             players.put(newPlayer.getId(), newPlayer);
@@ -204,6 +218,9 @@ public class TeamLoader {
             player.setsUTR(newPlayer.getsUTR());
             player.setdUTR(newPlayer.getdUTR());
         }
+
+        player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+
         return player;
     }
 

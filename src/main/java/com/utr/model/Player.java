@@ -2,6 +2,7 @@ package com.utr.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Player {
@@ -24,6 +25,10 @@ public class Player {
     String dynamicRating;
 
     float successRate;
+
+    float wholeSuccessRate;
+
+    Timestamp utrFetchedTime;
 
     public Player(String firstName, String lastName, String gender, String UTR) {
         this.firstName = firstName;
@@ -144,6 +149,26 @@ public class Player {
 
     public void setSuccessRate(float successRate) {
         this.successRate = successRate;
+    }
+
+    public float getWholeSuccessRate() {
+        return wholeSuccessRate;
+    }
+
+    public void setWholeSuccessRate(float wholeSuccessRate) {
+        this.wholeSuccessRate = wholeSuccessRate;
+    }
+
+    public Timestamp getUtrFetchedTime() {
+        return utrFetchedTime;
+    }
+
+    public void setUtrFetchedTime(Timestamp utrFetchedTime) {
+        this.utrFetchedTime = utrFetchedTime;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
