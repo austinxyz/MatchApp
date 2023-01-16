@@ -30,7 +30,7 @@ class PlayerRepositoryTest {
 
     @Test
     void findAll() {
-        List<PlayerEntity> players = playerRepo.findAll();
+        List<PlayerEntity> players = playerRepo.findByUtrFetchedTimeNull();
 
         for (PlayerEntity player : players) {
 

@@ -16,4 +16,7 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long> {
     List<PlayerEntity> findByFirstNameLikeOrLastNameLike(String firstName, String lastName);
 
     List<PlayerEntity> findByNameLike(String name);
+
+    List<PlayerEntity> findByUtrFetchedTimeNull();
+
 }
