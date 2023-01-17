@@ -19,4 +19,9 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long> {
 
     List<PlayerEntity> findByUtrFetchedTimeNull();
 
+    List<PlayerEntity> findByNoncalLinkNotNullAndUstaNorcalIdNull();
+
+    PlayerEntity findByUstaNorcalId(String ustaNorcalId);
+
+
 }

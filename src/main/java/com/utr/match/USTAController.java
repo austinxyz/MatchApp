@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,9 @@ public class USTAController {
 
     @Autowired
     private USTATeamImportor importor;
+
+    @Autowired
+    private USTATeamMatchRepository matchRepository;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
@@ -67,7 +71,7 @@ public class USTAController {
                 continue;
             }
 
-            if (player.isRefreshedUTR()) {
+            if (player.getUtrFetchedTime() != null) {
                 continue;
             }
             Player utrPlayer = loader.getPlayer(player.getUtrId());
@@ -150,6 +154,22 @@ public class USTAController {
                 return new ResponseEntity<>(team.get(), HttpStatus.OK);
             }
 
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams/{id}/matchscores")
+    public ResponseEntity<List<USTATeamMatch>> getTeamMatchScores(@PathVariable("id") String id) {
+
+        Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+
+        if (team.isPresent()) {
+
+            List<USTATeamMatch> matches = matchRepository.findByTeam(team.get());
+
+            return new ResponseEntity<>(matches, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

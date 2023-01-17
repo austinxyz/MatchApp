@@ -12,6 +12,7 @@ import java.util.List;
 @Table(name="player")
 public class PlayerEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name="first_name")
@@ -58,6 +59,9 @@ public class PlayerEntity {
 
     @Column(name="memo")
     private String memo;
+
+    @Column(name="usta_norcal_id")
+    private String ustaNorcalId;
 
     @JsonIgnore
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -310,6 +314,14 @@ public class PlayerEntity {
 
     public void setDrFetchedTime(Timestamp drFetchedTime) {
         this.drFetchedTime = drFetchedTime;
+    }
+
+    public String getUstaNorcalId() {
+        return ustaNorcalId;
+    }
+
+    public void setUstaNorcalId(String ustaNorcalId) {
+        this.ustaNorcalId = ustaNorcalId;
     }
 
     @JsonProperty

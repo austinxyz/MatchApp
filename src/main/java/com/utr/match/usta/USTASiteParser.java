@@ -2,6 +2,8 @@ package com.utr.match.usta;
 
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTATeam;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class USTASiteParser {
@@ -20,6 +24,100 @@ public class USTASiteParser {
     private static final Logger logger = LoggerFactory.getLogger(USTASiteParser.class);
 
     public USTASiteParser() {
+    }
+
+    public JSONObject parseScoreCard(String scoreCardURL) throws IOException {
+
+        JSONObject result = new JSONObject();
+
+        Document doc = Jsoup.connect(scoreCardURL).get();
+
+        Elements trs = doc.select("tr:contains(Match Date)");
+
+        boolean home = true;
+
+        for (Element tr : trs) {
+
+            Element matchTr = tr.nextElementSibling();
+
+            result.put("matchDate", matchTr.children().get(0).text());
+            result.put("homeTeamName", getTeamName(matchTr.children().get(1).text()));
+            result.put("homePoint", matchTr.children().get(2).text());
+            result.put("guestTeamName", getTeamName(matchTr.children().get(3).text()));
+            result.put("guestPoint", matchTr.children().get(4).text());
+
+        }
+
+        Elements b = doc.select("b:contains(Singles)");
+        for (Element e: b) {
+            Element singleResultTable = e.parent().parent().parent().parent().nextElementSibling();
+
+            Element body = singleResultTable.children().get(0);
+
+            JSONArray singles = new JSONArray();
+
+            for (Element res: body.children()) {
+                parseResult(res, true, singles);
+            }
+
+            result.put("singles", singles);
+        }
+
+        logger.debug("Doules ");
+        b = doc.select("b:contains(Doubles)");
+        for (Element e: b) {
+            Element douleResultTable = e.parent().parent().parent().parent().nextElementSibling();
+
+            Element body = douleResultTable.children().get(0);
+
+            JSONArray doubles = new JSONArray();
+
+            for (Element res: body.children()) {
+                parseResult(res, false, doubles);
+            }
+
+            result.put("doubles", doubles);
+        }
+        return result;
+    }
+
+    private void parseResult(Element tr, boolean isSingle, JSONArray array) {
+        JSONObject result = new JSONObject();
+
+        if (isResultTr(tr)) {
+            result.put("lineName", (isSingle?"S":"D") + tr.children().get(0).text());
+            result.put("homePlayers", parsePlayers(tr.children().get(1)));
+            result.put("guestPlayers", parsePlayers(tr.children().get(2)));
+            result.put("score", tr.children().get(3).text());
+            result.put("winTeam", tr.children().get(4).text());
+
+            array.put(result);
+        }
+
+    }
+
+    private JSONArray parsePlayers(Element td) {
+        JSONArray result = new JSONArray();
+
+        Elements links = td.select("a[href]");
+        for (Element link : links) {
+            String href = link.attr("href");
+            if (href.startsWith("playermatches.asp")) {
+                String player = link.text();
+                int last = href.indexOf("=");
+                String id = href.substring(last + 1, href.length());
+                JSONObject playerJSON = new JSONObject();
+                playerJSON.put("name", getLastName(player) + " " + getFirstName(player));
+                playerJSON.put("norcalId", id);
+                result.put(playerJSON);
+            }
+        }
+        return result;
+    }
+
+    private boolean isResultTr(Element tr) {
+        String text = tr.text().trim();
+        return text.length() > 1 && text.charAt(0) > '0' && text.charAt(0) <='9';
     }
 
     public List<String> parseUSTAFlight(String flightURL) throws IOException {
@@ -45,7 +143,7 @@ public class USTASiteParser {
         Document doc = Jsoup.connect(teamURL).get();
         String title = doc.title();
         USTATeam team = new USTATeam();
-        team.setName(getName(title));
+        team.setName(getTeamName(title));
         team.setAlias(getAlias(title));
         team.setLink(teamURL);
 
@@ -232,16 +330,28 @@ public class USTASiteParser {
         return name;
     }
 
-    private String getName(String title) {
+    private String getTeamName(String title) {
         int i = title.indexOf("|");
         String teamName = title;
         if (i > 0) {
             teamName = title.substring(i + 1);
         }
+
         int index = teamName.indexOf("[");
         if (index > 0) {
-            teamName = teamName.substring(0, index - 1);
+            teamName = teamName.substring(0, index - 1).trim();
         }
+
+        char lastC = teamName.charAt(teamName.length()-1);
+
+        if (lastC > '0' && lastC <= '9') {
+            index = teamName.lastIndexOf(" ");
+
+            if (index > 0) {
+                teamName = teamName.substring(0, index);
+            }
+        }
+
         return teamName.trim();
     }
 
