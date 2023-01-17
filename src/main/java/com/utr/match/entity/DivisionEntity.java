@@ -8,6 +8,7 @@ import java.util.List;
 @Table(name="division")
 public class DivisionEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name="div_id")

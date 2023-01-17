@@ -78,4 +78,18 @@ class USTASiteParserTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    void parseScoreCard() {
+
+        USTASiteParser util = new USTASiteParser();
+
+        try {
+            System.out.println(util.parseScoreCard("https://www.ustanorcal.com/scorecard.asp?id=749919&l=17840:2605").toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
 }

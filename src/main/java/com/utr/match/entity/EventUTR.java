@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class EventUTR {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name="event_id")

@@ -28,7 +28,13 @@ class USTATeamRepositoryTest {
     private PlayerRepository playerRepository;
 
     @Autowired
+    private USTAFlightRepository flightRepository;
+
+    @Autowired
     private TeamLoader loader;
+
+    @Autowired
+    private USTATeamMatchRepository matchRepository;
 
     @Test
     void createTeam() {
@@ -281,5 +287,44 @@ class USTATeamRepositoryTest {
         }
 
     }
+
+    @Test
+    void createFlights() {
+
+        for (USTATeam team : ustaTeamRepository.findAll()) {
+            String flightStr = team.getFlight();
+            int flightNo = Integer.parseInt(flightStr);
+
+            long divisionId = team.getDivision().getId();
+
+            USTAFlight flight = flightRepository.findByDivision_IdAndFlightNo(divisionId, flightNo);
+
+            if (flight == null) {
+                flight = new USTAFlight(flightNo, team.getDivision());
+                flightRepository.save(flight);
+                System.out.println(" new flight created with division " + team.getDivisionName() + " no. " + flightNo );
+
+                flight = flightRepository.findByDivision_IdAndFlightNo(divisionId, flightNo);
+
+            }
+            team.setUstaFlight(flight);
+
+            ustaTeamRepository.save(team);
+        }
+
+
+    }
+
+    @Test
+    void queryMatchScore() {
+
+        USTATeam team = ustaTeamRepository.findById(3L).get();
+        for (USTATeamMatch match: matchRepository.findByTeam(team)) {
+            System.out.println(match.getScoreCard());
+        }
+
+
+    }
+
 
 }

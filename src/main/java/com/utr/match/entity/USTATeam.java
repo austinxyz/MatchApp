@@ -11,6 +11,7 @@ import java.util.List;
 @Table(name = "usta_team")
 public class USTATeam {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "name")
@@ -32,6 +33,11 @@ public class USTATeam {
     @ManyToOne
     @JoinColumn(name = "usta_division_id")
     private USTADivision division;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "flight_id")
+    private USTAFlight ustaFlight;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usta_team_player",
@@ -181,6 +187,14 @@ public class USTATeam {
             }
         }
         return null;
+    }
+
+    public USTAFlight getUstaFlight() {
+        return ustaFlight;
+    }
+
+    public void setUstaFlight(USTAFlight ustaFlight) {
+        this.ustaFlight = ustaFlight;
     }
 
     @Override

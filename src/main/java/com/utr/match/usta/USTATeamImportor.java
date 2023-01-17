@@ -7,6 +7,8 @@ import com.utr.model.Event;
 import com.utr.model.Player;
 import com.utr.model.PlayerEvent;
 import com.utr.parser.UTRParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 @Component
 @Scope("singleton")
@@ -42,8 +49,215 @@ public class USTATeamImportor {
     @Autowired
     private TeamLoader loader;
 
+    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
+    @Autowired
+    private USTAFlightRepository ustaFlightRepository;
+
+    @Autowired
+    private USTATeamMatchRepository teamMatchRepository;
+
+    @Autowired
+    private USTATeamMatchLineRepository matchLineRepository;
+
+    @Autowired
+    private USTATeamScoreCardRepository scoreCardRepository;
+
     public USTATeamImportor() {
     }
+
+    public USTATeamScoreCard importScoreCard(String scoreCardURL, Long flightId) {
+
+        USTASiteParser util = new USTASiteParser();
+        try {
+            USTAFlight flight = ustaFlightRepository.findById(flightId).get();
+
+            JSONObject obj = util.parseScoreCard(scoreCardURL);
+
+            USTATeamMatch homeMatch = createHomeTeamMatch(obj);
+
+            USTATeamMatch guestMatch = createGuestTeamMatch(obj);
+
+            homeMatch.setOpponentTeam(guestMatch.getTeam());
+            homeMatch.setOpponentPoint(guestMatch.getPoint());
+
+            guestMatch.setOpponentTeam(homeMatch.getTeam());
+            guestMatch.setOpponentPoint(homeMatch.getPoint());
+
+            USTATeamScoreCard scoreCard = new USTATeamScoreCard(flight);
+
+            createMatchLines(obj, scoreCard, homeMatch, guestMatch);
+
+            homeMatch = createOrFetchMatch(homeMatch);
+
+            guestMatch = createOrFetchMatch(guestMatch);
+
+            if (homeMatch.getScoreCard() == null) {
+
+                for (USTATeamLineScore lineScore : scoreCard.getLineScores()) {
+                    USTATeamMatchLine homeLine = lineScore.getHomeLine();
+                    homeLine = matchLineRepository.findByMatch_IdAndName(homeMatch.getId(), homeLine.getName());
+
+                    if (homeLine != null) {
+                        lineScore.setHomeLine(homeLine);
+                    }
+
+                    USTATeamMatchLine guestLine = lineScore.getHomeLine();
+                    guestLine = matchLineRepository.findByMatch_IdAndName(guestMatch.getId(), homeLine.getName());
+
+                    if (guestLine != null) {
+                        lineScore.setGuestLine(guestLine);
+                    }
+                }
+
+                scoreCard = scoreCardRepository.save(scoreCard);
+
+                homeMatch.setScoreCard(scoreCard);
+
+                teamMatchRepository.save(homeMatch);
+
+                guestMatch.setScoreCard(scoreCard);
+
+                teamMatchRepository.save(guestMatch);
+            }
+
+            System.out.println(scoreCard);
+            System.out.println(homeMatch);
+            System.out.println(guestMatch);
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return null;
+    }
+
+    private USTATeamMatch createOrFetchMatch(USTATeamMatch match) {
+        USTATeamMatch existMatch = teamMatchRepository.findByMatchDateAndTeam_IdAndOpponentTeam_Id(match.getMatchDate(),
+                match.getTeam().getId(), match.getOpponentTeam().getId());
+        if (existMatch != null) {
+            match = existMatch;
+        } else {
+            match = teamMatchRepository.save(match);
+        }
+        return match;
+    }
+
+    private USTATeamMatch createGuestTeamMatch(JSONObject obj) throws ParseException {
+        String guestTeamName = obj.get("guestTeamName").toString();
+
+        USTATeam guestTeam = ustaTeamRepository.findByName(guestTeamName);
+
+        USTATeamMatch match = new USTATeamMatch(guestTeam);
+
+        java.util.Date date = formatter.parse(obj.get("matchDate").toString());
+
+        Date matchDate = new Date(date.getTime());
+
+        match.setMatchDate(matchDate);
+
+        match.setPoint(Integer.parseInt(obj.get("guestPoint").toString()));
+
+        match.setHome(false);
+
+        return match;
+    }
+
+    private void createMatchLines(JSONObject obj, USTATeamScoreCard scoreCard, USTATeamMatch homeMatch, USTATeamMatch guestMatch) {
+
+        if (obj.has("singles")) {
+
+            JSONArray singles = (JSONArray)obj.get("singles");
+
+            parseScore(scoreCard, homeMatch, guestMatch, singles, true);
+
+        }
+
+        JSONArray doubles = (JSONArray)obj.get("doubles");
+
+        parseScore(scoreCard, homeMatch, guestMatch, doubles, false);
+
+    }
+
+    private void parseScore(USTATeamScoreCard scoreCard, USTATeamMatch homeMatch, USTATeamMatch guestMatch, JSONArray linescores, boolean isSingle) {
+
+        for (int i = 0; i< linescores.length(); i++) {
+            JSONObject scoreJson = (JSONObject) linescores.get(i);
+
+            USTATeamLineScore score = new USTATeamLineScore();
+
+            score.setScore(scoreJson.get("score").toString());
+            score.setHomeTeamWin(scoreJson.get("winTeam").toString().equals("Home"));
+
+            USTATeamMatchLine homeLine = createMatchLine(scoreJson, isSingle, true);
+
+            homeMatch.getLines().add(homeLine);
+
+            homeLine.setMatch(homeMatch);
+
+            score.setHomeLine(homeLine);
+
+            USTATeamMatchLine guestLine = createMatchLine(scoreJson, isSingle, false);
+
+            guestMatch.getLines().add(guestLine);
+
+            guestLine.setMatch(guestMatch);
+
+            score.setGuestLine(guestLine);
+
+            scoreCard.getLineScores().add(score);
+
+            score.setScoreCard(scoreCard);
+        }
+    }
+
+    private USTATeamMatchLine createMatchLine(JSONObject scoreJson, boolean isSingle, boolean home) {
+        String playersName = home? "homePlayers": "guestPlayers";
+
+        JSONArray players = (JSONArray) scoreJson.get(playersName);
+
+        JSONObject playerJson = (JSONObject)players.get(0);
+
+        String norcalId = (String)playerJson.get("norcalId");
+
+        PlayerEntity player1 = playerRepository.findByUstaNorcalId(norcalId);
+
+        PlayerEntity player2 = null;
+
+        if (!isSingle) {
+            playerJson = (JSONObject)players.get(1);
+
+            norcalId = (String)playerJson.get("norcalId");
+
+            player2 = playerRepository.findByUstaNorcalId(norcalId);
+        }
+
+        String name = (String) scoreJson.get("lineName");
+
+        USTATeamMatchLine matchLine = new USTATeamMatchLine(player1, player2, isSingle? "S":"D", name);
+
+        return matchLine;
+    }
+
+    private USTATeamMatch createHomeTeamMatch(JSONObject obj) throws ParseException {
+        String homeTeamName = obj.get("homeTeamName").toString();
+
+        USTATeam homeTeam = ustaTeamRepository.findByName(homeTeamName);
+
+        USTATeamMatch match = new USTATeamMatch(homeTeam);
+
+        java.util.Date date = formatter.parse(obj.get("matchDate").toString());
+
+        Date matchDate = new Date(date.getTime());
+
+        match.setMatchDate(matchDate);
+
+        match.setPoint(Integer.parseInt(obj.get("homePoint").toString()));
+
+        match.setHome(true);
+
+        return match;
+    }
+
 
     public USTATeam importUSTATeam(String teamURL) {
         USTATeam team = createTeamAndAddPlayers(teamURL);

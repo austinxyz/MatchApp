@@ -15,8 +15,9 @@ class USTATeamImportorTest {
 
     final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96400";
     final String teamName = "BAY CLUB SANTA CLARA 40AM3.5A";
-    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17731:2606&r=L";
+    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-mp&l=17608:2606&r=L";
 
+    final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753752&l=17644:2623";
 
     @Test
     void importUSTAFlight() {
@@ -35,6 +36,12 @@ class USTATeamImportorTest {
     @Test
     void updateTeamUTR() {
         importor.updateTeamUTRInfo(teamName);
+    }
+
+
+    @Test
+    void importScoreCard() {
+        importor.importScoreCard(scoreCardURL, 3L);
     }
 
 }

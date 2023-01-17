@@ -29,7 +29,7 @@ class PlayerRepositoryTest {
     TeamLoader loader;
 
     @Test
-    void findAll() {
+    void updateUTRByNotFetechedPlayers() {
         List<PlayerEntity> players = playerRepo.findByUtrFetchedTimeNull();
 
         for (PlayerEntity player : players) {
@@ -70,6 +70,30 @@ class PlayerRepositoryTest {
             playerRepo.save(player);
 
             System.out.println(player.getName() + " utr is updated" );
+        }
+    }
+
+    @Test
+    void updateNorCalUSTAId() {
+        List<PlayerEntity> players = playerRepo.findByNoncalLinkNotNullAndUstaNorcalIdNull();
+
+        for (PlayerEntity player : players) {
+
+            String norcalLink = player.getNoncalLink();
+
+            int start = norcalLink.indexOf("=");
+
+            if (start > 0) {
+                String ustaId = norcalLink.substring(start+1, norcalLink.length());
+
+                player.setUstaNorcalId(ustaId);
+
+                playerRepo.save(player);
+
+                System.out.println(player.getName() + " norcal id " + player.getUstaNorcalId() + " is saved" );
+            }
+
+
         }
     }
 
