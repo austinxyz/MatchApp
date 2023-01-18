@@ -29,7 +29,7 @@ public class UTRParser {
 
     public static final String CLUB_URL = "https://app.universaltennis.com/api/v1/club/%s";
 
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjIwODkxNCIsImVtYWlsIjoiemhvdXpob25neWkuc2hAZ21haWwuY29tIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMTMxNTY3OTYiLCJuYmYiOjE2NzEzMzk2NDAsImV4cCI6MTY3MzkzMTY0MCwiaWF0IjoxNjcxMzM5NjQwfQ.1lt7quHKMeSl8dbmw_UWQAhekyTJbVe4SU7J_QTvLp0";
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjIwODkxNCIsImVtYWlsIjoiemhvdXpob25neWkuc2hAZ21haWwuY29tIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMTM0NTUzMjQiLCJuYmYiOjE2NzQwMjcxMzYsImV4cCI6MTY3NjYxOTEzNiwiaWF0IjoxNjc0MDI3MTM2fQ.HVz-VDtenXz5Jx1HnTwS8ve_sAdcDOhYVITYkhry49c";
 
     public List<Event> getClubEvents(String clubId) {
         EventParser eventParser = new EventParser();

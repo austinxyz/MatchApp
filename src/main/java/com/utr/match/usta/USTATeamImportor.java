@@ -65,6 +65,23 @@ public class USTATeamImportor {
     public USTATeamImportor() {
     }
 
+    public void refreshTeamMatcheScores(USTATeam team) {
+        USTASiteParser util = new USTASiteParser();
+        try {
+            JSONArray matches = util.parseTeamMatches(team);
+            USTAFlight flight = team.getUstaFlight();
+
+            for (int i=0; i<matches.length(); i++) {
+                JSONObject scoreCardJSON = (JSONObject)matches.get(i);
+                handleScoreCard(flight, scoreCardJSON);
+            }
+
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public USTATeamScoreCard importScoreCard(String scoreCardURL, Long flightId) {
 
         USTASiteParser util = new USTASiteParser();
@@ -73,41 +90,54 @@ public class USTATeamImportor {
 
             JSONObject obj = util.parseScoreCard(scoreCardURL);
 
-            USTATeamMatch homeMatch = createHomeTeamMatch(obj);
+            handleScoreCard(flight, obj);
 
-            USTATeamMatch guestMatch = createGuestTeamMatch(obj);
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
 
-            homeMatch.setOpponentTeam(guestMatch.getTeam());
-            homeMatch.setOpponentPoint(guestMatch.getPoint());
 
-            guestMatch.setOpponentTeam(homeMatch.getTeam());
-            guestMatch.setOpponentPoint(homeMatch.getPoint());
+        return null;
+    }
 
-            USTATeamScoreCard scoreCard = new USTATeamScoreCard(flight);
+    private void handleScoreCard(USTAFlight flight, JSONObject obj) throws ParseException {
+        USTATeamMatch homeMatch = createHomeTeamMatch(obj);
 
-            createMatchLines(obj, scoreCard, homeMatch, guestMatch);
+        USTATeamMatch guestMatch = createGuestTeamMatch(obj);
 
-            homeMatch = createOrFetchMatch(homeMatch);
+        homeMatch.setOpponentTeam(guestMatch.getTeam());
+        homeMatch.setOpponentPoint(guestMatch.getPoint());
 
-            guestMatch = createOrFetchMatch(guestMatch);
+        guestMatch.setOpponentTeam(homeMatch.getTeam());
+        guestMatch.setOpponentPoint(homeMatch.getPoint());
 
-            if (homeMatch.getScoreCard() == null) {
+        USTATeamScoreCard scoreCard = new USTATeamScoreCard(flight);
 
-                for (USTATeamLineScore lineScore : scoreCard.getLineScores()) {
-                    USTATeamMatchLine homeLine = lineScore.getHomeLine();
-                    homeLine = matchLineRepository.findByMatch_IdAndName(homeMatch.getId(), homeLine.getName());
+        createMatchLines(obj, scoreCard, homeMatch, guestMatch);
 
-                    if (homeLine != null) {
-                        lineScore.setHomeLine(homeLine);
-                    }
+        homeMatch = createOrFetchMatch(homeMatch);
 
-                    USTATeamMatchLine guestLine = lineScore.getHomeLine();
-                    guestLine = matchLineRepository.findByMatch_IdAndName(guestMatch.getId(), homeLine.getName());
+        guestMatch = createOrFetchMatch(guestMatch);
 
-                    if (guestLine != null) {
-                        lineScore.setGuestLine(guestLine);
-                    }
+        if (homeMatch.getScoreCard() == null) {
+
+            for (USTATeamLineScore lineScore : scoreCard.getLineScores()) {
+                USTATeamMatchLine homeLine = lineScore.getHomeLine();
+                homeLine = matchLineRepository.findByMatch_IdAndName(homeMatch.getId(), homeLine.getName());
+
+                if (homeLine != null) {
+                    lineScore.setHomeLine(homeLine);
                 }
+
+                USTATeamMatchLine guestLine = lineScore.getGuestLine();
+                guestLine = matchLineRepository.findByMatch_IdAndName(guestMatch.getId(), guestLine.getName());
+
+                if (guestLine != null) {
+                    lineScore.setGuestLine(guestLine);
+                }
+            }
+
+            if (homeMatch.getLines() != null && !homeMatch.getLines().isEmpty()) {
 
                 scoreCard = scoreCardRepository.save(scoreCard);
 
@@ -119,27 +149,36 @@ public class USTATeamImportor {
 
                 teamMatchRepository.save(guestMatch);
             }
-
-            System.out.println(scoreCard);
-            System.out.println(homeMatch);
-            System.out.println(guestMatch);
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException(e);
         }
 
-
-        return null;
     }
 
     private USTATeamMatch createOrFetchMatch(USTATeamMatch match) {
         USTATeamMatch existMatch = teamMatchRepository.findByMatchDateAndTeam_IdAndOpponentTeam_Id(match.getMatchDate(),
                 match.getTeam().getId(), match.getOpponentTeam().getId());
         if (existMatch != null) {
-            match = existMatch;
+            match = updateMatchInfo(existMatch, match);
         } else {
             match = teamMatchRepository.save(match);
         }
         return match;
+    }
+
+    private USTATeamMatch updateMatchInfo(USTATeamMatch existMatch, USTATeamMatch match) {
+
+        if (existMatch.getLines() == null || existMatch.getLines().size() == 0) { //exist match has no result
+            existMatch.setPoint(match.getPoint());
+            existMatch.setOpponentPoint(match.getOpponentPoint());
+            existMatch.getLines().addAll(match.getLines());
+
+            for (USTATeamMatchLine line : match.getLines()) {
+                line.setMatch(existMatch);
+            }
+
+            return teamMatchRepository.save(existMatch);
+        }
+
+        return existMatch;
     }
 
     private USTATeamMatch createGuestTeamMatch(JSONObject obj) throws ParseException {
@@ -155,7 +194,9 @@ public class USTATeamImportor {
 
         match.setMatchDate(matchDate);
 
-        match.setPoint(Integer.parseInt(obj.get("guestPoint").toString()));
+        if (obj.has("guestPoint")) {
+            match.setPoint(Integer.parseInt(obj.get("guestPoint").toString()));
+        }
 
         match.setHome(false);
 
@@ -171,10 +212,11 @@ public class USTATeamImportor {
             parseScore(scoreCard, homeMatch, guestMatch, singles, true);
 
         }
+        if (obj.has("doubles")) {
+            JSONArray doubles = (JSONArray) obj.get("doubles");
 
-        JSONArray doubles = (JSONArray)obj.get("doubles");
-
-        parseScore(scoreCard, homeMatch, guestMatch, doubles, false);
+            parseScore(scoreCard, homeMatch, guestMatch, doubles, false);
+        }
 
     }
 
@@ -251,7 +293,9 @@ public class USTATeamImportor {
 
         match.setMatchDate(matchDate);
 
-        match.setPoint(Integer.parseInt(obj.get("homePoint").toString()));
+        if (obj.has("homePoint")) {
+            match.setPoint(Integer.parseInt(obj.get("homePoint").toString()));
+        }
 
         match.setHome(true);
 
