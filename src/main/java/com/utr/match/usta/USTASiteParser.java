@@ -26,6 +26,59 @@ public class USTASiteParser {
     public USTASiteParser() {
     }
 
+    public JSONArray parseTeamMatches(USTATeam team) throws IOException {
+        JSONArray result = new JSONArray();
+
+        Document doc = Jsoup.connect(team.getLink()).get();
+
+        Elements tables = doc.select("table:contains(Team Schedule)");
+
+        for (Element table: tables) {
+            Element scheduleTable = table.nextElementSibling();
+
+            Element tbody = scheduleTable.child(0).child(0).child(0).child(0).child(0);
+
+            for (Element tr: tbody.children()) {
+                if (tr.children().size() == 0) {
+                    continue;
+                }
+                String status = tr.child(0).text();
+
+                if (!status.startsWith("Confirmed") && !status.startsWith("Scheduled")) {
+                    continue;
+                }
+
+                JSONObject scoreCard;
+                if (status.startsWith("Confirmed")) {
+                    String href = tr.child(2).child(0).attr("href");
+                    scoreCard = parseScoreCard("https://www.ustanorcal.com/" + href);
+                } else {
+                    scoreCard = new JSONObject();
+                    String matchDate = tr.child(2).text();
+                    scoreCard.put("matchDate", matchDate);
+
+                    String home = tr.child(6).text();
+                    boolean isHome = home.equals("Home");
+
+                    if (isHome) {
+                        scoreCard.put("homeTeamName", team.getName());
+                        String opponentTeam = tr.child(5).text();
+                        scoreCard.put("guestTeamName", getTeamName(opponentTeam));
+                    } else {
+                        scoreCard.put("guestTeamName", team.getName());
+                        String opponentTeam = tr.child(5).text();
+                        scoreCard.put("homeTeamName", getTeamName(opponentTeam));
+                    }
+                }
+                result.put(scoreCard);
+            }
+
+        }
+
+        return result;
+
+    }
+
     public JSONObject parseScoreCard(String scoreCardURL) throws IOException {
 
         JSONObject result = new JSONObject();
@@ -63,7 +116,6 @@ public class USTASiteParser {
             result.put("singles", singles);
         }
 
-        logger.debug("Doules ");
         b = doc.select("b:contains(Doubles)");
         for (Element e: b) {
             Element douleResultTable = e.parent().parent().parent().parent().nextElementSibling();

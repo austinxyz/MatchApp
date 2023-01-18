@@ -92,4 +92,18 @@ class USTASiteParserTest {
 
 
     }
+
+    @Test
+    void parseTeamSchedule() {
+
+        USTASiteParser util = new USTASiteParser();
+
+        try {
+            USTATeam team = util.parseUSTATeam("https://www.ustanorcal.com/teaminfo.asp?id=97082");
+            System.out.println(util.parseTeamMatches(team).toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }

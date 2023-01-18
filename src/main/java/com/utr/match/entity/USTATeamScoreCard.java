@@ -1,12 +1,11 @@
 package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.utr.match.model.Line;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "usta_team_scorecard")
@@ -23,6 +22,7 @@ public class USTATeamScoreCard {
     @JoinColumn(name = "flight_id")
     private USTAFlight flight;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "scoreCard", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<USTATeamLineScore> lineScores;
 
@@ -51,6 +51,16 @@ public class USTATeamScoreCard {
         return lineScores;
     }
 
+
+    @JsonProperty
+    public List<USTATeamLineScore> getScores() {
+
+        List<USTATeamLineScore> res = new ArrayList<>(this.lineScores);
+
+        res.sort(Comparator.comparing(o -> o.getHomeLine().getName()));
+
+        return res;
+    }
     public String getComment() {
         return comment;
     }

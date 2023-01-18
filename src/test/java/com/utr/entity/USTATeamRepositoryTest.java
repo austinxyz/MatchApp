@@ -319,8 +319,8 @@ class USTATeamRepositoryTest {
     void queryMatchScore() {
 
         USTATeam team = ustaTeamRepository.findById(3L).get();
-        for (USTATeamMatch match: matchRepository.findByTeam(team)) {
-            System.out.println(match.getScoreCard());
+        for (USTATeamMatch match: matchRepository.findByTeamOrderByMatchDateAsc(team)) {
+            System.out.println(match);
         }
 
 

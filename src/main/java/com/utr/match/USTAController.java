@@ -160,16 +160,32 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/teams/{id}/matchscores")
-    public ResponseEntity<List<USTATeamMatch>> getTeamMatchScores(@PathVariable("id") String id) {
+    @GetMapping("/teams/{id}/matches")
+    public ResponseEntity<List<USTATeamMatch>> getTeamMatchScores(@PathVariable("id") String id,
+                                                                  @RequestParam(value = "action", defaultValue = "fetch") String action) {
 
         Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
 
-        if (team.isPresent()) {
+        if (action.equals("fetch")) {
 
-            List<USTATeamMatch> matches = matchRepository.findByTeam(team.get());
+            if (team.isPresent()) {
 
-            return new ResponseEntity<>(matches, HttpStatus.OK);
+                List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team.get());
+
+                return new ResponseEntity<>(matches, HttpStatus.OK);
+            }
+        }
+
+        if (action.equals("updateScore")) {
+
+            if (team.isPresent()) {
+
+                importor.refreshTeamMatcheScores(team.get());
+
+                List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team.get());
+
+                return new ResponseEntity<>(matches, HttpStatus.OK);
+            }
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

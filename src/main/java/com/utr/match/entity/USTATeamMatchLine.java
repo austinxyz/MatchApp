@@ -96,7 +96,7 @@ public class USTATeamMatchLine {
                 "type='" + type + '\'' +
                 ", name='" + name + '\'' +
                 ", player1=" + player1.getName() +
-                ", player2=" + player2.getName() +
+                (player2==null?  "":"player2=" + player2.getName()) +
                 '}';
     }
 }
