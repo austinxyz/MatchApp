@@ -149,6 +149,15 @@ public class USTATeamMatch {
         this.opponentPoint = opponentPoint;
     }
 
+
+    public USTATeamMatchLine getLine(String lineName) {
+        for (USTATeamMatchLine line: this.lines) {
+            if (line.getName().equals(lineName)) {
+                return line;
+            }
+        }
+        return null;
+    }
     @Override
     public String toString() {
         return "USTATeamMatch{" +

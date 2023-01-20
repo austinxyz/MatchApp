@@ -23,5 +23,7 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long> {
 
     PlayerEntity findByUstaNorcalId(String ustaNorcalId);
 
+    PlayerEntity findByNameIgnoreCase(String name);
+
 
 }
