@@ -71,9 +71,9 @@ class USTASiteParserTest {
     void getTeamDynamicRating() {
         USTASiteParser util = new USTASiteParser();
         try {
-            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=RINCONADA%20PK%2018AM3.5A&year=2022");
+            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=VALLEY%20CHURCH%2040AM3.5A&year=2023");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------");
-            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=RINCONADA%20PK%2018MX7.0B&year=2022");
+            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=SUNNYVALE%20TC/SUNNYVALE%20MTC%2040AM3.5B&year=2023");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

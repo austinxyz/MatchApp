@@ -214,6 +214,8 @@ public class USTASiteParser {
                     String gender = player.get(2).text();
                     String rating = player.get(3).text();
                     String noncalLink = "https://www.ustanorcal.com/" + link.attr("href");
+                    int last = noncalLink.indexOf("=");
+                    String noncalId = noncalLink.substring(last + 1, noncalLink.length());
                     PlayerEntity playerEntity = new PlayerEntity();
                     playerEntity.setLastName(getLastName(name));
                     playerEntity.setFirstName(getFirstName(name));
@@ -222,6 +224,7 @@ public class USTASiteParser {
                     playerEntity.setGender(gender);
                     playerEntity.setUstaRating(rating);
                     playerEntity.setNoncalLink(noncalLink);
+                    playerEntity.setUstaNorcalId(noncalId);
 
                     team.getPlayers().add(playerEntity);
 
@@ -333,29 +336,30 @@ public class USTASiteParser {
     public List<PlayerEntity> getTeamDynamicRating(String teamTennisRecordLink) throws IOException {
         List<PlayerEntity> players = new ArrayList<>();
         Document doc = Jsoup.connect(teamTennisRecordLink).get();
-        Elements links = doc.select("a[href]");
+
+        Elements tables = doc.select("table:contains(Rating)");
+        Element table = tables.get(0);
+
+        int ratingIndex = getRatingIndex(table);
+
+
+        Elements links = table.select("a[href]");
         for (Element link : links) {
             String href = link.attr("href");
             if (href.startsWith("/adult/profile.aspx?playername")) {
                 Element tr = link.parent().parent();
-                if (tr.parent().parent().parent().parent().className().equals("large")) {
-                    continue;
-                }
-                String dr = tr.children().get(5).text();
-                if (dr.trim().equals("") || dr.indexOf("-") > 0) {
-                    if (tr.children().size() > 8) {
-                        // try to get #7.
-                        dr = tr.children().get(7).text();
-
-                        if ((dr.trim().equals("") || dr.indexOf("-") > 0)) {
-                            continue;
-                        }
-                    }
-                }
+                String dr = tr.children().get(ratingIndex).text();
                 PlayerEntity player = new PlayerEntity();
                 String name = link.text();
-                player.setDynamicRating(Double.parseDouble(dr));
-                player.setName(name);
+                if (!dr.trim().equals("") && !dr.startsWith("-")) {
+                    if (dr.trim().endsWith("M")) {
+                        dr = dr.trim().substring(0, dr.length()-1).trim();
+                    }
+                    player.setDynamicRating(Double.parseDouble(dr));
+                } else {
+                    player.setDynamicRating(0.0D);
+                }
+                player.setName(getLastName(name) + " " + getFirstName(name) );
                 player.setArea(tr.children().get(1).text());
                 player.setTennisRecordLink("https://www.tennisrecord.com/" + href);
 
@@ -368,16 +372,43 @@ public class USTASiteParser {
         return players;
     }
 
-    private String getLastName(String name) {
-        if (name.indexOf(",") > 0) {
-            return name.split(",")[0].trim();
+    private int getRatingIndex(Element table) {
+        Element tr = table.child(0).child(0);
+
+        for (int i=0; i<tr.children().size(); i++) {
+            if (tr.child(i).text().equals("Rating")) {
+                return i;
+            }
         }
+        return 0;
+    }
+
+    private String getLastName(String name) {
+
+        if (name.indexOf(",") > 0) { // name in USTA, split with ,
+            return name.split(",")[0].trim();
+        } else { // name in tennis record, split with " ", consider first part as first Name
+            String trimedName = name.trim();
+            int firstBlank = trimedName.indexOf(" ");
+
+            if (firstBlank > 0) {
+                return trimedName.substring(firstBlank+1, trimedName.length());
+            }
+        }
+
         return name;
     }
 
     private String getFirstName(String name) {
         if (name.indexOf(",") > 0) {
             return name.split(",")[1].trim();
+        } else {
+            String trimedName = name.trim();
+            int firstBlank = trimedName.indexOf(" ");
+
+            if (firstBlank > 0) {
+                return trimedName.substring(0, firstBlank);
+            }
         }
         return name;
     }

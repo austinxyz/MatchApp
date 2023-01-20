@@ -182,7 +182,7 @@ public class USTATeam {
 
     public PlayerEntity getPlayer(String name) {
         for (PlayerEntity player : this.players) {
-            if (player.getName().equals(name)) {
+            if (player.getName().equalsIgnoreCase(name)) {
                 return player;
             }
         }

@@ -144,7 +144,7 @@ public class USTAController {
                                                         @RequestParam("action") String action
     ) {
 
-        if (action.equals("refresh")) {
+        if (action.equals("refreshID")) {
 
             Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
 
@@ -152,6 +152,41 @@ public class USTAController {
                 importor.updateTeamPlayersUTRID(team.get());
 
                 return new ResponseEntity<>(team.get(), HttpStatus.OK);
+            }
+
+        }
+
+        if (action.equals("refreshValue")) {
+
+            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+
+            if (team.isPresent()) {
+                importor.updateTeamUTRInfo(team.get());
+
+                return new ResponseEntity<>(team.get(), HttpStatus.OK);
+            }
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams/{id}/drs")
+    public ResponseEntity<USTATeam> updatePlayersDR(@PathVariable("id") String id,
+                                                       @RequestParam("action") String action
+    ) {
+
+        if (action.equals("refresh")) {
+
+            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+
+            if (team.isPresent()) {
+                USTATeam existTeam = team.get();
+
+                importor.updateTeamPlayersDR(existTeam);
+
+                return new ResponseEntity<>(existTeam, HttpStatus.OK);
             }
 
         }

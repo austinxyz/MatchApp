@@ -176,9 +176,14 @@ public class USTATeamImportor {
             }
 
             return teamMatchRepository.save(existMatch);
+        } else {
+            for (USTATeamMatchLine line: existMatch.getLines()) {
+                USTATeamMatchLine newLine = match.getLine(line.getName());
+                line.setPlayer1(newLine.getPlayer1());
+                line.setPlayer2(newLine.getPlayer2());
+            }
+            return teamMatchRepository.save(existMatch);
         }
-
-        return existMatch;
     }
 
     private USTATeamMatch createGuestTeamMatch(JSONObject obj) throws ParseException {
@@ -425,14 +430,35 @@ public class USTATeamImportor {
         }
     }
 
-    public void updateTeamUTRInfo(String teamName) {
+    public void updateTeamPlayersDR(USTATeam team) {
 
-        USTATeam existTeam = ustaTeamRepository.findByName(teamName);
+        USTASiteParser util = new USTASiteParser();
 
-        if (existTeam == null) {
-            logger.debug("team " + existTeam.getName() + " is not existed");
-            return;
+        try {
+            List<PlayerEntity> players = util.getTeamDynamicRating(team.getTennisRecordLink());
+
+            for (PlayerEntity player: players) {
+                PlayerEntity existPlayer = team.getPlayer(player.getName());
+
+                if (existPlayer == null || player.getArea().indexOf(existPlayer.getArea()) == -1) {
+                    continue;
+                }
+
+                existPlayer.setDynamicRating(player.getDynamicRating());
+                existPlayer.setDrFetchedTime(new Timestamp(System.currentTimeMillis()));
+
+                playerRepository.save(existPlayer);
+
+                logger.debug("player " + existPlayer.getName() + " dr " + player.getDynamicRating().toString() + " update");
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
+    }
+
+    public void updateTeamUTRInfo(USTATeam existTeam) {
 
         for (PlayerEntity player : existTeam.getPlayers()) {
 
