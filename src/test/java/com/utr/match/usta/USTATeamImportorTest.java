@@ -1,5 +1,7 @@
 package com.utr.match.usta;
 
+import com.utr.match.entity.PlayerEntity;
+import com.utr.match.entity.PlayerRepository;
 import com.utr.match.entity.USTATeam;
 import com.utr.match.entity.USTATeamRepository;
 import org.junit.jupiter.api.Test;
@@ -18,10 +20,12 @@ class USTATeamImportorTest {
     USTATeamRepository teamRepository;
 
     final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96400";
-    final String teamName = "SUNNYVALE MTC 40AM3.5C";
+    final String teamName = "MOUNTAIN VIEW TC/RENGSTORFF PK 40AM4.0A";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=17834:2624&r=L";
 
-    final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753766&l=17647:2625";
+    final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=750078&l=17608:2606";
+    @Autowired
+    private PlayerRepository playerRepository;
 
     @Test
     void importUSTAFlight() {
@@ -46,7 +50,7 @@ class USTATeamImportorTest {
 
     @Test
     void importScoreCard() {
-        importor.importScoreCard(scoreCardURL, 4L);
+        importor.importScoreCard(scoreCardURL, 6L);
     }
 
 
@@ -60,5 +64,12 @@ class USTATeamImportorTest {
     void updateTeamPlayersDR() {
         USTATeam team = teamRepository.findByName(teamName);
         importor.updateTeamPlayersDR(team);
+    }
+
+    @Test
+    void updatePlayerUTRInfo() {
+        PlayerEntity player = playerRepository.findByUtrId("2929342");
+
+        importor.updatePlayerUTRInfo(player, true);
     }
 }

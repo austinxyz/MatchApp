@@ -3,6 +3,7 @@ package com.utr.entity;
 import com.utr.match.TeamLoader;
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.PlayerRepository;
+import com.utr.match.entity.USTATeam;
 import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Player;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -98,9 +100,14 @@ class PlayerRepositoryTest {
     }
 
     @Test
+    @Transactional
     void findByUTR() {
         PlayerEntity player = playerRepo.findByUtrId("1316122");
         System.out.println(player.getFirstName() + " " + player.getLastName());
+
+        for (USTATeam team: player.getTeams()) {
+            System.out.println(team.getName());
+        }
 
     }
 

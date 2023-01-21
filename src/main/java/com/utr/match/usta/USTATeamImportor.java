@@ -262,20 +262,26 @@ public class USTATeamImportor {
 
         JSONArray players = (JSONArray) scoreJson.get(playersName);
 
-        JSONObject playerJson = (JSONObject)players.get(0);
-
-        String norcalId = (String)playerJson.get("norcalId");
-
-        PlayerEntity player1 = playerRepository.findByUstaNorcalId(norcalId);
+        PlayerEntity player1 = null;
 
         PlayerEntity player2 = null;
 
-        if (!isSingle) {
-            playerJson = (JSONObject)players.get(1);
+        if (players != null && players.length() > 0) {
 
-            norcalId = (String)playerJson.get("norcalId");
+            JSONObject playerJson = (JSONObject)players.get(0);
 
-            player2 = playerRepository.findByUstaNorcalId(norcalId);
+            String norcalId = (String)playerJson.get("norcalId");
+
+            player1 = playerRepository.findByUstaNorcalId(norcalId);
+
+            if (!isSingle) {
+                playerJson = (JSONObject)players.get(1);
+
+                norcalId = (String)playerJson.get("norcalId");
+
+                player2 = playerRepository.findByUstaNorcalId(norcalId);
+            }
+
         }
 
         String name = (String) scoreJson.get("lineName");
@@ -359,19 +365,16 @@ public class USTATeamImportor {
             }
 
             for (PlayerEntity player : team.getPlayers()) {
-                List<PlayerEntity> existedPlayers = playerRepository.findByNameLike(player.getName());
-                PlayerEntity existedPlayer = null;
+                PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
 
-                if (existedPlayers.size() > 0) {
-                    existedPlayer = existedPlayers.get(0);
+                if (existedPlayer != null) {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
                     existedPlayer.setArea(player.getArea());
                     existedPlayer.setUstaRating(player.getUstaRating());
                     playerRepository.save(existedPlayer);
                     logger.debug(player.getName() + " is existed, update USTA info");
                 } else {
-                    playerRepository.save(player);
-                    existedPlayer = playerRepository.findByNameLike(player.getName()).get(0);
+                    existedPlayer = playerRepository.save(player);
                     logger.debug("new player " + player.getName() + " is created");
                 }
 
@@ -440,7 +443,7 @@ public class USTATeamImportor {
             for (PlayerEntity player: players) {
                 PlayerEntity existPlayer = team.getPlayer(player.getName());
 
-                if (existPlayer == null || player.getArea().indexOf(existPlayer.getArea()) == -1) {
+                if (existPlayer == null) {
                     continue;
                 }
 
@@ -449,7 +452,7 @@ public class USTATeamImportor {
 
                 playerRepository.save(existPlayer);
 
-                logger.debug("player " + existPlayer.getName() + " dr " + player.getDynamicRating().toString() + " update");
+                logger.debug("player " + existPlayer.getId() + " " + existPlayer.getName() + " dr " + player.getDynamicRating().toString() + " updated");
             }
 
         } catch (IOException e) {
@@ -462,47 +465,50 @@ public class USTATeamImportor {
 
         for (PlayerEntity player : existTeam.getPlayers()) {
 
-            if (player.isRefreshedUTR()) {
-                logger.debug(player.getName() + " has latest UTR, skip");
-                continue;
-            }
-
-            String utrId = player.getUtrId();
-
-            if (utrId == null || utrId.equals("")) {
-                logger.debug(player.getName() + " has no UTR, no need to refresh");
-                continue;
-            }
-
-            logger.debug(player.getName() + " start to query utr and win ratio" );
-
-            loader.searchPlayerResult(utrId, false);
-
-            loader.searchPlayerResult(utrId, true);
-
-            Player utrplayer = loader.getPlayer(utrId);
-
-            if (utrplayer == null) {
-                continue;
-            }
-
-
-            player.setsUTR(utrplayer.getsUTR());
-            player.setdUTR(utrplayer.getdUTR());
-            player.setsUTRStatus(utrplayer.getsUTRStatus());
-            player.setdUTRStatus(utrplayer.getdUTRStatus());
-            player.setSuccessRate(utrplayer.getSuccessRate());
-            player.setWholeSuccessRate(utrplayer.getWholeSuccessRate());
-            player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
-
-            playerRepository.save(player);
-
-            logger.debug(player.getName() + " utr is updated" );
-
+            updatePlayerUTRInfo(player, false);
 
         }
 
 
+    }
+
+    public void updatePlayerUTRInfo(PlayerEntity player, boolean forceUpdate) {
+        if (player.isRefreshedUTR() && !forceUpdate) {
+            logger.debug(player.getName() + " has latest UTR, skip");
+            return;
+        }
+
+        String utrId = player.getUtrId();
+
+        if (utrId == null || utrId.equals("")) {
+            logger.debug(player.getName() + " has no UTR, no need to refresh");
+            return;
+        }
+
+        logger.debug(player.getName() + " start to query utr and win ratio" );
+
+        loader.searchPlayerResult(utrId, false);
+
+        loader.searchPlayerResult(utrId, true);
+
+        Player utrplayer = loader.getPlayer(utrId);
+
+        if (utrplayer == null) {
+            return;
+        }
+
+
+        player.setsUTR(utrplayer.getsUTR());
+        player.setdUTR(utrplayer.getdUTR());
+        player.setsUTRStatus(utrplayer.getsUTRStatus());
+        player.setdUTRStatus(utrplayer.getdUTRStatus());
+        player.setSuccessRate(utrplayer.getSuccessRate());
+        player.setWholeSuccessRate(utrplayer.getWholeSuccessRate());
+        player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+
+        playerRepository.save(player);
+
+        logger.debug(player.getName() + " utr is updated" );
     }
 
     private String findUTRID(List<Player> players, PlayerEntity player) {

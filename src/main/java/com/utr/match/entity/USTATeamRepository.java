@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface USTATeamRepository extends CrudRepository<USTATeam, Long> {
+    List<USTATeam> findByUstaFlightNull();
 
     List<USTATeam> findByNameLike(String name);
 
@@ -13,7 +14,8 @@ public interface USTATeamRepository extends CrudRepository<USTATeam, Long> {
 
     List<USTATeam> findAll();
 
-    List<USTATeam> findByDivision_IdOrderByAreaAsc(long id);
+
+    List<USTATeam> findByDivision_IdOrderByUstaFlightAsc(Long division);
 
 
 }

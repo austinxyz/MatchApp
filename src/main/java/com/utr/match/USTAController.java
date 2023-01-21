@@ -115,7 +115,7 @@ public class USTAController {
     public ResponseEntity<List<USTATeam>> getTeamsByDivision(@PathVariable("divId") String divId
     ) {
 
-        List<USTATeam> teams = teamRepository.findByDivision_IdOrderByAreaAsc(Long.valueOf(divId));
+        List<USTATeam> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(divId));
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);

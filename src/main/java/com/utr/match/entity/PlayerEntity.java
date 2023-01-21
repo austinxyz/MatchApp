@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="player")
@@ -66,6 +67,10 @@ public class PlayerEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EventUTR> utrs;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
+    private Set<USTATeam> teams;
 
     @Column(name="dutr")
     Double dUTR;
@@ -322,6 +327,10 @@ public class PlayerEntity {
 
     public void setUstaNorcalId(String ustaNorcalId) {
         this.ustaNorcalId = ustaNorcalId;
+    }
+
+    public Set<USTATeam> getTeams() {
+        return teams;
     }
 
     @JsonProperty
