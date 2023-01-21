@@ -39,7 +39,7 @@ public class USTATeam {
     @JoinColumn(name = "flight_id")
     private USTAFlight ustaFlight;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usta_team_player",
             joinColumns = {@JoinColumn(name = "usta_team_id")},
             inverseJoinColumns = {@JoinColumn(name = "player_id")})

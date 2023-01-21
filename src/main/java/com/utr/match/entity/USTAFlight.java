@@ -19,6 +19,9 @@ public class USTAFlight {
     @Column(name = "flight_no")
     private int flightNo;
 
+    @Column(name = "area")
+    private String area;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usta_division_id")
@@ -27,6 +30,7 @@ public class USTAFlight {
     @OneToMany(mappedBy = "ustaFlight", fetch = FetchType.LAZY)
     private Set<USTATeam> teams;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "flight", fetch = FetchType.LAZY)
     private Set<USTATeamScoreCard> teamScoreCards;
 
@@ -48,6 +52,14 @@ public class USTAFlight {
 
     public int getFlightNo() {
         return flightNo;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
     }
 
     public Set<USTATeam> getTeams() {

@@ -131,11 +131,9 @@ class USTATeamRepositoryTest {
             }
 
             for (PlayerEntity player : team.getPlayers()) {
-                List<PlayerEntity> existedPlayers = playerRepository.findByNameLike(player.getName());
-                PlayerEntity existedPlayer = null;
+                PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
 
-                if (existedPlayers.size() > 0) {
-                    existedPlayer = existedPlayers.get(0);
+                if (existedPlayer != null) {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
                     existedPlayer.setArea(player.getArea());
                     existedPlayer.setUstaRating(player.getUstaRating());
@@ -297,16 +295,18 @@ class USTATeamRepositoryTest {
 
             long divisionId = team.getDivision().getId();
 
-            USTAFlight flight = flightRepository.findByDivision_IdAndFlightNo(divisionId, flightNo);
+            USTAFlight flight = flightRepository.findByDivision_IdAndFlightNoAndArea(divisionId, flightNo, team.getArea());
 
             if (flight == null) {
                 flight = new USTAFlight(flightNo, team.getDivision());
-                flightRepository.save(flight);
+                flight.setArea(team.getArea());
+                flight = flightRepository.save(flight);
                 System.out.println(" new flight created with division " + team.getDivisionName() + " no. " + flightNo );
-
-                flight = flightRepository.findByDivision_IdAndFlightNo(divisionId, flightNo);
-
+            } else {
+                flight.setArea(team.getArea());
+                flight = flightRepository.save(flight);
             }
+
             team.setUstaFlight(flight);
 
             ustaTeamRepository.save(team);
