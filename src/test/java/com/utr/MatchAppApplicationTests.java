@@ -1,5 +1,6 @@
 package com.utr;
 
+import com.utr.match.PlayerController;
 import com.utr.match.ZiJingController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,13 @@ class MatchAppApplicationTests {
 	@Autowired
 	private ZiJingController controller;
 
+	@Autowired
+	private PlayerController playerController;
+
 	@Test
 	void contextLoads() {
 		//System.out.println(controller.analysis("ZJU-BYD", "0").toString());
-		System.out.println(controller.analysisFixed("ZJU-BYD", "",
-				"Dai  Ian,Li Haoyang_Dai  Ian,Teoh  Ian", "", "", "", "true").toString());
+		System.out.println(playerController.searchByName("927540").toString());
 	}
 
 }

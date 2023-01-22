@@ -23,7 +23,7 @@ class USTATeamImportorTest {
     final String teamName = "MOUNTAIN VIEW TC/RENGSTORFF PK 40AM4.0A";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=17834:2624&r=L";
 
-    final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=750078&l=17608:2606";
+    final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
     @Autowired
     private PlayerRepository playerRepository;
 
