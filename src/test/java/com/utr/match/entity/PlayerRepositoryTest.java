@@ -1,20 +1,16 @@
-package com.utr.entity;
+package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.PlayerRepository;
-import com.utr.match.entity.USTATeam;
-import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Player;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
@@ -61,10 +57,10 @@ class PlayerRepositoryTest {
             }
 
 
-            player.setsUTR(utrplayer.getsUTR());
-            player.setdUTR(utrplayer.getdUTR());
-            player.setsUTRStatus(utrplayer.getsUTRStatus());
-            player.setdUTRStatus(utrplayer.getdUTRStatus());
+            player.setDUTR(utrplayer.getsUTR());
+            player.setDUTR(utrplayer.getdUTR());
+            player.setDUTRStatus(utrplayer.getsUTRStatus());
+            player.setDUTRStatus(utrplayer.getdUTRStatus());
             player.setSuccessRate(utrplayer.getSuccessRate());
             player.setWholeSuccessRate(utrplayer.getWholeSuccessRate());
             player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
@@ -111,5 +107,17 @@ class PlayerRepositoryTest {
 
     }
 
+    @Test
+    void findHighUTRPlayerswithUSTARating() {
+        Pageable firstPage = PageRequest.of(0,10);
+        PlayerSpecification ustaRating = new PlayerSpecification(new SearchCriteria("ustaRating", ":", "3.5C"));
+        PlayerSpecification dUTR = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf("5.5")), new OrderByCriteria("dUTR", false));
+        PlayerSpecification gender = new PlayerSpecification(new SearchCriteria("gender", ":", "M"));
+        Page<PlayerEntity> players = playerRepo.findAll(Specification.where(ustaRating).and(dUTR).and(gender), firstPage);
 
+        for (PlayerEntity player: players) {
+            System.out.println(player.getName() + " " + player.getDUTR());
+        }
+
+    }
 }

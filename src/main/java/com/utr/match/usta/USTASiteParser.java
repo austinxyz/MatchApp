@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class USTASiteParser {
@@ -33,12 +31,12 @@ public class USTASiteParser {
 
         Elements tables = doc.select("table:contains(Team Schedule)");
 
-        for (Element table: tables) {
+        for (Element table : tables) {
             Element scheduleTable = table.nextElementSibling();
 
             Element tbody = scheduleTable.child(0).child(0).child(0).child(0).child(0);
 
-            for (Element tr: tbody.children()) {
+            for (Element tr : tbody.children()) {
                 if (tr.children().size() == 0) {
                     continue;
                 }
@@ -56,7 +54,7 @@ public class USTASiteParser {
                     scoreCard = new JSONObject();
                     String matchDate = tr.child(2).text();
 
-                    if (matchDate == null || matchDate.trim().equals("")) {
+                    if (matchDate.trim().equals("")) {
                         continue;
                     }
                     scoreCard.put("matchDate", matchDate);
@@ -91,8 +89,6 @@ public class USTASiteParser {
 
         Elements trs = doc.select("tr:contains(Match Date)");
 
-        boolean home = true;
-
         for (Element tr : trs) {
 
             Element matchTr = tr.nextElementSibling();
@@ -106,14 +102,14 @@ public class USTASiteParser {
         }
 
         Elements b = doc.select("b:contains(Singles)");
-        for (Element e: b) {
+        for (Element e : b) {
             Element singleResultTable = e.parent().parent().parent().parent().nextElementSibling();
 
             Element body = singleResultTable.children().get(0);
 
             JSONArray singles = new JSONArray();
 
-            for (Element res: body.children()) {
+            for (Element res : body.children()) {
                 parseResult(res, true, singles);
             }
 
@@ -121,14 +117,14 @@ public class USTASiteParser {
         }
 
         b = doc.select("b:contains(Doubles)");
-        for (Element e: b) {
-            Element douleResultTable = e.parent().parent().parent().parent().nextElementSibling();
+        for (Element e : b) {
+            Element doubleResultTable = e.parent().parent().parent().parent().nextElementSibling();
 
-            Element body = douleResultTable.children().get(0);
+            Element body = doubleResultTable.children().get(0);
 
             JSONArray doubles = new JSONArray();
 
-            for (Element res: body.children()) {
+            for (Element res : body.children()) {
                 parseResult(res, false, doubles);
             }
 
@@ -141,7 +137,7 @@ public class USTASiteParser {
         JSONObject result = new JSONObject();
 
         if (isResultTr(tr)) {
-            result.put("lineName", (isSingle?"S":"D") + tr.children().get(0).text());
+            result.put("lineName", (isSingle ? "S" : "D") + tr.children().get(0).text());
             result.put("homePlayers", parsePlayers(tr.children().get(1)));
             result.put("guestPlayers", parsePlayers(tr.children().get(2)));
             result.put("score", tr.children().get(3).text());
@@ -161,7 +157,7 @@ public class USTASiteParser {
             if (href.startsWith("playermatches.asp")) {
                 String player = link.text();
                 int last = href.indexOf("=");
-                String id = href.substring(last + 1, href.length());
+                String id = href.substring(last + 1);
                 JSONObject playerJSON = new JSONObject();
                 playerJSON.put("name", getLastName(player) + " " + getFirstName(player));
                 playerJSON.put("norcalId", id);
@@ -173,7 +169,7 @@ public class USTASiteParser {
 
     private boolean isResultTr(Element tr) {
         String text = tr.text().trim();
-        return text.length() > 1 && text.charAt(0) > '0' && text.charAt(0) <='9';
+        return text.length() > 1 && text.charAt(0) > '0' && text.charAt(0) <= '9';
     }
 
     public List<String> parseUSTAFlight(String flightURL) throws IOException {
@@ -219,7 +215,7 @@ public class USTASiteParser {
                     String rating = player.get(3).text();
                     String noncalLink = "https://www.ustanorcal.com/" + link.attr("href");
                     int last = noncalLink.indexOf("=");
-                    String noncalId = noncalLink.substring(last + 1, noncalLink.length());
+                    String noncalId = noncalLink.substring(last + 1);
                     PlayerEntity playerEntity = new PlayerEntity();
                     playerEntity.setLastName(getLastName(name));
                     playerEntity.setFirstName(getFirstName(name));
@@ -357,13 +353,13 @@ public class USTASiteParser {
                 String name = link.text();
                 if (!dr.trim().equals("") && !dr.startsWith("-")) {
                     if (dr.trim().endsWith("M")) {
-                        dr = dr.trim().substring(0, dr.length()-1).trim();
+                        dr = dr.trim().substring(0, dr.length() - 1).trim();
                     }
                     player.setDynamicRating(Double.parseDouble(dr));
                 } else {
                     player.setDynamicRating(0.0D);
                 }
-                player.setName(getLastName(name) + " " + getFirstName(name) );
+                player.setName(getLastName(name) + " " + getFirstName(name));
                 player.setArea(tr.children().get(1).text());
                 player.setTennisRecordLink("https://www.tennisrecord.com/" + href);
 
@@ -379,7 +375,7 @@ public class USTASiteParser {
     private int getRatingIndex(Element table) {
         Element tr = table.child(0).child(0);
 
-        for (int i=0; i<tr.children().size(); i++) {
+        for (int i = 0; i < tr.children().size(); i++) {
             if (tr.child(i).text().equals("Rating")) {
                 return i;
             }
@@ -393,10 +389,10 @@ public class USTASiteParser {
             return name.split(",")[0].trim();
         } else { // name in tennis record, split with " ", consider first part as first Name
             String trimedName = name.trim();
-            int firstBlank = trimedName.indexOf(" ");
+            int lastBlank = trimedName.lastIndexOf(" ");
 
-            if (firstBlank > 0) {
-                return trimedName.substring(firstBlank+1, trimedName.length());
+            if (lastBlank > 0 && lastBlank <= trimedName.length()) {
+                return trimedName.substring(lastBlank + 1).trim();
             }
         }
 
@@ -408,10 +404,10 @@ public class USTASiteParser {
             return name.split(",")[1].trim();
         } else {
             String trimedName = name.trim();
-            int firstBlank = trimedName.indexOf(" ");
+            int lastBlank = trimedName.lastIndexOf(" ");
 
-            if (firstBlank > 0) {
-                return trimedName.substring(0, firstBlank);
+            if (lastBlank > 0 && lastBlank <= trimedName.length()) {
+                return trimedName.substring(0, lastBlank).trim();
             }
         }
         return name;
@@ -429,7 +425,7 @@ public class USTASiteParser {
             teamName = teamName.substring(0, index - 1).trim();
         }
 
-        char lastC = teamName.charAt(teamName.length()-1);
+        char lastC = teamName.charAt(teamName.length() - 1);
 
         if (lastC > '0' && lastC <= '9') {
             index = teamName.lastIndexOf(" ");
@@ -444,7 +440,7 @@ public class USTASiteParser {
 
     private String getAlias(String title) {
         int i = title.indexOf("[");
-        String alias = title;
+        String alias;
         if (i > 0) {
             alias = title.substring(i + 1);
         } else {

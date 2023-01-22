@@ -2,7 +2,6 @@ package com.utr.match;
 
 
 import com.utr.match.entity.*;
-import com.utr.match.usta.USTASiteParser;
 import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +22,6 @@ public class USTAController {
     @Autowired
     TeamLoader loader;
 
-    @Autowired
-    USTASiteParser parser;
     @Autowired
     private USTADivisionRepository divisionRepository;
     @Autowired
@@ -66,7 +60,7 @@ public class USTAController {
     }
 
     private USTATeam prepareUTRData(USTATeam ustaTeam) {
-        for (PlayerEntity player: ustaTeam.getPlayers()) {
+        for (PlayerEntity player : ustaTeam.getPlayers()) {
             if (player.getUtrId() == null || player.getUtrId().trim().equals("")) {
                 continue;
             }
@@ -80,10 +74,10 @@ public class USTAController {
                 //the time get utr info from utr website is early the time stored in db, no need to refresh from utr website.
                 continue;
             }
-            player.setdUTR(utrPlayer.getdUTR());
-            player.setsUTR(utrPlayer.getsUTR());
-            player.setdUTRStatus(utrPlayer.getdUTRStatus());
-            player.setsUTRStatus(utrPlayer.getsUTRStatus());
+            player.setDUTR(utrPlayer.getdUTR());
+            player.setSUTR(utrPlayer.getsUTR());
+            player.setDUTRStatus(utrPlayer.getdUTRStatus());
+            player.setSUTRStatus(utrPlayer.getsUTRStatus());
 
             if (utrPlayer.getSuccessRate() > 0.0) {
                 player.setSuccessRate(utrPlayer.getSuccessRate());
@@ -141,7 +135,7 @@ public class USTAController {
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/utrs")
     public ResponseEntity<USTATeam> updatePlayersUTRId(@PathVariable("id") String id,
-                                                        @RequestParam("action") String action
+                                                       @RequestParam("action") String action
     ) {
 
         if (action.equals("refreshID")) {
@@ -174,7 +168,7 @@ public class USTAController {
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/drs")
     public ResponseEntity<USTATeam> updatePlayersDR(@PathVariable("id") String id,
-                                                       @RequestParam("action") String action
+                                                    @RequestParam("action") String action
     ) {
 
         if (action.equals("refresh")) {
@@ -215,7 +209,7 @@ public class USTAController {
 
             if (team.isPresent()) {
 
-                importor.refreshTeamMatcheScores(team.get());
+                importor.refreshTeamMatchesScores(team.get());
 
                 List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team.get());
 
