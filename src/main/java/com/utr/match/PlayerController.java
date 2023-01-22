@@ -3,6 +3,7 @@ package com.utr.match;
 
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.PlayerRepository;
+import com.utr.match.entity.USTATeam;
 import com.utr.model.Player;
 import com.utr.model.PlayerResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/players")
@@ -37,17 +40,40 @@ public class PlayerController {
         }
     }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping("/{id}/teams")
+    public ResponseEntity<Set<USTATeam>> playerTeams(@PathVariable("id") String id
+    ) {
+        Optional<PlayerEntity> player = playerRepo.findById(Long.valueOf(id));
+
+        if (player.isPresent()) {
+            return ResponseEntity.ok(player.get().getTeams());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search")
     public ResponseEntity<List<PlayerEntity>> searchByName(@RequestParam("name") String name
     ) {
-        String likeString = "%" + name + "%";
-        List<PlayerEntity> players = playerRepo.findByNameLike(likeString);
-        String reverseString = "%" + reverseName(name) + "%";
+        List<PlayerEntity> players = null;
 
-        if (!likeString.equals(reverseString)) {
-            players.addAll(playerRepo.findByNameLike(reverseString));
+        if (isUTRId(name)) {
+            players = new ArrayList<>();
+            PlayerEntity player = playerRepo.findByUtrId(name);
+            if (player != null) {
+                players.add(player);
+            }
+        } else {
+
+            String likeString = "%" + name + "%";
+            players = playerRepo.findByNameLike(likeString);
+            String reverseString = "%" + reverseName(name) + "%";
+
+            if (!likeString.equals(reverseString)) {
+                players.addAll(playerRepo.findByNameLike(reverseString));
+            }
         }
 
         if (players.size() > 0) {
@@ -55,6 +81,13 @@ public class PlayerController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private boolean isUTRId(String name) {
+
+        char c = name.charAt(0);
+
+        return c>='0' && c<='9';
     }
 
     private String reverseName(String name) {
@@ -93,7 +126,7 @@ public class PlayerController {
     @CrossOrigin(origins = "*")
     @GetMapping("/utr/{id}")
     public ResponseEntity<PlayerEntity> updatePlayerUTR(@PathVariable("id") String utrId,
-                                                        @RequestParam("action") String action
+                                                        @RequestParam(value = "action", defaultValue = "search") String action
                                                         ) {
 
         if (action.equals("refreshUTR")) {

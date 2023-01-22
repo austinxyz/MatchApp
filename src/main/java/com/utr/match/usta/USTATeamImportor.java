@@ -193,7 +193,13 @@ public class USTATeamImportor {
 
         USTATeamMatch match = new USTATeamMatch(guestTeam);
 
-        java.util.Date date = formatter.parse(obj.get("matchDate").toString());
+        Object matchDateStr = (Object)obj.get("matchDate");
+
+        if (matchDateStr == null || matchDateStr.toString().trim().equals("")) {
+            return null;
+        }
+
+        java.util.Date date = formatter.parse(matchDateStr.toString());
 
         Date matchDate = new Date(date.getTime());
 
@@ -298,7 +304,12 @@ public class USTATeamImportor {
 
         USTATeamMatch match = new USTATeamMatch(homeTeam);
 
-        java.util.Date date = formatter.parse(obj.get("matchDate").toString());
+        Object matchDateStr = (Object)obj.get("matchDate");
+
+        if (matchDateStr == null || matchDateStr.toString().trim().equals("")) {
+            return null;
+        }
+        java.util.Date date = formatter.parse(matchDateStr.toString());
 
         Date matchDate = new Date(date.getTime());
 

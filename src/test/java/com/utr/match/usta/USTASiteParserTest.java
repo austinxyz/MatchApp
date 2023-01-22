@@ -71,7 +71,7 @@ class USTASiteParserTest {
     void getTeamDynamicRating() {
         USTASiteParser util = new USTASiteParser();
         try {
-            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=RINCONADA%20PK%2040AM4.0B&year=2023");
+            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=MITCHELL%20PK%2018MX7.0A&year=2023");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------");
             util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=SUNNYVALE%20TC/SUNNYVALE%20MTC%2040AM3.5B&year=2023");
         } catch (IOException e) {
@@ -99,7 +99,7 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
 
         try {
-            USTATeam team = util.parseUSTATeam("https://www.ustanorcal.com/teaminfo.asp?id=97082");
+            USTATeam team = util.parseUSTATeam("https://www.ustanorcal.com/teaminfo.asp?id=96702");
             System.out.println(util.parseTeamMatches(team).toString());
         } catch (IOException e) {
             throw new RuntimeException(e);

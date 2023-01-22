@@ -55,6 +55,10 @@ public class USTASiteParser {
                 } else {
                     scoreCard = new JSONObject();
                     String matchDate = tr.child(2).text();
+
+                    if (matchDate == null || matchDate.trim().equals("")) {
+                        continue;
+                    }
                     scoreCard.put("matchDate", matchDate);
 
                     String home = tr.child(6).text();
