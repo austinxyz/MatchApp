@@ -1,12 +1,13 @@
 package com.utr.match;
 
 
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.PlayerRepository;
-import com.utr.match.entity.USTATeam;
+import com.utr.match.entity.*;
 import com.utr.model.Player;
-import com.utr.model.PlayerResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/players")
@@ -57,7 +59,7 @@ public class PlayerController {
     @GetMapping("/search")
     public ResponseEntity<List<PlayerEntity>> searchByName(@RequestParam("name") String name
     ) {
-        List<PlayerEntity> players = null;
+        List<PlayerEntity> players;
 
         if (isUTRId(name)) {
             players = new ArrayList<>();
@@ -83,19 +85,48 @@ public class PlayerController {
         }
     }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping("/searchUTR")
+    public ResponseEntity<List<PlayerEntity>> searchByUTR(@RequestParam("USTARating") String ustaRating,
+                                                          @RequestParam("utr") String utrValue,
+                                                          @RequestParam(value = "type", defaultValue = "double") String type,
+                                                          @RequestParam(value = "gender", defaultValue = "M") String gender,
+                                                          @RequestParam(value = "start", defaultValue = "0") int start,
+                                                          @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        Pageable firstPage = PageRequest.of(start, size);
+        PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating));
+        PlayerSpecification UTRSpec;
+        if (type.equalsIgnoreCase("double")) {
+            UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf(utrValue)),
+                    new OrderByCriteria("dUTR", false));
+        } else {
+            UTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", Double.valueOf(utrValue)),
+                    new OrderByCriteria("sUTR", false));
+        }
+        PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
+        Page<PlayerEntity> players = playerRepo.findAll(Specification.where(ustaRatingSpec).and(UTRSpec).and(genderSpec), firstPage);
+
+        if (!players.isEmpty()) {
+            return ResponseEntity.ok(players.get().collect(Collectors.toList()));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     private boolean isUTRId(String name) {
 
         char c = name.charAt(0);
 
-        return c>='0' && c<='9';
+        return c >= '0' && c <= '9';
     }
 
     private String reverseName(String name) {
 
         int index = name.indexOf(' ');
-        if (index > 0 && index < name.length()-1) {
+        if (index > 0 && index < name.length() - 1) {
             String first = name.substring(0, index);
-            String last = name.substring(index+1);
+            String last = name.substring(index + 1);
             return last + " " + first;
         }
 
@@ -109,7 +140,7 @@ public class PlayerController {
 
         if (player.getUtrId() != null) {
             PlayerEntity existedPlayer = playerRepo.findByUtrId(player.getUtrId());
-            if (existedPlayer !=null) {
+            if (existedPlayer != null) {
                 return existedPlayer;
             }
             Player utrPlayer = loader.getPlayer(player.getUtrId());
@@ -127,7 +158,7 @@ public class PlayerController {
     @GetMapping("/utr/{id}")
     public ResponseEntity<PlayerEntity> updatePlayerUTR(@PathVariable("id") String utrId,
                                                         @RequestParam(value = "action", defaultValue = "search") String action
-                                                        ) {
+    ) {
 
         if (action.equals("refreshUTR")) {
 
@@ -147,10 +178,10 @@ public class PlayerController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            playerData.setsUTR(player.getsUTR());
-            playerData.setdUTR(player.getdUTR());
-            playerData.setsUTRStatus(player.getsUTRStatus());
-            playerData.setdUTRStatus(player.getdUTRStatus());
+            playerData.setSUTR(player.getsUTR());
+            playerData.setDUTR(player.getdUTR());
+            playerData.setSUTRStatus(player.getsUTRStatus());
+            playerData.setDUTRStatus(player.getdUTRStatus());
             playerData.setSuccessRate(player.getSuccessRate());
             playerData.setWholeSuccessRate(player.getWholeSuccessRate());
             playerData.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
@@ -163,7 +194,7 @@ public class PlayerController {
         if (action.equals("search")) {
             PlayerEntity player = playerRepo.findByUtrId(utrId);
 
-            if (player!= null) {
+            if (player != null) {
                 return ResponseEntity.ok(player);
             } else {
                 return ResponseEntity.notFound().build();

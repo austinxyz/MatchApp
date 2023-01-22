@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class USTATeamImportorTest {
 
@@ -20,7 +18,7 @@ class USTATeamImportorTest {
     USTATeamRepository teamRepository;
 
     final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96400";
-    final String teamName = "MOUNTAIN VIEW TC/RENGSTORFF PK 40AM4.0A";
+    final String teamName = "SUNNYVALE TC/SUNNYVALE MTC 18MX7.0A";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=17834:2624&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
@@ -57,7 +55,7 @@ class USTATeamImportorTest {
     @Test
     void importTeamMatchs() {
         USTATeam team = teamRepository.findByName(teamName);
-        importor.refreshTeamMatcheScores(team);
+        importor.refreshTeamMatchesScores(team);
     }
 
     @Test

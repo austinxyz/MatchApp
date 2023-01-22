@@ -96,35 +96,35 @@ public class PlayerEntity {
     @Column(name="dr_fetched_time")
     Timestamp drFetchedTime;
 
-    public double getdUTR() {
+    public double getDUTR() {
         return dUTR==null? 0.0d: dUTR.doubleValue();
     }
 
-    public void setdUTR(double dUTR) {
+    public void setDUTR(double dUTR) {
         this.dUTR = dUTR;
     }
 
-    public double getsUTR() {
+    public double getSUTR() {
         return sUTR==null? 0.0d: sUTR.doubleValue();
     }
 
-    public void setsUTR(double sUTR) {
+    public void setSUTR(double sUTR) {
         this.sUTR = sUTR;
     }
 
-    public String getdUTRStatus() {
+    public String getDUTRStatus() {
         return dUTRStatus;
     }
 
-    public void setdUTRStatus(String dUTRStatus) {
+    public void setDUTRStatus(String dUTRStatus) {
         this.dUTRStatus = dUTRStatus;
     }
 
-    public String getsUTRStatus() {
+    public String getSUTRStatus() {
         return sUTRStatus;
     }
 
-    public void setsUTRStatus(String sUTRStatus) {
+    public void setSUTRStatus(String sUTRStatus) {
         this.sUTRStatus = sUTRStatus;
     }
 

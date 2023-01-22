@@ -61,7 +61,7 @@ public class ZiJingController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search/players")
-    public ResponseEntity<List<Player>> searchPlayer(@RequestParam(value = "query", defaultValue = "Yanzhao Xu") String query,
+    public ResponseEntity<List<Player>> searchPlayer(@RequestParam(value = "query") String query,
                                                      @RequestParam(value = "top", defaultValue = "5") int top) {
 
         List<Player> players = loader.queryPlayer(query, top);

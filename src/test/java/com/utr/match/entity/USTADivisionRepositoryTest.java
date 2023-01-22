@@ -1,4 +1,4 @@
-package com.utr.entity;
+package com.utr.match.entity;
 
 import com.utr.match.entity.USTADivision;
 import com.utr.match.entity.USTADivisionRepository;

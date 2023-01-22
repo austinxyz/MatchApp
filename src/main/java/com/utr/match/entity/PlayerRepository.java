@@ -1,9 +1,10 @@
 package com.utr.match.entity;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
-public interface PlayerRepository extends CrudRepository<PlayerEntity, Long> {
+public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, JpaSpecificationExecutor<PlayerEntity> {
 
     List<PlayerEntity> findAll();
 
@@ -24,6 +25,5 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long> {
     PlayerEntity findByUstaNorcalId(String ustaNorcalId);
 
     PlayerEntity findByNameIgnoreCase(String name);
-
 
 }

@@ -2,11 +2,7 @@ package com.utr.match.usta;
 
 import com.utr.match.TeamLoader;
 import com.utr.match.entity.*;
-import com.utr.model.Division;
-import com.utr.model.Event;
 import com.utr.model.Player;
-import com.utr.model.PlayerEvent;
-import com.utr.parser.UTRParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -21,9 +17,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Component
 @Scope("singleton")
@@ -36,20 +32,15 @@ public class USTATeamImportor {
 
     @Autowired
     USTASiteParser ustaParser;
-
+    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
     @Autowired
     private USTADivisionRepository divisionRepository;
-
     @Autowired
     private USTATeamRepository ustaTeamRepository;
-
     @Autowired
     private PlayerRepository playerRepository;
-
     @Autowired
     private TeamLoader loader;
-
-    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
     @Autowired
     private USTAFlightRepository ustaFlightRepository;
 
@@ -65,14 +56,14 @@ public class USTATeamImportor {
     public USTATeamImportor() {
     }
 
-    public void refreshTeamMatcheScores(USTATeam team) {
+    public void refreshTeamMatchesScores(USTATeam team) {
         USTASiteParser util = new USTASiteParser();
         try {
             JSONArray matches = util.parseTeamMatches(team);
             USTAFlight flight = team.getUstaFlight();
 
-            for (int i=0; i<matches.length(); i++) {
-                JSONObject scoreCardJSON = (JSONObject)matches.get(i);
+            for (int i = 0; i < matches.length(); i++) {
+                JSONObject scoreCardJSON = (JSONObject) matches.get(i);
                 handleScoreCard(flight, scoreCardJSON);
             }
 
@@ -82,28 +73,34 @@ public class USTATeamImportor {
 
     }
 
-    public USTATeamScoreCard importScoreCard(String scoreCardURL, Long flightId) {
+    public void importScoreCard(String scoreCardURL, Long flightId) {
 
         USTASiteParser util = new USTASiteParser();
         try {
-            USTAFlight flight = ustaFlightRepository.findById(flightId).get();
+            Optional<USTAFlight> flightOptional = ustaFlightRepository.findById(flightId);
 
-            JSONObject obj = util.parseScoreCard(scoreCardURL);
+            if (flightOptional.isPresent()) {
+                USTAFlight flight = flightOptional.get();
 
-            handleScoreCard(flight, obj);
+                JSONObject obj = util.parseScoreCard(scoreCardURL);
+
+                handleScoreCard(flight, obj);
+            }
 
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
 
-
-        return null;
     }
 
     private void handleScoreCard(USTAFlight flight, JSONObject obj) throws ParseException {
         USTATeamMatch homeMatch = createHomeTeamMatch(obj);
 
         USTATeamMatch guestMatch = createGuestTeamMatch(obj);
+
+        if (homeMatch == null || guestMatch == null) {
+            return;
+        }
 
         homeMatch.setOpponentTeam(guestMatch.getTeam());
         homeMatch.setOpponentPoint(guestMatch.getPoint());
@@ -177,7 +174,7 @@ public class USTATeamImportor {
 
             return teamMatchRepository.save(existMatch);
         } else {
-            for (USTATeamMatchLine line: existMatch.getLines()) {
+            for (USTATeamMatchLine line : existMatch.getLines()) {
                 USTATeamMatchLine newLine = match.getLine(line.getName());
                 line.setPlayer1(newLine.getPlayer1());
                 line.setPlayer2(newLine.getPlayer2());
@@ -193,7 +190,7 @@ public class USTATeamImportor {
 
         USTATeamMatch match = new USTATeamMatch(guestTeam);
 
-        Object matchDateStr = (Object)obj.get("matchDate");
+        Object matchDateStr = obj.get("matchDate");
 
         if (matchDateStr == null || matchDateStr.toString().trim().equals("")) {
             return null;
@@ -218,7 +215,7 @@ public class USTATeamImportor {
 
         if (obj.has("singles")) {
 
-            JSONArray singles = (JSONArray)obj.get("singles");
+            JSONArray singles = (JSONArray) obj.get("singles");
 
             parseScore(scoreCard, homeMatch, guestMatch, singles, true);
 
@@ -233,7 +230,7 @@ public class USTATeamImportor {
 
     private void parseScore(USTATeamScoreCard scoreCard, USTATeamMatch homeMatch, USTATeamMatch guestMatch, JSONArray linescores, boolean isSingle) {
 
-        for (int i = 0; i< linescores.length(); i++) {
+        for (int i = 0; i < linescores.length(); i++) {
             JSONObject scoreJson = (JSONObject) linescores.get(i);
 
             USTATeamLineScore score = new USTATeamLineScore();
@@ -264,7 +261,7 @@ public class USTATeamImportor {
     }
 
     private USTATeamMatchLine createMatchLine(JSONObject scoreJson, boolean isSingle, boolean home) {
-        String playersName = home? "homePlayers": "guestPlayers";
+        String playersName = home ? "homePlayers" : "guestPlayers";
 
         JSONArray players = (JSONArray) scoreJson.get(playersName);
 
@@ -274,16 +271,16 @@ public class USTATeamImportor {
 
         if (players != null && players.length() > 0) {
 
-            JSONObject playerJson = (JSONObject)players.get(0);
+            JSONObject playerJson = (JSONObject) players.get(0);
 
-            String norcalId = (String)playerJson.get("norcalId");
+            String norcalId = (String) playerJson.get("norcalId");
 
             player1 = playerRepository.findByUstaNorcalId(norcalId);
 
             if (!isSingle) {
-                playerJson = (JSONObject)players.get(1);
+                playerJson = (JSONObject) players.get(1);
 
-                norcalId = (String)playerJson.get("norcalId");
+                norcalId = (String) playerJson.get("norcalId");
 
                 player2 = playerRepository.findByUstaNorcalId(norcalId);
             }
@@ -292,9 +289,8 @@ public class USTATeamImportor {
 
         String name = (String) scoreJson.get("lineName");
 
-        USTATeamMatchLine matchLine = new USTATeamMatchLine(player1, player2, isSingle? "S":"D", name);
+        return new USTATeamMatchLine(player1, player2, isSingle ? "S" : "D", name);
 
-        return matchLine;
     }
 
     private USTATeamMatch createHomeTeamMatch(JSONObject obj) throws ParseException {
@@ -304,11 +300,12 @@ public class USTATeamImportor {
 
         USTATeamMatch match = new USTATeamMatch(homeTeam);
 
-        Object matchDateStr = (Object)obj.get("matchDate");
+        Object matchDateStr = obj.get("matchDate");
 
         if (matchDateStr == null || matchDateStr.toString().trim().equals("")) {
             return null;
         }
+
         java.util.Date date = formatter.parse(matchDateStr.toString());
 
         Date matchDate = new Date(date.getTime());
@@ -337,7 +334,7 @@ public class USTATeamImportor {
         List<USTATeam> teams = new ArrayList<>();
 
         try {
-            for (String teamURL: util.parseUSTAFlight(flightURL)) {
+            for (String teamURL : util.parseUSTAFlight(flightURL)) {
                 teams.add(importUSTATeam(teamURL));
             }
         } catch (IOException e) {
@@ -366,7 +363,7 @@ public class USTATeamImportor {
                 newTeam.setArea(team.getArea());
                 newTeam.setFlight(team.getFlight());
                 USTADivision division = divisionRepository.findByName(team.getDivisionName());
-                if (division!=null) {
+                if (division != null) {
                     newTeam.setDivision(division);
                 }
 
@@ -415,7 +412,7 @@ public class USTATeamImportor {
         USTATeam existTeam = ustaTeamRepository.findByName(teamName);
 
         if (existTeam == null) {
-            logger.debug("team " + existTeam.getName() + " is not existed");
+            logger.debug("team " + teamName + " is not existed");
             return;
         }
 
@@ -451,7 +448,7 @@ public class USTATeamImportor {
         try {
             List<PlayerEntity> players = util.getTeamDynamicRating(team.getTennisRecordLink());
 
-            for (PlayerEntity player: players) {
+            for (PlayerEntity player : players) {
                 PlayerEntity existPlayer = team.getPlayer(player.getName());
 
                 if (existPlayer == null) {
@@ -496,7 +493,7 @@ public class USTATeamImportor {
             return;
         }
 
-        logger.debug(player.getName() + " start to query utr and win ratio" );
+        logger.debug(player.getName() + " start to query utr and win ratio");
 
         loader.searchPlayerResult(utrId, false);
 
@@ -509,17 +506,17 @@ public class USTATeamImportor {
         }
 
 
-        player.setsUTR(utrplayer.getsUTR());
-        player.setdUTR(utrplayer.getdUTR());
-        player.setsUTRStatus(utrplayer.getsUTRStatus());
-        player.setdUTRStatus(utrplayer.getdUTRStatus());
+        player.setSUTR(utrplayer.getsUTR());
+        player.setDUTR(utrplayer.getdUTR());
+        player.setDUTRStatus(utrplayer.getsUTRStatus());
+        player.setDUTRStatus(utrplayer.getdUTRStatus());
         player.setSuccessRate(utrplayer.getSuccessRate());
         player.setWholeSuccessRate(utrplayer.getWholeSuccessRate());
         player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
 
         playerRepository.save(player);
 
-        logger.debug(player.getName() + " utr is updated" );
+        logger.debug(player.getName() + " utr is updated");
     }
 
     private String findUTRID(List<Player> players, PlayerEntity player) {
@@ -537,7 +534,7 @@ public class USTATeamImportor {
                 continue;
             }
 
-            if (utrPlayer.getLocation() == null || utrPlayer.getLocation().indexOf("CA") < 0) {
+            if (utrPlayer.getLocation() == null || !utrPlayer.getLocation().contains("CA")) {
                 continue;
             }
 
