@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 @SpringBootTest
 class USTATeamImportorTest {
 
@@ -16,6 +18,7 @@ class USTATeamImportorTest {
 
     @Autowired
     USTATeamRepository teamRepository;
+
 
     final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96400";
     final String teamName = "SUNNYVALE TC/SUNNYVALE MTC 18MX7.0A";
@@ -33,6 +36,19 @@ class USTATeamImportorTest {
     void importUSTATeam() {
         importor.importUSTATeam(teamURL);
     }
+
+    @Test
+    void updateAllUTRId() {
+
+        List<USTATeam> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(2L);
+
+        for (USTATeam team: teams) {
+            //System.out.println(team.getName());
+            //importor.updateTeamPlayersUTRID(team);
+            importor.updateTeamUTRInfo(team);
+        }
+    }
+
 
     @Test
     void updateUTRId() {

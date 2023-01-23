@@ -27,6 +27,7 @@ public class USTAFlight {
     @JoinColumn(name = "usta_division_id")
     private USTADivision division;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "ustaFlight", fetch = FetchType.LAZY)
     private Set<USTATeam> teams;
 

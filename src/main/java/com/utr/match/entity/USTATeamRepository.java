@@ -17,5 +17,6 @@ public interface USTATeamRepository extends CrudRepository<USTATeam, Long> {
 
     List<USTATeam> findByDivision_IdOrderByUstaFlightAsc(Long division);
 
+    List<USTATeam> findByUstaFlight_Id(long id);
 
 }

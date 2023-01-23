@@ -2,8 +2,12 @@ package com.utr.match;
 
 
 import com.utr.match.entity.*;
+import com.utr.match.usta.USTATeamAnalyser;
+import com.utr.match.usta.USTATeamAnalysisResult;
 import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Player;
+import com.utr.player.PlayerAnalyser;
+import com.utr.player.SingleAnalysisResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +36,12 @@ public class USTAController {
 
     @Autowired
     private USTATeamMatchRepository matchRepository;
+
+    @Autowired
+    private USTAFlightRepository flightRepository;
+
+    @Autowired
+    private USTATeamAnalyser teamAnalyser;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
@@ -110,6 +120,33 @@ public class USTAController {
     ) {
 
         List<USTATeam> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(divId));
+
+        if (teams.size() > 0) {
+            return ResponseEntity.ok(teams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/divisions/{divId}/flights")
+    public ResponseEntity<List<USTAFlight>> getFlightsByDivisions(@PathVariable("divId") String divId
+    ) {
+
+        List<USTAFlight> flights = flightRepository.findByDivision_Id(Long.valueOf(divId));
+
+        if (flights.size() > 0) {
+            return ResponseEntity.ok(flights);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/flights/{flightId}/teams")
+    public ResponseEntity<List<USTATeam>> getTeamByFlight(@PathVariable("flightId") String flightId
+    ) {
+        List<USTATeam> teams = teamRepository.findByUstaFlight_Id(Long.valueOf(flightId));
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -218,5 +255,19 @@ public class USTAController {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/analysis/team/team1/{teamId1}/team2/{teamId2}")
+    public ResponseEntity<USTATeamAnalysisResult> singleAnalysis(@PathVariable("teamId1") String teamId1,
+                                                               @PathVariable("teamId2") String teamId2
+    ) {
+        USTATeamAnalysisResult result = teamAnalyser.compareTeam(teamId1, teamId2);
+
+        if (result != null) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
