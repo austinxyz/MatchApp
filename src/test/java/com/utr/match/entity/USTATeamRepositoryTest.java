@@ -36,6 +36,9 @@ class USTATeamRepositoryTest {
     @Autowired
     private USTATeamMatchRepository matchRepository;
 
+    @Autowired
+    private USTATeamMatchLineRepository matchLineRepository ;
+
     @Test
     void createTeam() {
         Optional<USTADivision> division = divisionRepository.findById(1L);
@@ -318,9 +321,18 @@ class USTATeamRepositoryTest {
     @Test
     void queryMatchScore() {
 
-        USTATeam team = ustaTeamRepository.findById(3L).get();
+        USTATeam team = ustaTeamRepository.findById(77L).get();
         for (USTATeamMatch match: matchRepository.findByTeamOrderByMatchDateAsc(team)) {
-            System.out.println(match);
+            if (match.getScoreCard()!=null) {
+                USTATeamScoreCard card = match.getScoreCard();
+                for (USTATeamLineScore score: card.getLineScores()) {
+                    if (score.getGuestLine().getName().equals("D3")) {
+                        score.getGuestLine().setPlayer2(playerRepository.findById(163L).get());
+                        matchLineRepository.save(score.getGuestLine());
+                    }
+                }
+
+            }
         }
 
 

@@ -69,6 +69,44 @@ public class USTATeamScoreCard {
         this.comment = comment;
     }
 
+    @JsonIgnore
+    public USTATeam getHomeTeam() {
+        if (this.lineScores.size() > 0) {
+            USTATeamLineScore lineScore = this.lineScores.iterator().next();
+            return lineScore.getHomeLine().getMatch().getTeam();
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public USTATeam getGuestTeam() {
+        if (this.lineScores.size() > 0) {
+            USTATeamLineScore lineScore = this.lineScores.iterator().next();
+            return lineScore.getGuestLine().getMatch().getTeam();
+        }
+        return null;
+    }
+
+    @JsonProperty
+    public String getHomeTeamName() {
+        USTATeam team = getHomeTeam();
+
+        if (team != null) {
+            return team.getName();
+        }
+        return "";
+    }
+
+    @JsonProperty
+    public String getGuestTeamName() {
+        USTATeam team = getGuestTeam();
+
+        if (team != null) {
+            return team.getName();
+        }
+        return "";
+    }
+
     @Override
     public String toString() {
         return "USTATeamScoreCard{" +
