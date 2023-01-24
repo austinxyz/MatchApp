@@ -40,4 +40,8 @@ public class EventUTR {
     public PlayerEntity getPlayer() {
         return player;
     }
+
+    public void setPlayer(PlayerEntity player) {
+        this.player = player;
+    }
 }

@@ -85,7 +85,7 @@ public class USTATeamAnalyser {
                         if (candidateCards.containsKey(teamName)) {
                             List<USTATeamScoreCard> cards = candidateCards.get(teamName);
                             if (!result.getMatchesWithSameTeam().containsKey(teamName)) {
-                                result.getMatchesWithSameTeam().get(teamName).addAll(cards);
+                                result.getMatchesWithSameTeam().put(teamName, cards);
                             }
                             result.getMatchesWithSameTeam().get(teamName).add(card);
                         }

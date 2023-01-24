@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
+import com.utr.model.Division;
 import com.utr.model.Player;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,7 +15,10 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 class PlayerRepositoryTest {
@@ -22,6 +26,9 @@ class PlayerRepositoryTest {
 
     @Autowired
     private PlayerRepository playerRepo;
+
+    @Autowired
+    private DivisionRepository divisionRepository;
 
     @Autowired
     TeamLoader loader;
@@ -117,6 +124,189 @@ class PlayerRepositoryTest {
 
         for (PlayerEntity player: players) {
             System.out.println(player.getName() + " " + player.getDUTR());
+        }
+
+    }
+
+    @Test
+    void fixFullNameIssues() {
+
+//        for (PlayerEntity player: playerRepo.findAll()) {
+//            if (player.getId() > 2L) {
+//                return;
+//            }
+//            String name = player.getLastName().trim() + " " + player.getFirstName().trim();
+//            if (!player.getName().equals(name)) {
+//                player.setName(name);
+//                playerRepo.save(player);
+//                System.out.println(player.getName() + " full name is updated");
+//            }
+//        }
+
+        //String fullnameList = "Lee Tzong-Han";
+        String fullnameList=
+        "Huang Andrew,"+
+        "Ye Kitty,"+
+        "Yu Jiahong,"+
+        "Zhang Lynda,"+
+        "Pan Lucy,"+
+        "Nie Wennie,"+
+        "Hu William,"+
+        "Liu Shang,"+
+        "Chiang Judy,"+
+        "Chen Bay,"+
+        "Wong Fang,"+
+        "Zong Qingqing,"+
+        "Wang Sharon,"+
+        "Li Sujuan,"+
+        "Xiao Chen,"+
+        "Zhang Jean";
+
+        for (String playerName: fullnameList.split(",")) {
+            playerName = playerName.trim();
+
+            List<PlayerEntity> players = playerRepo.findByName(playerName);
+
+            PlayerEntity primaryPlayer = null;
+
+            for(PlayerEntity player: players) {
+                if (player.getUstaId() != null && !player.getUstaId().trim().equals("")) {
+                    primaryPlayer = player;
+                    break;
+                }
+            }
+
+            if (primaryPlayer != null) {
+                for(PlayerEntity player: players) {
+                    if (player.getId() == primaryPlayer.getId()) {
+                        continue;
+                    }
+
+                    DivisionEntity division = divisionRepository.findByPlayers_Id(player.getId()).get();
+                    division.removePlayer(player.getId());
+                    division.getPlayers().add(primaryPlayer);
+                    divisionRepository.save(division);
+
+                    Set<EventUTR> utrs = player.getUtrs();
+
+                    for (EventUTR utr: utrs) {
+                        utr.setPlayer(primaryPlayer);
+                    }
+
+                    primaryPlayer.setUtrs(utrs);
+                    primaryPlayer.setUtrId(player.getUtrId());
+                    player.setUtrs(new HashSet<>());
+
+                    playerRepo.save(primaryPlayer);
+                    playerRepo.save(player);
+
+                    System.out.println(playerName +"'s update is completed");
+                }
+            }
+
+        }
+
+    }
+
+    @Test
+    void verifyFullNameIssues() {
+
+        String fullnameList=
+                "Huang Andrew,"+
+                        "Ye Kitty,"+
+                        "Yu Jiahong,"+
+                        "Zhang Lynda,"+
+                        "Pan Lucy,"+
+                        "Nie Wennie,"+
+                        "Hu William,"+
+                        "Liu Shang,"+
+                        "Chiang Judy,"+
+                        "Chen Bay,"+
+                        "Wong Fang,"+
+                        "Zong Qingqing,"+
+                        "Wang Sharon,"+
+                        "Li Sujuan,"+
+                        "Xiao Chen,"+
+                        "Zhang Jean";
+
+        for (String playerName: fullnameList.split(",")) {
+            playerName = playerName.trim();
+
+            List<PlayerEntity> players = playerRepo.findByName(playerName);
+
+            PlayerEntity primaryPlayer = null;
+
+            for(PlayerEntity player: players) {
+                if (player.getUstaId() != null && !player.getUstaId().trim().equals("")) {
+                    primaryPlayer = player;
+                    break;
+                }
+            }
+
+            if (primaryPlayer != null) {
+                for(PlayerEntity player: players) {
+                    if (player.getId() == primaryPlayer.getId()) {
+                        DivisionEntity division = divisionRepository.findByPlayers_Id(player.getId()).get();
+                        System.out.println(division.getName());
+                        System.out.println(player.getUtrs());
+                        System.out.println(playerName +"'s update is completed");
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
+    @Test
+    void cleanFullNameIssues() {
+
+        String fullnameList=
+                "Huang Andrew,"+
+                        "Ye Kitty,"+
+                        "Yu Jiahong,"+
+                        "Zhang Lynda,"+
+                        "Pan Lucy,"+
+                        "Nie Wennie,"+
+                        "Hu William,"+
+                        "Liu Shang,"+
+                        "Chiang Judy,"+
+                        "Chen Bay,"+
+                        "Wong Fang,"+
+                        "Zong Qingqing,"+
+                        "Wang Sharon,"+
+                        "Li Sujuan,"+
+                        "Xiao Chen,"+
+                        "Zhang Jean";
+
+        for (String playerName: fullnameList.split(",")) {
+            playerName = playerName.trim();
+
+            List<PlayerEntity> players = playerRepo.findByName(playerName);
+
+            PlayerEntity primaryPlayer = null;
+
+            for(PlayerEntity player: players) {
+                if (player.getUstaId() != null && !player.getUstaId().trim().equals("")) {
+                    primaryPlayer = player;
+                    break;
+                }
+            }
+
+            if (primaryPlayer != null) {
+                for(PlayerEntity player: players) {
+                    if (player.getId() == primaryPlayer.getId()) {
+                        DivisionEntity division = divisionRepository.findByPlayers_Id(player.getId()).get();
+                        continue;
+                    } else {
+                        playerRepo.delete(player);
+                        System.out.println("player " + player.getName() + " with id " +  player.getId() +"'is deleted");
+                    }
+                }
+                continue;
+            }
+
         }
 
     }

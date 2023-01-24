@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +108,18 @@ class USTATeamRepositoryTest {
 
     }
 
+    @Test
+    @Transactional
+    void getTeams() {
+        PlayerEntity player = playerRepository.findByNameLike("%Lucy%").get(0);
+        System.out.println(player.getName());
+        for (USTATeam team :player.getTeams()) {
+            System.out.println(team.getName());
+        }
+
+
+
+    }
     @Test
     void createTeamAndAddPlayers() {
 

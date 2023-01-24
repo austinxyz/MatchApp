@@ -26,4 +26,10 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, Jp
 
     PlayerEntity findByNameIgnoreCase(String name);
 
+    List<PlayerEntity> findByName(String name);
+
+    List<PlayerEntity> findByUtrIdNull();
+
+
+
 }

@@ -15,6 +15,6 @@ class USTATeamAnalyserTest {
 
     @Test
     void compareTeam() {
-        analyser.compareTeam("2", "38");
+        analyser.compareTeam("2", "40");
     }
 }

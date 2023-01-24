@@ -365,7 +365,18 @@ public class USTATeamImportor {
                 USTADivision division = divisionRepository.findByName(team.getDivisionName());
                 if (division != null) {
                     newTeam.setDivision(division);
+                    int flightNo = Integer.parseInt(newTeam.getFlight());
+                    USTAFlight flight = ustaFlightRepository.findByDivision_IdAndFlightNoAndArea(division.getId(), flightNo, newTeam.getArea());
+
+                    if (flight == null) {
+                        flight = new USTAFlight(flightNo, division);
+                        flight.setArea(newTeam.getArea());
+                        flight = ustaFlightRepository.save(flight);
+                    }
+
+                    newTeam.setUstaFlight(flight);
                 }
+
 
                 ustaTeamRepository.save(newTeam);
                 existTeam = ustaTeamRepository.findByName(newTeam.getName());
@@ -373,13 +384,21 @@ public class USTATeamImportor {
             }
 
             for (PlayerEntity player : team.getPlayers()) {
-                PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
+                List<PlayerEntity> existedPlayers = playerRepository.findByName(player.getName().trim());;
+
+                PlayerEntity existedPlayer = null;
+
+                if (existedPlayers.size() !=1) {
+                    existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
+                } else {
+                    existedPlayer = existedPlayers.get(0);
+                }
 
                 if (existedPlayer != null) {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
                     existedPlayer.setArea(player.getArea());
                     existedPlayer.setUstaRating(player.getUstaRating());
-                    playerRepository.save(existedPlayer);
+                    existedPlayer = playerRepository.save(existedPlayer);
                     logger.debug(player.getName() + " is existed, update USTA info");
                 } else {
                     existedPlayer = playerRepository.save(player);

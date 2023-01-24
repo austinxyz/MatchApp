@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -65,8 +66,8 @@ public class PlayerEntity {
     private String ustaNorcalId;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<EventUTR> utrs;
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<EventUTR> utrs;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
@@ -237,10 +238,10 @@ public class PlayerEntity {
     }
 
     public PlayerEntity() {
-        this.utrs = new ArrayList<>();
+        this.utrs = new HashSet<>();
     }
 
-    public List<EventUTR> getUtrs() {
+    public Set<EventUTR> getUtrs() {
         return utrs;
     }
 
@@ -331,6 +332,10 @@ public class PlayerEntity {
 
     public Set<USTATeam> getTeams() {
         return teams;
+    }
+
+    public void setUtrs(Set<EventUTR> utrs) {
+        this.utrs = utrs;
     }
 
     @JsonProperty
