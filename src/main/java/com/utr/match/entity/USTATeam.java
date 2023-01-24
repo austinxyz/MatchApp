@@ -30,12 +30,12 @@ public class USTATeam {
     private String link;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usta_division_id")
     private USTADivision division;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flight_id")
     private USTAFlight ustaFlight;
 

@@ -29,7 +29,7 @@ public class DivisionEntity {
         inverseJoinColumns = {@JoinColumn(name="player_id")})
     private List<PlayerEntity> players;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private EventEntity event;
 
@@ -85,5 +85,19 @@ public class DivisionEntity {
 
     public void setDivisionId(String divisionId) {
         this.divisionId = divisionId;
+    }
+
+    public void removePlayer(Long playerId) {
+        PlayerEntity target = null;
+        for (PlayerEntity player: this.players) {
+            if (player.getId() == playerId)  {
+                target = player;
+                break;
+            }
+        }
+
+        if (target!=null) {
+            this.players.remove(target);
+        }
     }
 }

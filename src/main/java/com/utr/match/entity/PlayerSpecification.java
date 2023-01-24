@@ -45,7 +45,13 @@ public class PlayerSpecification implements Specification<PlayerEntity> {
             } else {
                 return criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue());
             }
+        } else if (criteria.getOperation().equals("isNull")) {
+            return   criteriaBuilder.isNull(root.get(criteria.getKey()));
+        } else if (criteria.getOperation().equals("isNotNull")) {
+            return   criteriaBuilder.isNotNull(root.get(criteria.getKey()));
         }
+
+
         return null;
     }
 }
