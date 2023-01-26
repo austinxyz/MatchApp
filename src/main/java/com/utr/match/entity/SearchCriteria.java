@@ -22,4 +22,13 @@ public class SearchCriteria {
     public Object getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "SearchCriteria{" +
+                "key='" + key + '\'' +
+                ", operation='" + operation + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }
