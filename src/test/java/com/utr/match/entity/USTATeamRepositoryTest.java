@@ -352,4 +352,22 @@ class USTATeamRepositoryTest {
     }
 
 
+    @Test
+    void updateAgeRange() {
+
+        for (USTATeam team : ustaTeamRepository.findByDivision_IdOrderByUstaFlightAsc(4L)){
+            for (PlayerEntity player: team.getPlayers()) {
+
+                if (player.getAgeRange() == null || !player.getAgeRange().equals("40+")) {
+                    player.setAgeRange("40+");
+                    playerRepository.save(player);
+                    System.out.println(player.getName() + " is 40+");
+                }
+            }
+        }
+
+
+
+    }
+
 }

@@ -91,6 +91,7 @@ public class PlayerController {
                                                           @RequestParam("utr") String utrValue,
                                                           @RequestParam(value = "type", defaultValue = "double") String type,
                                                           @RequestParam(value = "gender", defaultValue = "M") String gender,
+                                                          @RequestParam(value = "ageRange") String ageRange,
                                                           @RequestParam(value = "start", defaultValue = "0") int start,
                                                           @RequestParam(value = "size", defaultValue = "10") int size
     ) {
@@ -105,7 +106,10 @@ public class PlayerController {
                     new OrderByCriteria("sUTR", false));
         }
         PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
-        Page<PlayerEntity> players = playerRepo.findAll(Specification.where(ustaRatingSpec).and(UTRSpec).and(genderSpec), firstPage);
+        PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
+        Specification spec = Specification.where(ustaRatingSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
+
+        Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
 
         if (!players.isEmpty()) {
             return ResponseEntity.ok(players.get().collect(Collectors.toList()));
