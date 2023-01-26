@@ -258,6 +258,34 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/players/{id}/utrs")
+    public ResponseEntity<PlayerEntity> getPlayerUtr(@PathVariable("id") String id,
+                                                                  @RequestParam(value = "action", defaultValue = "fetch") String action) {
+
+        Optional<PlayerEntity> player = playerRepository.findById(Long.valueOf(id));
+
+        if (action.equals("fetch")) {
+
+            if (player.isPresent()) {
+
+                return new ResponseEntity<>(player.get(), HttpStatus.OK);
+            }
+        }
+
+        if (action.equals("refreshValue")) {
+
+            if (player.isPresent()) {
+
+                PlayerEntity thisPlayer = importor.updatePlayerUTRInfo(player.get(), true);
+
+                return new ResponseEntity<>(thisPlayer, HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/analysis/team/team1/{teamId1}/team2/{teamId2}")
     public ResponseEntity<USTATeamAnalysisResult> singleAnalysis(@PathVariable("teamId1") String teamId1,
                                                                @PathVariable("teamId2") String teamId2

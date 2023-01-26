@@ -19,6 +19,9 @@ public class USTADivision {
     @JoinColumn(name = "usta_league_id")
     private USTALeague league;
 
+    @Column(name="age_range")
+    String ageRange;
+
     public USTADivision(String name, String level, USTALeague league) {
         this.name = name;
         this.level = level;
@@ -50,5 +53,13 @@ public class USTADivision {
 
     public USTALeague getLeague() {
         return league;
+    }
+
+    public String getAgeRange() {
+        return ageRange;
+    }
+
+    public void setAgeRange(String ageRange) {
+        this.ageRange = ageRange;
     }
 }

@@ -350,7 +350,7 @@ public class USTATeamImportor {
         USTASiteParser util = new USTASiteParser();
         try {
             USTATeam team = util.parseUSTATeam(teamURL);
-
+            USTADivision division = divisionRepository.findByName(team.getDivisionName());
             USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
 
             if (existTeam != null) {
@@ -362,7 +362,6 @@ public class USTATeamImportor {
                 newTeam.setLink(teamURL);
                 newTeam.setArea(team.getArea());
                 newTeam.setFlight(team.getFlight());
-                USTADivision division = divisionRepository.findByName(team.getDivisionName());
                 if (division != null) {
                     newTeam.setDivision(division);
                     int flightNo = Integer.parseInt(newTeam.getFlight());
@@ -398,9 +397,12 @@ public class USTATeamImportor {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
                     existedPlayer.setArea(player.getArea());
                     existedPlayer.setUstaRating(player.getUstaRating());
+                    setAgeRange(existedPlayer, division);
                     existedPlayer = playerRepository.save(existedPlayer);
+
                     logger.debug(player.getName() + " is existed, update USTA info");
                 } else {
+                    setAgeRange(player, division);
                     existedPlayer = playerRepository.save(player);
                     logger.debug("new player " + player.getName() + " is created");
                 }
@@ -422,6 +424,22 @@ public class USTATeamImportor {
         } catch (IOException e) {
             logger.error(e.toString());
             throw new RuntimeException(e);
+        }
+
+    }
+
+    private void setAgeRange(PlayerEntity existedPlayer, USTADivision division) {
+        if (division == null) {
+            return;
+        }
+        String ageRange = division.getAgeRange();
+        if (existedPlayer.getAgeRange() == null || existedPlayer.getAgeRange().trim().equals("")) {
+            existedPlayer.setAgeRange(ageRange);
+            return;
+        }
+
+        if (existedPlayer.getAgeRange().compareTo(ageRange) < 0) {
+            existedPlayer.setAgeRange(ageRange);
         }
 
     }
@@ -499,17 +517,34 @@ public class USTATeamImportor {
 
     }
 
-    public void updatePlayerUTRInfo(PlayerEntity player, boolean forceUpdate) {
+    public PlayerEntity updatePlayerUTRInfo(PlayerEntity player, boolean forceUpdate) {
         if (player.isRefreshedUTR() && !forceUpdate) {
             logger.debug(player.getName() + " has latest UTR, skip");
-            return;
+            return player;
         }
 
         String utrId = player.getUtrId();
 
         if (utrId == null || utrId.equals("")) {
             logger.debug(player.getName() + " has no UTR, no need to refresh");
-            return;
+
+            if (player.getDUTR() > 0.0 || player.getSUTR() > 0.0) {
+                if (player.getDUTR() > 0.0) {
+                    player.setDUTR(0.0);
+                    player.setDUTRStatus("");
+                }
+
+                if (player.getSUTR() > 0.0) {
+                    player.setSUTR(0.0);
+                    player.setSUTRStatus("");
+                }
+
+                player.setWholeSuccessRate(0.0f);
+                player.setSuccessRate(0.0f);
+                player = playerRepository.save(player);
+            }
+
+            return player;
         }
 
         logger.debug(player.getName() + " start to query utr and win ratio");
@@ -521,21 +556,23 @@ public class USTATeamImportor {
         Player utrplayer = loader.getPlayer(utrId);
 
         if (utrplayer == null) {
-            return;
+            return player;
         }
 
 
         player.setSUTR(utrplayer.getsUTR());
         player.setDUTR(utrplayer.getdUTR());
-        player.setDUTRStatus(utrplayer.getsUTRStatus());
+        player.setSUTRStatus(utrplayer.getsUTRStatus());
         player.setDUTRStatus(utrplayer.getdUTRStatus());
         player.setSuccessRate(utrplayer.getSuccessRate());
         player.setWholeSuccessRate(utrplayer.getWholeSuccessRate());
         player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
 
-        playerRepository.save(player);
+        player = playerRepository.save(player);
 
         logger.debug(player.getName() + " utr is updated");
+
+        return player;
     }
 
     private String findUTRID(List<Player> players, PlayerEntity player) {

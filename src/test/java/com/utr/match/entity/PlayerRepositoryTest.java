@@ -117,10 +117,13 @@ class PlayerRepositoryTest {
     @Test
     void findHighUTRPlayerswithUSTARating() {
         Pageable firstPage = PageRequest.of(0,10);
-        PlayerSpecification ustaRating = new PlayerSpecification(new SearchCriteria("ustaRating", ":", "3.5C"));
-        PlayerSpecification dUTR = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf("5.5")), new OrderByCriteria("dUTR", false));
-        PlayerSpecification gender = new PlayerSpecification(new SearchCriteria("gender", ":", "M"));
-        Page<PlayerEntity> players = playerRepo.findAll(Specification.where(ustaRating).and(dUTR).and(gender), firstPage);
+        PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", "3.5C"));
+        PlayerSpecification UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf("5.5")), new OrderByCriteria("dUTR", false));
+        PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", "M"));
+        PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", "40+"));
+        Specification spec = Specification.where(ustaRatingSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
+
+        Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
 
         for (PlayerEntity player: players) {
             System.out.println(player.getName() + " " + player.getDUTR());

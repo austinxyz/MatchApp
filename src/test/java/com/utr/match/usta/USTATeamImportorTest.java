@@ -20,9 +20,9 @@ class USTATeamImportorTest {
     USTATeamRepository teamRepository;
 
 
-    final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96400";
-    final String teamName = "SUNNYVALE TC/SUNNYVALE MTC 18MX7.0A";
-    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17669:2605&r=L";
+    final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=97135";
+    final String teamName = "RINCONADA PK 18MX8.0C";
+    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17728:2625&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
     @Autowired
@@ -63,7 +63,7 @@ class USTATeamImportorTest {
     }
     @Test
     void updateFlightUTRID() {
-        List<USTATeam> teams = teamRepository.findByUstaFlight_Id(23L);
+        List<USTATeam> teams = teamRepository.findByUstaFlight_Id(28L);
 
         for (USTATeam team: teams) {
             importor.updateTeamPlayersUTRID(team);
@@ -72,7 +72,7 @@ class USTATeamImportorTest {
 
     @Test
     void updateFlightUTRInfo() {
-        List<USTATeam> teams = teamRepository.findByUstaFlight_Id(1L);
+        List<USTATeam> teams = teamRepository.findByUstaFlight_Id(28L);
 
         for (USTATeam team: teams) {
             importor.updateTeamUTRInfo(team);
@@ -98,8 +98,15 @@ class USTATeamImportorTest {
 
     @Test
     void updatePlayerUTRInfo() {
-        PlayerEntity player = playerRepository.findByUtrId("750749");
+        PlayerEntity player = playerRepository.findByUtrId("257354");
 
         importor.updatePlayerUTRInfo(player, true);
+    }
+
+    @Test
+    void findTeamsByFlight() {
+        long begin = System.currentTimeMillis();
+        List<USTATeam> teams = teamRepository.findByUstaFlight_Id(2L);
+        System.out.println("it takes " + (System.currentTimeMillis() - begin)/1000 + " second");
     }
 }

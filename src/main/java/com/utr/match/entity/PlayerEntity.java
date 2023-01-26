@@ -97,6 +97,9 @@ public class PlayerEntity {
     @Column(name="dr_fetched_time")
     Timestamp drFetchedTime;
 
+    @Column(name="age_range")
+    String ageRange;
+
     public double getDUTR() {
         return dUTR==null? 0.0d: dUTR.doubleValue();
     }
@@ -336,6 +339,14 @@ public class PlayerEntity {
 
     public void setUtrs(Set<EventUTR> utrs) {
         this.utrs = utrs;
+    }
+
+    public String getAgeRange() {
+        return ageRange;
+    }
+
+    public void setAgeRange(String ageRange) {
+        this.ageRange = ageRange;
     }
 
     @JsonProperty
