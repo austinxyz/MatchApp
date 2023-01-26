@@ -112,7 +112,7 @@ public class USTATeamMatch {
     @JsonProperty
     public String getTeamName() {
         if (this.team!=null) {
-            if (this.team.getAlias()!=null) {
+            if (this.team.getAlias()!=null && !this.team.getAlias().trim().equals("") ) {
                 return this.team.getName() + "-" + this.team.getAlias();
             } else {
                 return this.team.getName();
@@ -132,7 +132,7 @@ public class USTATeamMatch {
     @JsonProperty
     public String getOpponentTeamName() {
         if (this.opponentTeam!=null) {
-            if (this.opponentTeam.getAlias()!=null) {
+            if (this.opponentTeam.getAlias()!=null && !this.opponentTeam.getAlias().trim().equals("")) {
                 return this.opponentTeam.getName() + "-" + this.opponentTeam.getAlias();
             } else {
                 return this.opponentTeam.getName();

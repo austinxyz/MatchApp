@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -88,7 +85,7 @@ public class PlayerController {
     @CrossOrigin(origins = "*")
     @GetMapping("/searchUTR")
     public ResponseEntity<List<PlayerEntity>> searchByUTR(@RequestParam("USTARating") String ustaRating,
-                                                          @RequestParam("utr") String utrValue,
+                                                          @RequestParam(value = "utr", defaultValue = "0.0") String utrValue,
                                                           @RequestParam(value = "type", defaultValue = "double") String type,
                                                           @RequestParam(value = "gender", defaultValue = "M") String gender,
                                                           @RequestParam(value = "ageRange") String ageRange,
@@ -113,6 +110,77 @@ public class PlayerController {
 
         if (!players.isEmpty()) {
             return ResponseEntity.ok(players.get().collect(Collectors.toList()));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/statUTR")
+    public ResponseEntity<Map<String, Object>> statUTR(@RequestParam("USTARating") String ustaRating,
+                                                       @RequestParam(value = "ratedOnly", defaultValue = "false") String ratedOnlyStr,
+                                                       @RequestParam(value = "ignoreZeroUTR", defaultValue = "false") String ignoreZeroUTRStr,
+                                                       @RequestParam(value = "type", defaultValue = "double") String type,
+                                                       @RequestParam(value = "gender", defaultValue = "M") String gender,
+                                                       @RequestParam(value = "ageRange") String ageRange
+                                                       ) {
+
+
+        Pageable firstPage = PageRequest.of(0, 1);
+        PlayerSpecification ratedOnlySpec = null;
+        PlayerSpecification ignoreZeroUTRSpec = null;
+
+        boolean ratedOnly = !ratedOnlyStr.equals("false");
+        boolean ignoreZeroUTR = !ignoreZeroUTRStr.equals("false");
+
+        OrderByCriteria orderBy;
+        if (type.equalsIgnoreCase("double")) {
+            orderBy = new OrderByCriteria("dUTR", false);
+            if (ratedOnly) {
+                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("dUTRStatus", ":", "Rated"));
+            }
+            if (ignoreZeroUTR) {
+                ignoreZeroUTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", 0.1D));
+            }
+        } else {
+            orderBy = new OrderByCriteria("sUTR", false);
+            if (ratedOnly) {
+                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("sUTRStatus", ":", "Rated"));
+            }
+            if (ignoreZeroUTR) {
+                ignoreZeroUTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", 0.1D));
+            }
+        }
+
+        PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating), orderBy);
+        PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
+        PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
+
+        Specification spec = Specification.where(ustaRatingSpec).and(genderSpec).and(ageRangeSpec);
+
+        if (ratedOnly && ratedOnlySpec!=null) {
+            spec = spec.and(ratedOnlySpec);
+        }
+
+        if (ignoreZeroUTR && ignoreZeroUTRSpec!=null) {
+            spec = spec.and(ignoreZeroUTRSpec);
+        }
+
+        Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
+
+        if (!players.isEmpty()) {
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("totalNumber", String.valueOf(players.getTotalElements()));
+            PlayerEntity topPlayer = players.get().collect(Collectors.toList()).get(0);
+            result.put("topPlayer", topPlayer);
+
+            Pageable midPage = PageRequest.of(players.getTotalPages()/2, 1);
+
+            players = playerRepo.findAll(spec, midPage);
+            PlayerEntity midPlayer = players.get().collect(Collectors.toList()).get(0);
+            result.put("midPlayer", midPlayer);
+            return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.notFound().build();
         }

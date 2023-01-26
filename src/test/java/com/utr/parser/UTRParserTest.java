@@ -37,7 +37,7 @@ class UTRParserTest {
     void searchPlayer() {
 
         UTRParser parser = new UTRParser();
-        List<Player> results = parser.searchPlayers("Baker Caitlin", 5);
+        List<Player> results = parser.searchPlayers("Wang Shan", 5);
 
         System.out.println(results);
     }
