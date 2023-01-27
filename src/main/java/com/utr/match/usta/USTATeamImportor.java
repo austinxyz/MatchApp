@@ -67,10 +67,53 @@ public class USTATeamImportor {
                 handleScoreCard(flight, scoreCardJSON);
             }
 
+            cleanUpMatches(matches, team);
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void cleanUpMatches(JSONArray matches, USTATeam team) throws ParseException {
+        List<USTATeamMatch> existedMatches = teamMatchRepository.findByTeamOrderByMatchDateAsc(team);
+
+        for (int i = 0; i < matches.length(); i++) {
+            JSONObject scoreCardJSON = (JSONObject) matches.get(i);
+            USTATeamMatch homeMatch = createHomeTeamMatch(scoreCardJSON);
+            USTATeamMatch guestMatch = createGuestTeamMatch(scoreCardJSON);
+            homeMatch.setOpponentTeam(guestMatch.getTeam());
+            guestMatch.setOpponentTeam(homeMatch.getTeam());
+            if (homeMatch.getTeam().getId() == team.getId()) {
+                removeMatch(existedMatches, homeMatch.getMatchDate(), homeMatch.getOpponentTeam().getId());
+            }
+            if (guestMatch.getTeam().getId() == team.getId()) {
+                removeMatch(existedMatches, guestMatch.getMatchDate(), guestMatch.getOpponentTeam().getId());
+            }
+        }
+
+        for (USTATeamMatch match: existedMatches) {
+            if (match.getLines().size() > 1) {
+                continue;
+            }
+            USTATeamMatch oppMatch = teamMatchRepository.findByMatchDateAndTeam_IdAndOpponentTeam_Id(match.getMatchDate(), match.getOpponentTeamId(), match.getTeamId());
+
+            teamMatchRepository.delete(match);
+            teamMatchRepository.delete(oppMatch);
+        }
+    }
+
+    private void removeMatch(List<USTATeamMatch> existedMatches, Date matchDate, Long opponentTeamId) {
+        USTATeamMatch target = null;
+        for (USTATeamMatch match: existedMatches) {
+            if (match.getMatchDate().equals(matchDate) && match.getOpponentTeamId() == opponentTeamId) {
+                target = match;
+                break;
+            }
+        }
+
+        if (target!=null) {
+            existedMatches.remove(target);
+        }
     }
 
     public void importScoreCard(String scoreCardURL, Long flightId) {

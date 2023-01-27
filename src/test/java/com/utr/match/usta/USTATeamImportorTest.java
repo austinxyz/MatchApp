@@ -21,7 +21,7 @@ class USTATeamImportorTest {
 
 
     final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96834";
-    final String teamName = "RINCONADA PK 18MX7.0C";
+    final String teamName = "RINCONADA PK 40AM4.0B";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17728:2625&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";

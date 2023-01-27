@@ -6,8 +6,6 @@ import com.utr.match.usta.USTATeamAnalyser;
 import com.utr.match.usta.USTATeamAnalysisResult;
 import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Player;
-import com.utr.player.PlayerAnalyser;
-import com.utr.player.SingleAnalysisResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +40,9 @@ public class USTAController {
 
     @Autowired
     private USTATeamAnalyser teamAnalyser;
+
+    @Autowired
+    private USTATeamLineScoreRepository lineScoreRepository;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
@@ -202,6 +203,30 @@ public class USTAController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams/{id}/players")
+    public ResponseEntity<USTATeam> updatePlayers(@PathVariable("id") String id,
+                                                    @RequestParam("action") String action
+    ) {
+
+        if (action.equals("refresh")) {
+
+            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+
+            if (team.isPresent()) {
+                USTATeam existTeam = team.get();
+
+                existTeam = importor.importUSTATeam(existTeam.getLink());
+
+                return new ResponseEntity<>(existTeam, HttpStatus.OK);
+            }
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/drs")
     public ResponseEntity<USTATeam> updatePlayersDR(@PathVariable("id") String id,
@@ -260,7 +285,7 @@ public class USTAController {
     @CrossOrigin(origins = "*")
     @GetMapping("/players/{id}/utrs")
     public ResponseEntity<PlayerEntity> getPlayerUtr(@PathVariable("id") String id,
-                                                                  @RequestParam(value = "action", defaultValue = "fetch") String action) {
+                                                     @RequestParam(value = "action", defaultValue = "fetch") String action) {
 
         Optional<PlayerEntity> player = playerRepository.findById(Long.valueOf(id));
 
@@ -288,7 +313,7 @@ public class USTAController {
     @CrossOrigin(origins = "*")
     @GetMapping("/analysis/team/team1/{teamId1}/team2/{teamId2}")
     public ResponseEntity<USTATeamAnalysisResult> singleAnalysis(@PathVariable("teamId1") String teamId1,
-                                                               @PathVariable("teamId2") String teamId2
+                                                                 @PathVariable("teamId2") String teamId2
     ) {
         USTATeamAnalysisResult result = teamAnalyser.compareTeam(teamId1, teamId2);
 
@@ -296,6 +321,26 @@ public class USTAController {
             return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/players/{id}/scores")
+    public ResponseEntity<List<USTATeamLineScore>> getPlayerScores(@PathVariable("id") String id) {
+
+        Optional<PlayerEntity> player = playerRepository.findById(Long.valueOf(id));
+
+        if (player.isPresent()) {
+
+            PlayerEntity thisPlayer = player.get();
+
+            List<USTATeamLineScore> scores = lineScoreRepository.findByGuestLine_Player1OrHomeLine_Player2OrHomeLine_Player1OrGuestLine_Player2(
+                    thisPlayer, thisPlayer, thisPlayer, thisPlayer);
+
+            return new ResponseEntity<>(scores, HttpStatus.OK);
+        } else {
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
