@@ -31,6 +31,9 @@ class PlayerRepositoryTest {
     private DivisionRepository divisionRepository;
 
     @Autowired
+    private USTATeamLineScoreRepository lineScoreRepository;
+
+    @Autowired
     TeamLoader loader;
 
     @Test
@@ -331,5 +334,14 @@ class PlayerRepositoryTest {
 
         }
 
+    }
+
+    @Test
+    void findScores() {
+        PlayerEntity player = playerRepo.findById(1L).get();
+        List<USTATeamLineScore> scores = lineScoreRepository.findByGuestLine_Player1OrHomeLine_Player2OrHomeLine_Player1OrGuestLine_Player2(player, player, player, player);
+        for (USTATeamLineScore score: scores) {
+            System.out.println(score);
+        }
     }
 }

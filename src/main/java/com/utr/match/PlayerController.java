@@ -85,6 +85,7 @@ public class PlayerController {
     @CrossOrigin(origins = "*")
     @GetMapping("/searchUTR")
     public ResponseEntity<List<PlayerEntity>> searchByUTR(@RequestParam("USTARating") String ustaRating,
+                                                          @RequestParam(value = "utrLimit", defaultValue = "16.0") String utrLimitValue,
                                                           @RequestParam(value = "utr", defaultValue = "0.0") String utrValue,
                                                           @RequestParam(value = "type", defaultValue = "double") String type,
                                                           @RequestParam(value = "gender", defaultValue = "M") String gender,
@@ -95,16 +96,19 @@ public class PlayerController {
         Pageable firstPage = PageRequest.of(start, size);
         PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating));
         PlayerSpecification UTRSpec;
+        PlayerSpecification utrLimitSpec;
         if (type.equalsIgnoreCase("double")) {
             UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf(utrValue)),
                     new OrderByCriteria("dUTR", false));
+            utrLimitSpec = new PlayerSpecification(new SearchCriteria("dUTR", "<", utrLimitValue));
         } else {
             UTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", Double.valueOf(utrValue)),
                     new OrderByCriteria("sUTR", false));
+            utrLimitSpec = new PlayerSpecification(new SearchCriteria("sUTR", "<", utrLimitValue));
         }
         PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
         PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
-        Specification spec = Specification.where(ustaRatingSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
+        Specification spec = Specification.where(ustaRatingSpec).and(utrLimitSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
 
         Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
 

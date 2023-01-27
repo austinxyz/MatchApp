@@ -42,7 +42,7 @@ public class USTASiteParser {
                 }
                 String status = tr.child(0).text();
 
-                if (!status.startsWith("Confirmed") && !status.startsWith("Scheduled")) {
+                if (!status.startsWith("Confirmed") && !status.startsWith("Scheduled") && !status.startsWith("Verify")) {
                     continue;
                 }
 
