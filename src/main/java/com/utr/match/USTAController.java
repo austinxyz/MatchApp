@@ -44,6 +44,9 @@ public class USTAController {
     @Autowired
     private USTATeamLineScoreRepository lineScoreRepository;
 
+    @Autowired
+    private USTALeagueRepository leagueRepository;
+
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
     public ResponseEntity<List<USTATeam>> teams(
@@ -157,14 +160,42 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/divisions/")
-    public ResponseEntity<List<USTADivision>> getDivisions(
+    @GetMapping("/leagues/{id}/divisions/")
+    public ResponseEntity<List<USTADivision>> getDivisions(@PathVariable("id") String id
     ) {
 
-        List<USTADivision> divisions = divisionRepository.findAll();
+        List<USTADivision> divisions = divisionRepository.findByLeague_Id(Long.valueOf(id));
 
         if (divisions.size() > 0) {
             return ResponseEntity.ok(divisions);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/{year}/divisions/")
+    public ResponseEntity<List<USTADivision>> getDivisionsByYear(@PathVariable("year") String year
+    ) {
+
+        List<USTADivision> divisions = divisionRepository.findByLeague_Year(year);
+
+        if (divisions.size() > 0) {
+            return ResponseEntity.ok(divisions);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/{year}/leagues/")
+    public ResponseEntity<List<USTALeague>> getLeagues(@PathVariable("year") String year
+    ) {
+
+        List<USTALeague> leagues = leagueRepository.findByYear(year);
+
+        if (leagues.size() > 0) {
+            return ResponseEntity.ok(leagues);
         } else {
             return ResponseEntity.notFound().build();
         }

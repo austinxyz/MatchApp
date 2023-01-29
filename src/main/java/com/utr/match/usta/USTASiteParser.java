@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class USTASiteParser {
@@ -62,14 +64,21 @@ public class USTASiteParser {
                     String home = tr.child(6).text();
                     boolean isHome = home.equals("Home");
 
+                    Element opposingTeamDR = tr.child(5).child(0);
                     if (isHome) {
                         scoreCard.put("homeTeamName", team.getName());
-                        String opponentTeam = tr.child(5).text();
+                        scoreCard.put("homeTeamLink", team.getLink());
+                        String opponentTeam = opposingTeamDR.text();
+                        String href = "https://www.ustanorcal.com/" + opposingTeamDR.attr("href");
                         scoreCard.put("guestTeamName", getTeamName(opponentTeam));
+                        scoreCard.put("guestTeamLink", href);
                     } else {
                         scoreCard.put("guestTeamName", team.getName());
-                        String opponentTeam = tr.child(5).text();
+                        scoreCard.put("guestTeamLink", team.getLink());
+                        String opponentTeam = opposingTeamDR.text();
+                        String href = "https://www.ustanorcal.com/" + opposingTeamDR.attr("href");
                         scoreCard.put("homeTeamName", getTeamName(opponentTeam));
+                        scoreCard.put("homeTeamLink", href);
                     }
                 }
                 result.put(scoreCard);
@@ -94,9 +103,15 @@ public class USTASiteParser {
             Element matchTr = tr.nextElementSibling();
 
             result.put("matchDate", matchTr.children().get(0).text());
-            result.put("homeTeamName", getTeamName(matchTr.children().get(1).text()));
+            Element homeTeamDR = matchTr.children().get(1).child(0);
+            String href = "https://www.ustanorcal.com/" + homeTeamDR.attr("href");
+            result.put("homeTeamLink", href);
+            result.put("homeTeamName", getTeamName(homeTeamDR.text()));
             result.put("homePoint", matchTr.children().get(2).text());
-            result.put("guestTeamName", getTeamName(matchTr.children().get(3).text()));
+            Element guestTeamDR = matchTr.children().get(3).child(0);
+            href = "https://www.ustanorcal.com/" + guestTeamDR.attr("href");
+            result.put("guestTeamLink", href);
+            result.put("guestTeamName", getTeamName(guestTeamDR.text()));
             result.put("guestPoint", matchTr.children().get(4).text());
 
         }
@@ -185,7 +200,9 @@ public class USTASiteParser {
 
                 String teamURL = "https://www.ustanorcal.com/" + href;
 
-                teams.add(teamURL);
+                if (!teams.contains(teamURL)) {
+                    teams.add(teamURL);
+                }
             }
         }
         return teams;
@@ -297,9 +314,10 @@ public class USTASiteParser {
         logger.debug("Division Name: " + divisionName + " Flight: " + flight);
     }
 
-    public String parseUSTANumber(String noncalLink) throws IOException {
+    public Map<String, String> parseUSTANumber(String noncalLink) throws IOException {
         Document doc = Jsoup.connect(noncalLink).get();
         Elements playerInfos = doc.getElementsByClass("PlayerInfo");
+        Map<String, String> result = new HashMap<>();
         String ustaNubmer = "";
         for (Element playerInfo : playerInfos) {
             ustaNubmer = playerInfo.children().get(0).text();
@@ -311,8 +329,28 @@ public class USTASiteParser {
 
             int end = ustaNubmer.indexOf(" ");
             ustaNubmer = ustaNubmer.substring(0, end);
+
+            result.put("USTAID", ustaNubmer);
+
+
+            String rating = playerInfo.child(1).text();
+
+            result.put("Rating", parseRating(rating));
         }
-        return ustaNubmer;
+        return result;
+    }
+
+    private String parseRating(String rating) {
+
+        if (rating.indexOf("YEAR END RATING") > 0) {
+            rating = rating.substring(rating.indexOf("RATING") + 6);
+
+            String[] words = rating.trim().split(" ");
+            return words[1] + words[0];
+        } else {
+            String[] words = rating.trim().split(" ");
+            return words[2] + words[1];
+        }
     }
 
     public String getDynamicRating(String tennisRecordLink) throws IOException {

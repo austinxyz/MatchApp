@@ -16,10 +16,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Scope("singleton")
@@ -79,8 +76,8 @@ public class USTATeamImportor {
 
         for (int i = 0; i < matches.length(); i++) {
             JSONObject scoreCardJSON = (JSONObject) matches.get(i);
-            USTATeamMatch homeMatch = createHomeTeamMatch(scoreCardJSON);
-            USTATeamMatch guestMatch = createGuestTeamMatch(scoreCardJSON);
+            USTATeamMatch homeMatch = createHomeTeamMatch(scoreCardJSON, team.getUstaFlight());
+            USTATeamMatch guestMatch = createGuestTeamMatch(scoreCardJSON, team.getUstaFlight());
             homeMatch.setOpponentTeam(guestMatch.getTeam());
             guestMatch.setOpponentTeam(homeMatch.getTeam());
             if (homeMatch.getTeam().getId() == team.getId()) {
@@ -137,9 +134,9 @@ public class USTATeamImportor {
     }
 
     private void handleScoreCard(USTAFlight flight, JSONObject obj) throws ParseException {
-        USTATeamMatch homeMatch = createHomeTeamMatch(obj);
+        USTATeamMatch homeMatch = createHomeTeamMatch(obj, flight);
 
-        USTATeamMatch guestMatch = createGuestTeamMatch(obj);
+        USTATeamMatch guestMatch = createGuestTeamMatch(obj, flight);
 
         if (homeMatch == null || guestMatch == null) {
             return;
@@ -226,10 +223,8 @@ public class USTATeamImportor {
         }
     }
 
-    private USTATeamMatch createGuestTeamMatch(JSONObject obj) throws ParseException {
-        String guestTeamName = obj.get("guestTeamName").toString();
-
-        USTATeam guestTeam = ustaTeamRepository.findByName(guestTeamName);
+    private USTATeamMatch createGuestTeamMatch(JSONObject obj, USTAFlight flight) throws ParseException {
+        USTATeam guestTeam = fetchOrCreateTeam(obj, false, flight.getDivision());
 
         USTATeamMatch match = new USTATeamMatch(guestTeam);
 
@@ -336,10 +331,8 @@ public class USTATeamImportor {
 
     }
 
-    private USTATeamMatch createHomeTeamMatch(JSONObject obj) throws ParseException {
-        String homeTeamName = obj.get("homeTeamName").toString();
-
-        USTATeam homeTeam = ustaTeamRepository.findByName(homeTeamName);
+    private USTATeamMatch createHomeTeamMatch(JSONObject obj, USTAFlight flight) throws ParseException {
+        USTATeam homeTeam = fetchOrCreateTeam(obj, true, flight.getDivision());
 
         USTATeamMatch match = new USTATeamMatch(homeTeam);
 
@@ -362,6 +355,21 @@ public class USTATeamImportor {
         match.setHome(true);
 
         return match;
+    }
+
+    private USTATeam fetchOrCreateTeam(JSONObject obj, boolean isHome, USTADivision division) {
+        String teamNameLabel = isHome? "homeTeamName":"guestTeamName";
+        String teamLinkLabel = isHome? "homeTeamLink":"guestTeamLink";
+
+        String teamName = obj.get(teamNameLabel).toString();
+        String teamLink = obj.get(teamLinkLabel).toString();
+
+        USTATeam homeTeam = ustaTeamRepository.findByNameAndDivision_Id(teamName, division.getId());
+
+        if (homeTeam == null) {
+            homeTeam = importUSTATeam(teamLink);
+        }
+        return homeTeam;
     }
 
 
@@ -394,7 +402,7 @@ public class USTATeamImportor {
         try {
             USTATeam team = util.parseUSTATeam(teamURL);
             USTADivision division = divisionRepository.findByName(team.getDivisionName());
-            USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
+            USTATeam existTeam = ustaTeamRepository.findByNameAndDivision_Id(team.getName(), division.getId());
 
             if (existTeam != null) {
                 logger.debug("team " + team.getName() + " is existed");
@@ -405,6 +413,7 @@ public class USTATeamImportor {
                 newTeam.setLink(teamURL);
                 newTeam.setArea(team.getArea());
                 newTeam.setFlight(team.getFlight());
+                newTeam.setTennisRecordLink("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=" + team.getName() + "&year=" + division.getLeague().getYear());
                 if (division != null) {
                     newTeam.setDivision(division);
                     int flightNo = Integer.parseInt(newTeam.getFlight());
@@ -420,9 +429,8 @@ public class USTATeamImportor {
                 }
 
 
-                ustaTeamRepository.save(newTeam);
-                existTeam = ustaTeamRepository.findByName(newTeam.getName());
-                logger.debug("new team " + team.getName() + " is created");
+                existTeam = ustaTeamRepository.save(newTeam);
+                logger.debug("new team " + existTeam.getName() + " with id: " + existTeam.getId() + " is created");
             }
 
             for (PlayerEntity player : team.getPlayers()) {
@@ -439,7 +447,7 @@ public class USTATeamImportor {
                 if (existedPlayer != null) {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
                     existedPlayer.setArea(player.getArea());
-                    existedPlayer.setUstaRating(player.getUstaRating());
+                    //existedPlayer.setUstaRating(player.getUstaRating());
                     setAgeRange(existedPlayer, division);
                     existedPlayer = playerRepository.save(existedPlayer);
 
@@ -487,9 +495,9 @@ public class USTATeamImportor {
 
     }
 
-    public void updateTeamPlayerUTRID(String teamName) {
+    public void updateTeamPlayerUTRID(String teamName, String divisionName) {
 
-        USTATeam existTeam = ustaTeamRepository.findByName(teamName);
+        USTATeam existTeam = ustaTeamRepository.findByNameAndDivision_Name(teamName, divisionName);
 
         if (existTeam == null) {
             logger.debug("team " + teamName + " is not existed");
@@ -643,13 +651,13 @@ public class USTATeamImportor {
         return candidateUTRIds.size() > 0 ? candidateUTRIds.get(0) : "";
     }
 
-    private void updatePlayerUSTANumber(String teamURL) {
+    public void updatePlayerUSTANumber(String teamURL) {
 
         USTASiteParser util = new USTASiteParser();
         try {
             USTATeam team = util.parseUSTATeam(teamURL);
 
-            USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
+            USTATeam existTeam = ustaTeamRepository.findByNameAndDivision_Name(team.getName(), team.getDivisionName());
 
             for (PlayerEntity player : existTeam.getPlayers()) {
 
@@ -657,15 +665,16 @@ public class USTATeamImportor {
                     PlayerEntity newPlayer = team.getPlayer(player.getName());
 
                     if (newPlayer != null) {
-                        player.setUstaRating(newPlayer.getUstaRating());
+                        //player.setUstaRating(newPlayer.getUstaRating());
                         player.setArea(newPlayer.getArea());
                         player.setNoncalLink(newPlayer.getNoncalLink());
                     }
                 }
 
                 if (player.getNoncalLink() != null) {
-                    player.setUstaId(util.parseUSTANumber(player.getNoncalLink()));
-                    player.getTennisRecordLink();
+                    Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
+                    player.setUstaId(playerInfo.get("USTAID"));
+                    player.setUstaRating(playerInfo.get("Rating"));
                 }
 
                 playerRepository.save(player);

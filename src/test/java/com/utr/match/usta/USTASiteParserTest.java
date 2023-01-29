@@ -3,6 +3,8 @@ package com.utr.match.usta;
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTATeam;
 import com.utr.parser.UTRParser;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,7 +21,12 @@ class USTASiteParserTest {
         List<String> teams = null;
 
         try {
-            teams = util.parseUSTAFlight("https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=17840:2605&r=L");
+            teams = util.parseUSTAFlight("https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=16677:2567&r=L");
+            System.out.println(teams.size());
+            for(String teamURL: teams) {
+                System.out.println(teamURL);
+                util.parseUSTATeam(teamURL);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,7 +57,7 @@ class USTASiteParserTest {
     void parseUSTANumber() {
         USTASiteParser util = new USTASiteParser();
         try {
-            util.parseUSTANumber("https://www.ustanorcal.com/playermatches.asp?id=217977");
+            System.out.println(util.parseUSTANumber("https://www.ustanorcal.com/playermatches.asp?id=169410"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -99,9 +106,15 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
 
         try {
-            USTATeam team = util.parseUSTATeam("https://www.ustanorcal.com/teaminfo.asp?id=96702");
-            System.out.println(util.parseTeamMatches(team).toString());
-        } catch (IOException e) {
+            USTATeam team = util.parseUSTATeam("https://www.ustanorcal.com/TeamInfo.asp?id=92360");
+            System.out.println(team.getDivisionName());
+            JSONArray matches = util.parseTeamMatches(team);
+
+            for (int i=0; i< matches.length(); i++) {
+                System.out.println(matches.get(i).toString());
+            }
+
+        } catch (IOException | JSONException e) {
             throw new RuntimeException(e);
         }
 

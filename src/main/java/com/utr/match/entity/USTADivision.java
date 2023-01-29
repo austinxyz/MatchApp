@@ -1,5 +1,7 @@
 package com.utr.match.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,6 +17,7 @@ public class USTADivision {
     @Column(name = "level")
     private String level;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usta_league_id")
     private USTALeague league;

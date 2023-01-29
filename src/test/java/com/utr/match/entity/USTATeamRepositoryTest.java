@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @SpringBootTest
@@ -128,7 +129,14 @@ class USTATeamRepositoryTest {
             String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96701";
             USTATeam team = util.parseUSTATeam(teamURL);
 
-            USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
+            USTADivision division = divisionRepository.findByName(team.getDivisionName());
+
+            if (division == null) {
+                System.out.println("Failed to import team, no division info");
+                return;
+            }
+
+            USTATeam existTeam = ustaTeamRepository.findByNameAndDivision_Id(team.getName(), division.getId());
 
             if (existTeam != null) {
                 System.out.println("team " + team.getName() + " is existed");
@@ -137,12 +145,10 @@ class USTATeamRepositoryTest {
                 newTeam.setName(team.getName());
                 newTeam.setAlias(team.getAlias());
                 newTeam.setLink(teamURL);
-                USTADivision division = divisionRepository.findByName(team.getDivisionName());
                 if (division!=null) {
                     newTeam.setDivision(division);
                 }
-                ustaTeamRepository.save(newTeam);
-                existTeam = ustaTeamRepository.findByName(newTeam.getName());
+                existTeam = ustaTeamRepository.save(newTeam);
                 System.out.println("new team " + team.getName() + " is created");
             }
 
@@ -152,7 +158,7 @@ class USTATeamRepositoryTest {
                 if (existedPlayer != null) {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
                     existedPlayer.setArea(player.getArea());
-                    existedPlayer.setUstaRating(player.getUstaRating());
+                    //existedPlayer.setUstaRating(player.getUstaRating());
                     playerRepository.save(existedPlayer);
                     System.out.println(player.getName() + " is existed, update USTA info");
                 } else {
@@ -239,7 +245,7 @@ class USTATeamRepositoryTest {
             String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96701";
             USTATeam team = util.parseUSTATeam(teamURL);
 
-            USTATeam existTeam = ustaTeamRepository.findByName(team.getName());
+            USTATeam existTeam = ustaTeamRepository.findByNameAndDivision_Name(team.getName(), team.getDivisionName());
 
             for (PlayerEntity player : existTeam.getPlayers()) {
 
@@ -247,15 +253,18 @@ class USTATeamRepositoryTest {
                     PlayerEntity newPlayer = team.getPlayer(player.getName());
 
                     if (newPlayer != null) {
-                        player.setUstaRating(newPlayer.getUstaRating());
+                        //player.setUstaRating(newPlayer.getUstaRating());
                         player.setArea(newPlayer.getArea());
                         player.setNoncalLink(newPlayer.getNoncalLink());
                     }
                 }
 
                 if (player.getNoncalLink() != null) {
-                    player.setUstaId(util.parseUSTANumber(player.getNoncalLink()));
-                    player.setTennisRecordLink(getTennisRecordLink(player));
+
+                    Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
+                    player.setUstaId(playerInfo.get("USTAID"));
+                    player.setUstaRating(playerInfo.get("Rating"));
+                    //player.setTennisRecordLink(getTennisRecordLink(player));
                 }
 
                 playerRepository.save(player);
@@ -365,9 +374,7 @@ class USTATeamRepositoryTest {
                 }
             }
         }
-
-
-
     }
+
 
 }
