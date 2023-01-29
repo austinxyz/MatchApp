@@ -29,6 +29,9 @@ public class USTATeam {
     @Column(name = "link")
     private String link;
 
+    @Column(name = "tr_link")
+    private String tennisRecordLink;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usta_division_id")
@@ -177,7 +180,11 @@ public class USTATeam {
 
     @JsonProperty
     public String getTennisRecordLink() {
-        return "https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=" + this.name + "&year=" + this.division.getLeague().getYear();
+        return this.tennisRecordLink;
+    }
+
+    public void setTennisRecordLink(String tennisRecordLink) {
+        this.tennisRecordLink = tennisRecordLink;
     }
 
     public PlayerEntity getPlayer(String name) {

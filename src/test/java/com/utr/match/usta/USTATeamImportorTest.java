@@ -7,6 +7,7 @@ import com.utr.match.entity.USTATeamRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -20,8 +21,10 @@ class USTATeamImportorTest {
     USTATeamRepository teamRepository;
 
 
-    final String teamURL = "https://www.ustanorcal.com/TeamInfo.asp?id=96834";
-    final String teamName = "RINCONADA PK 40AM4.0B";
+    final String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=92360";
+    final String teamName = "VALLEY CHURCH 40AM3.5A";
+
+    String divisionName = "2022 Adult 40 & Over Mens 3.5";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17728:2625&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
@@ -48,13 +51,20 @@ class USTATeamImportorTest {
 
     @Test
     void updateUTRId() {
-        importor.updateTeamPlayerUTRID(teamName);
+
+        importor.updateTeamPlayerUTRID(teamName, divisionName);
     }
 
     @Test
     void updateTeamUTR() {
-        USTATeam team = teamRepository.findByName(teamName);
+        USTATeam team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
         importor.updateTeamUTRInfo(team);
+    }
+
+    @Test
+    void updateTeamUSTAInfo() {
+        USTATeam team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
+        importor.updatePlayerUSTANumber(team.getLink());
     }
 
     @Test
@@ -86,13 +96,13 @@ class USTATeamImportorTest {
 
     @Test
     void importTeamMatchs() {
-        USTATeam team = teamRepository.findByName(teamName);
+        USTATeam team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
         importor.refreshTeamMatchesScores(team);
     }
 
     @Test
     void updateTeamPlayersDR() {
-        USTATeam team = teamRepository.findByName(teamName);
+        USTATeam team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
         importor.updateTeamPlayersDR(team);
     }
 
@@ -108,5 +118,13 @@ class USTATeamImportorTest {
         long begin = System.currentTimeMillis();
         List<USTATeam> teams = teamRepository.findByUstaFlight_Id(2L);
         System.out.println("it takes " + (System.currentTimeMillis() - begin)/1000 + " second");
+    }
+
+    @Test
+    void updateAllTeamsDR() {
+
+        for (USTATeam team : teamRepository.findByDivision_IdOrderByUstaFlightAsc(5L)) {
+            importor.updateTeamPlayersDR(team);
+        }
     }
 }

@@ -5,8 +5,11 @@ import com.utr.model.Event;
 import com.utr.model.Player;
 import com.utr.model.PlayerResult;
 import org.springframework.http.*;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -123,7 +126,11 @@ public class UTRParser {
 
     }
 
-    private String restGetCall(String getCallURL) {
+    @Retryable (value = HttpServerErrorException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 5000)
+    )
+    public String restGetCall(String getCallURL) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         String accessToken = TOKEN;
@@ -135,7 +142,7 @@ public class UTRParser {
             HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
             ResponseEntity<String> response = restTemplate.exchange(getCallURL, HttpMethod.GET, entity, String.class);
             return response.getBody();
-        } catch (HttpServerErrorException ex) {
+        } catch (RestClientException ex) {
             ex.printStackTrace();
         }
         return "";

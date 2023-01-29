@@ -10,7 +10,12 @@ public interface USTATeamRepository extends CrudRepository<USTATeam, Long> {
 
     List<USTATeam> findByNameLike(String name);
 
-    USTATeam findByName(String name);
+    List<USTATeam> findByName(String name);
+
+    USTATeam findByNameAndDivision_Id(String name, long id);
+
+    USTATeam findByNameAndDivision_Name(String name, String name1);
+
 
     List<USTATeam> findAll();
 
