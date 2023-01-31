@@ -2,6 +2,7 @@ package com.utr.match;
 
 
 import com.utr.match.entity.*;
+import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,9 @@ public class PlayerController {
     PlayerRepository playerRepo;
 
     @Autowired
+    USTATeamImportor importor;
+
+    @Autowired
     TeamLoader loader;
 
     @CrossOrigin(origins = "*")
@@ -34,6 +38,23 @@ public class PlayerController {
 
         if (players.size() > 0) {
             return ResponseEntity.ok(players);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/{id}")
+    public ResponseEntity<PlayerEntity> player(@PathVariable("id") String id,
+                                                     @RequestParam("action") String action
+    ) {
+        Optional<PlayerEntity> player = playerRepo.findById(Long.valueOf(id));
+
+        if (player.isPresent()) {
+            if (action.equals("updateUTRId")) {
+                return ResponseEntity.ok(importor.updatePlayerUTRID(player.get()));
+            }
+            return ResponseEntity.ok(player.get());
         } else {
             return ResponseEntity.notFound().build();
         }
