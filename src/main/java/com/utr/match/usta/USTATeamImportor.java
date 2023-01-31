@@ -512,21 +512,29 @@ public class USTATeamImportor {
     public void updateTeamPlayersUTRID(USTATeam existTeam) {
         for (PlayerEntity player : existTeam.getPlayers()) {
 
-            List<Player> utrplayers = loader.queryPlayer(player.getName(), 5);
-
-            if (player.getUtrId() == null) {
-                String candidateUTRId = findUTRID(utrplayers, player);
-                if (candidateUTRId != null) {
-                    player.setUtrId(candidateUTRId);
-                    playerRepository.save(player);
-                    logger.debug("Player:" + player.getName() + " utr: " + player.getUtrId() + " Saved ");
-                } else {
-                    logger.debug("Player:" + player.getName() + " has no UTRId");
-                }
-
-            }
+            updatePlayerUTRID(player);
 
         }
+    }
+
+    public PlayerEntity updatePlayerUTRID(PlayerEntity player) {
+
+        PlayerEntity result = player;
+
+        List<Player> utrplayers = loader.queryPlayer(player.getName(), 5);
+
+        if (player.getUtrId() == null) {
+            String candidateUTRId = findUTRID(utrplayers, player);
+            if (candidateUTRId != null) {
+                player.setUtrId(candidateUTRId);
+                result = playerRepository.save(player);
+                logger.debug("Player:" + player.getName() + " utr: " + player.getUtrId() + " Saved ");
+            } else {
+                logger.debug("Player:" + player.getName() + " has no UTRId");
+            }
+        }
+
+        return result;
     }
 
     public void updateTeamPlayersDR(USTATeam team) {
