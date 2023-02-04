@@ -46,7 +46,7 @@ public class USTATeam {
     @JoinTable(name = "usta_team_player",
             joinColumns = {@JoinColumn(name = "usta_team_id")},
             inverseJoinColumns = {@JoinColumn(name = "player_id")})
-    @OrderBy(" dutr DESC ")
+    @OrderBy(" gender DESC, dutr DESC ")
     private final List<PlayerEntity> players;
 
     @ManyToOne

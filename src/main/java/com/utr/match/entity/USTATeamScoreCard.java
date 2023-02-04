@@ -17,6 +17,12 @@ public class USTATeamScoreCard {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "home_team")
+    private String homeTeamName;
+
+    @Column(name = "guest_team")
+    private String guestTeamName;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "flight_id")
@@ -89,22 +95,20 @@ public class USTATeamScoreCard {
 
     @JsonProperty
     public String getHomeTeamName() {
-        USTATeam team = getHomeTeam();
-
-        if (team != null) {
-            return team.getName();
-        }
-        return "";
+        return this.homeTeamName;
     }
 
     @JsonProperty
     public String getGuestTeamName() {
-        USTATeam team = getGuestTeam();
+        return this.guestTeamName;
+    }
 
-        if (team != null) {
-            return team.getName();
-        }
-        return "";
+    public void setHomeTeamName(String homeTeamName) {
+        this.homeTeamName = homeTeamName;
+    }
+
+    public void setGuestTeamName(String guestTeamName) {
+        this.guestTeamName = guestTeamName;
     }
 
     @Override
@@ -113,5 +117,14 @@ public class USTATeamScoreCard {
                 "id=" + id +
                 ", lineScores=" + lineScores +
                 '}';
+    }
+
+    public USTATeamLineScore getLineScore(String name) {
+        for (USTATeamLineScore lineScore: this.lineScores ) {
+            if (lineScore.getHomeLine().getName().equals(name)) {
+                return lineScore;
+            }
+        }
+        return null;
     }
 }

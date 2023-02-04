@@ -302,7 +302,7 @@ public class USTAController {
 
             if (team.isPresent()) {
 
-                importor.refreshTeamMatchesScores(team.get());
+                importor.refreshTeamMatchesScores(team.get(), team.get().getDivision());
 
                 List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team.get());
 
@@ -371,6 +371,22 @@ public class USTAController {
             return new ResponseEntity<>(scores, HttpStatus.OK);
         } else {
 
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @PutMapping("/score/{id}")
+    public ResponseEntity<USTATeamLineScore> updateLineScoreInfo(@PathVariable("id") long id, @RequestBody USTATeamLineScore score) {
+        Optional<USTATeamLineScore> scoreData = lineScoreRepository.findById(id);
+
+        if (scoreData.isPresent()) {
+            USTATeamLineScore _score = scoreData.get();
+            _score.setVideoLink(score.getVideoLink());
+            _score.setComment(score.getComment());
+
+            return new ResponseEntity<>(lineScoreRepository.save(_score), HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
