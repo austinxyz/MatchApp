@@ -1,9 +1,6 @@
 package com.utr.match.usta;
 
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.PlayerRepository;
-import com.utr.match.entity.USTATeam;
-import com.utr.match.entity.USTATeamRepository;
+import com.utr.match.entity.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,14 +19,16 @@ class USTATeamImportorTest {
 
 
     final String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=92360";
-    final String teamName = "VALLEY CHURCH 40AM3.5A";
+    final String teamName = "SUNNYVALE MTC 40AM4.0B";
 
-    String divisionName = "2022 Adult 40 & Over Mens 3.5";
+    String divisionName = "2023 Adult 40 & Over Mens 4.0";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17728:2625&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
     @Autowired
     private PlayerRepository playerRepository;
+    @Autowired
+    private USTADivisionRepository divisionRepository;
 
     @Test
     void importUSTATeam() {
@@ -90,14 +89,16 @@ class USTATeamImportorTest {
     }
     @Test
     void importScoreCard() {
-        importor.importScoreCard(scoreCardURL, 6L);
+        USTADivision division = divisionRepository.findByName(divisionName);
+        importor.importScoreCard(scoreCardURL, 6L, division);
     }
 
 
     @Test
     void importTeamMatchs() {
         USTATeam team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
-        importor.refreshTeamMatchesScores(team);
+        USTADivision division = divisionRepository.findByName(divisionName);
+        importor.refreshTeamMatchesScores(team, division);
     }
 
     @Test

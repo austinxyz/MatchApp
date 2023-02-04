@@ -37,8 +37,8 @@ public class USTATeamAnalyser {
         for (USTATeamMatch match: team1Matches) {
             if (match.getScoreCard() != null ) {
                 USTATeamScoreCard card = match.getScoreCard();
-                if (card.getGuestTeam().getName().equals(team1.getName())) {
-                    String teamName = card.getHomeTeam().getName();
+                if (card.getGuestTeamName().equals(team1.getName())) {
+                    String teamName = card.getHomeTeamName();
                     if (teamName.equals(team2.getName())) {
                         result.getPastScores().add(card);
                     } else {
@@ -47,8 +47,8 @@ public class USTATeamAnalyser {
                         candidateCards.put(teamName, cards);
                     }
                 }
-                if (card.getHomeTeam().getName().equals(team1.getName())) {
-                    String teamName = card.getGuestTeam().getName();
+                if (card.getHomeTeamName().equals(team1.getName())) {
+                    String teamName = card.getGuestTeamName();
                     if (teamName.equals(team2.getName())) {
                         result.getPastScores().add(card);
                     } else {
@@ -63,8 +63,8 @@ public class USTATeamAnalyser {
         for (USTATeamMatch match: team2Matches) {
             if (match.getScoreCard() != null ) {
                 USTATeamScoreCard card = match.getScoreCard();
-                if (card.getGuestTeam().getName().equals(team2.getName())) {
-                    String teamName = card.getHomeTeam().getName();
+                if (card.getGuestTeamName().equals(team2.getName())) {
+                    String teamName = card.getHomeTeamName();
                     if (teamName.equals(team1.getName())) {
                         continue;
                     } else {
@@ -77,8 +77,8 @@ public class USTATeamAnalyser {
                         }
                     }
                 }
-                if (card.getHomeTeam().getName().equals(team2.getName())) {
-                    String teamName = card.getGuestTeam().getName();
+                if (card.getHomeTeamName().equals(team2.getName())) {
+                    String teamName = card.getGuestTeamName();
                     if (teamName.equals(team2.getName())) {
                         result.getPastScores().add(card);
                     } else {

@@ -53,31 +53,30 @@ public class USTATeamImportor {
     public USTATeamImportor() {
     }
 
-    public void refreshTeamMatchesScores(USTATeam team) {
+    public void refreshTeamMatchesScores(USTATeam team, USTADivision division) {
         USTASiteParser util = new USTASiteParser();
         try {
             JSONArray matches = util.parseTeamMatches(team);
-            USTAFlight flight = team.getUstaFlight();
 
             for (int i = 0; i < matches.length(); i++) {
                 JSONObject scoreCardJSON = (JSONObject) matches.get(i);
-                handleScoreCard(flight, scoreCardJSON);
+                handleScoreCard(division, team.getUstaFlight(), scoreCardJSON);
             }
 
-            cleanUpMatches(matches, team);
+            cleanUpMatches(matches, division, team);
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    private void cleanUpMatches(JSONArray matches, USTATeam team) throws ParseException {
+    private void cleanUpMatches(JSONArray matches, USTADivision division, USTATeam team) throws ParseException {
         List<USTATeamMatch> existedMatches = teamMatchRepository.findByTeamOrderByMatchDateAsc(team);
 
         for (int i = 0; i < matches.length(); i++) {
             JSONObject scoreCardJSON = (JSONObject) matches.get(i);
-            USTATeamMatch homeMatch = createHomeTeamMatch(scoreCardJSON, team.getUstaFlight());
-            USTATeamMatch guestMatch = createGuestTeamMatch(scoreCardJSON, team.getUstaFlight());
+            USTATeamMatch homeMatch = createHomeTeamMatch(scoreCardJSON, division);
+            USTATeamMatch guestMatch = createGuestTeamMatch(scoreCardJSON, division);
             homeMatch.setOpponentTeam(guestMatch.getTeam());
             guestMatch.setOpponentTeam(homeMatch.getTeam());
             if (homeMatch.getTeam().getId() == team.getId()) {
@@ -102,7 +101,7 @@ public class USTATeamImportor {
     private void removeMatch(List<USTATeamMatch> existedMatches, Date matchDate, Long opponentTeamId) {
         USTATeamMatch target = null;
         for (USTATeamMatch match: existedMatches) {
-            if (match.getMatchDate().equals(matchDate) && match.getOpponentTeamId() == opponentTeamId) {
+            if (match.getMatchDate().equals(matchDate) && match.getOpponentTeamId().longValue() == opponentTeamId.longValue()) {
                 target = match;
                 break;
             }
@@ -113,7 +112,7 @@ public class USTATeamImportor {
         }
     }
 
-    public void importScoreCard(String scoreCardURL, Long flightId) {
+    public void importScoreCard(String scoreCardURL, Long flightId, USTADivision division) {
 
         USTASiteParser util = new USTASiteParser();
         try {
@@ -124,7 +123,7 @@ public class USTATeamImportor {
 
                 JSONObject obj = util.parseScoreCard(scoreCardURL);
 
-                handleScoreCard(flight, obj);
+                handleScoreCard(division, flight, obj);
             }
 
         } catch (IOException | ParseException e) {
@@ -133,10 +132,10 @@ public class USTATeamImportor {
 
     }
 
-    private void handleScoreCard(USTAFlight flight, JSONObject obj) throws ParseException {
-        USTATeamMatch homeMatch = createHomeTeamMatch(obj, flight);
+    private void handleScoreCard(USTADivision division, USTAFlight flight, JSONObject obj) throws ParseException {
+        USTATeamMatch homeMatch = createHomeTeamMatch(obj, division);
 
-        USTATeamMatch guestMatch = createGuestTeamMatch(obj, flight);
+        USTATeamMatch guestMatch = createGuestTeamMatch(obj, division);
 
         if (homeMatch == null || guestMatch == null) {
             return;
@@ -155,6 +154,8 @@ public class USTATeamImportor {
         homeMatch = createOrFetchMatch(homeMatch);
 
         guestMatch = createOrFetchMatch(guestMatch);
+
+
 
         if (homeMatch.getScoreCard() == null) {
 
@@ -175,6 +176,8 @@ public class USTATeamImportor {
             }
 
             if (homeMatch.getLines() != null && !homeMatch.getLines().isEmpty()) {
+                scoreCard.setHomeTeamName(scoreCard.getHomeTeam().getName());
+                scoreCard.setGuestTeamName(scoreCard.getGuestTeam().getName());
 
                 scoreCard = scoreCardRepository.save(scoreCard);
 
@@ -186,7 +189,76 @@ public class USTATeamImportor {
 
                 teamMatchRepository.save(guestMatch);
             }
+        } else {
+
+            USTATeamScoreCard existedScoreCard = homeMatch.getScoreCard();
+
+            for (USTATeamLineScore lineScore : scoreCard.getLineScores()) {
+                USTATeamMatchLine homeLine = lineScore.getHomeLine();
+
+                USTATeamLineScore existedLineScore = existedScoreCard.getLineScore(homeLine.getName());
+
+                USTATeamMatchLine existedHomeLine = existedLineScore.getHomeLine();
+
+                boolean changed = false;
+
+                if (!samePlayer(homeLine.getPlayer1(), existedHomeLine.getPlayer1())) {
+                    existedHomeLine.setPlayer1(homeLine.getPlayer1());
+                    changed = true;
+                }
+
+                if (!samePlayer(homeLine.getPlayer2(), existedHomeLine.getPlayer2())) {
+                    existedHomeLine.setPlayer2(homeLine.getPlayer2());
+                    changed = true;
+                }
+
+                if (changed) {
+                    matchLineRepository.save(existedHomeLine);
+                    System.out.println("home line is updated" + existedHomeLine.toString());
+                    changed = false;
+                }
+
+                USTATeamMatchLine guestLine = lineScore.getGuestLine();
+
+                USTATeamMatchLine existedGuestLine = existedLineScore.getGuestLine();
+
+                if (!samePlayer(guestLine.getPlayer1(), existedGuestLine.getPlayer1())) {
+                    existedGuestLine.setPlayer1(guestLine.getPlayer1());
+                    changed = true;
+                }
+
+                if (!samePlayer(guestLine.getPlayer2(), existedGuestLine.getPlayer2())) {
+                    existedGuestLine.setPlayer2(guestLine.getPlayer2());
+                    changed = true;
+                }
+
+                if (changed) {
+                    matchLineRepository.save(existedGuestLine);
+                    System.out.println("guest line is updated" + existedGuestLine.toString());
+                    changed = false;
+                }
+            }
+
+            if (existedScoreCard.getHomeTeamName() == null || existedScoreCard.getHomeTeamName().trim().equals("")) {
+                existedScoreCard.setHomeTeamName(scoreCard.getHomeTeam().getName());
+                existedScoreCard.setGuestTeamName(scoreCard.getGuestTeam().getName());
+                scoreCardRepository.save(existedScoreCard);
+            }
+
         }
+
+    }
+
+    private boolean samePlayer(PlayerEntity player1, PlayerEntity player2) {
+        if (player1 == null && player2 == null) {
+            return true;
+        }
+
+        if (player1 == null || player2 == null) {
+            return false;
+        }
+
+        return player1.getId() == player2.getId();
 
     }
 
@@ -223,8 +295,8 @@ public class USTATeamImportor {
         }
     }
 
-    private USTATeamMatch createGuestTeamMatch(JSONObject obj, USTAFlight flight) throws ParseException {
-        USTATeam guestTeam = fetchOrCreateTeam(obj, false, flight.getDivision());
+    private USTATeamMatch createGuestTeamMatch(JSONObject obj, USTADivision division) throws ParseException {
+        USTATeam guestTeam = fetchOrCreateTeam(obj, false, division);
 
         USTATeamMatch match = new USTATeamMatch(guestTeam);
 
@@ -331,8 +403,8 @@ public class USTATeamImportor {
 
     }
 
-    private USTATeamMatch createHomeTeamMatch(JSONObject obj, USTAFlight flight) throws ParseException {
-        USTATeam homeTeam = fetchOrCreateTeam(obj, true, flight.getDivision());
+    private USTATeamMatch createHomeTeamMatch(JSONObject obj, USTADivision division) throws ParseException {
+        USTATeam homeTeam = fetchOrCreateTeam(obj, true, division);
 
         USTATeamMatch match = new USTATeamMatch(homeTeam);
 
@@ -446,6 +518,7 @@ public class USTATeamImportor {
 
                 if (existedPlayer != null) {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
+                    existedPlayer.setUstaNorcalId(player.getUstaNorcalId());
                     existedPlayer.setArea(player.getArea());
                     //existedPlayer.setUstaRating(player.getUstaRating());
                     setAgeRange(existedPlayer, division);

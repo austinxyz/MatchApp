@@ -113,14 +113,29 @@ class USTATeamRepositoryTest {
     @Transactional
     void getTeams() {
         PlayerEntity player = playerRepository.findByNameLike("%Lucy%").get(0);
+        long start = System.currentTimeMillis();
         System.out.println(player.getName());
         for (USTATeam team :player.getTeams()) {
             System.out.println(team.getName());
         }
-
-
+        System.out.println(System.currentTimeMillis() - start);
 
     }
+
+    @Test
+    void getTeamScore() {
+        USTATeam team = ustaTeamRepository.findById(1L).get();
+
+        long start = System.currentTimeMillis();
+
+        List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team);
+        for (USTATeamMatch match :matches) {
+            System.out.println(match.toString());
+        }
+        System.out.println(System.currentTimeMillis() - start);
+
+    }
+
     @Test
     void createTeamAndAddPlayers() {
 

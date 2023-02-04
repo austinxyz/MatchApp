@@ -23,7 +23,7 @@ public class DivisionEntity {
     @Column(name="formal_name_english")
     private String englishName;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "division_players",
         joinColumns = {@JoinColumn(name="division_id")},
         inverseJoinColumns = {@JoinColumn(name="player_id")})

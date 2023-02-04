@@ -23,7 +23,7 @@ public class USTAFlight {
     private String area;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "usta_division_id")
     private USTADivision division;
 

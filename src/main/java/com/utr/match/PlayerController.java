@@ -111,6 +111,7 @@ public class PlayerController {
                                                           @RequestParam(value = "type", defaultValue = "double") String type,
                                                           @RequestParam(value = "gender", defaultValue = "M") String gender,
                                                           @RequestParam(value = "ageRange") String ageRange,
+                                                          @RequestParam(value = "ratedOnly", defaultValue = "false") String ratedOnlyStr,
                                                           @RequestParam(value = "start", defaultValue = "0") int start,
                                                           @RequestParam(value = "size", defaultValue = "10") int size
     ) {
@@ -118,18 +119,30 @@ public class PlayerController {
         PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating));
         PlayerSpecification UTRSpec;
         PlayerSpecification utrLimitSpec;
+        PlayerSpecification ratedOnlySpec = null;
+        boolean ratedOnly = !ratedOnlyStr.equals("false");
         if (type.equalsIgnoreCase("double")) {
             UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf(utrValue)),
                     new OrderByCriteria("dUTR", false));
             utrLimitSpec = new PlayerSpecification(new SearchCriteria("dUTR", "<", utrLimitValue));
+            if (ratedOnly) {
+                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("dUTRStatus", ":", "Rated"));
+            }
         } else {
             UTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", Double.valueOf(utrValue)),
                     new OrderByCriteria("sUTR", false));
             utrLimitSpec = new PlayerSpecification(new SearchCriteria("sUTR", "<", utrLimitValue));
+            if (ratedOnly) {
+                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("sUTRStatus", ":", "Rated"));
+            }
         }
         PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
         PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
         Specification spec = Specification.where(ustaRatingSpec).and(utrLimitSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
+
+        if (ratedOnly && ratedOnlySpec!=null) {
+            spec = spec.and(ratedOnlySpec);
+        }
 
         Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
 
@@ -310,10 +323,33 @@ public class PlayerController {
             PlayerEntity _player = playerData.get();
             _player.setUstaId(player.getUstaId());
             _player.setUtrId(player.getUtrId());
+            _player.setUstaNorcalId(player.getUstaNorcalId());
+            _player.setSummary(player.getSummary());
+            _player.setMemo(player.getMemo());
+            _player.setLefty(player.isLefty());
 
             return new ResponseEntity<>(playerRepo.save(_player), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/usta/{norcalId}")
+    public ResponseEntity<PlayerEntity> getPlayerByNorcalId(@PathVariable("norcalId") String norcalId,
+                                                        @RequestParam(value = "action", defaultValue = "search") String action
+    ) {
+
+        if (action.equals("search")) {
+            PlayerEntity player = playerRepo.findByUstaNorcalId(norcalId);
+
+            if (player != null) {
+                return ResponseEntity.ok(player);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

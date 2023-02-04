@@ -66,7 +66,7 @@ public class PlayerEntity {
     private String ustaNorcalId;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<EventUTR> utrs;
 
     @JsonIgnore

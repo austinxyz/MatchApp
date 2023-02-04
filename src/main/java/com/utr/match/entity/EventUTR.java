@@ -16,7 +16,7 @@ public class EventUTR {
     @Column(name="event_utr")
     private double utr;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id")
     private PlayerEntity player;
 
