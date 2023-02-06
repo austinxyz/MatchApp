@@ -1,7 +1,6 @@
 package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
-import com.utr.model.Division;
 import com.utr.model.Player;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,7 +109,7 @@ class PlayerRepositoryTest {
         PlayerEntity player = playerRepo.findByUtrId("1316122");
         System.out.println(player.getFirstName() + " " + player.getLastName());
 
-        for (USTATeam team: player.getTeams()) {
+        for (USTATeamEntity team: player.getTeams()) {
             System.out.println(team.getName());
         }
 

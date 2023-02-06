@@ -1,6 +1,7 @@
 package com.utr.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Division {
@@ -33,6 +34,7 @@ public class Division {
     }
 
     public List<Player> getPlayers() {
+        players.sort((Player o1, Player o2)-> Double.compare(o2.getsUTR(), o1.getsUTR()));
         return players;
     }
 

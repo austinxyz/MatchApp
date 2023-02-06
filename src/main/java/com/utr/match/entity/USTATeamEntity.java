@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "usta_team")
-public class USTATeam {
+public class USTATeamEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -42,7 +42,10 @@ public class USTATeam {
     @JoinColumn(name = "flight_id")
     private USTAFlight ustaFlight;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
     @JoinTable(name = "usta_team_player",
             joinColumns = {@JoinColumn(name = "usta_team_id")},
             inverseJoinColumns = {@JoinColumn(name = "player_id")})
@@ -61,13 +64,13 @@ public class USTATeam {
     @Transient
     private String areaCode;
 
-    public USTATeam(String name, USTADivision division) {
+    public USTATeamEntity(String name, USTADivision division) {
         this.name = name;
         this.division = division;
         this.players = new ArrayList<>();
     }
 
-    public USTATeam() {
+    public USTATeamEntity() {
         this.players = new ArrayList<>();
     }
 

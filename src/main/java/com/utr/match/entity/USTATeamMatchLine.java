@@ -90,6 +90,12 @@ public class USTATeamMatchLine {
         this.player2 = player2;
     }
 
+    public boolean isPair(PlayerEntity player1, PlayerEntity player2) {
+        return type.equals("D") && ((player1.getId() == this.player1.getId()
+                && player2.getId() == this.player2.getId())
+                || (player2.getId() == this.player1.getId()
+                && player1.getId() == this.player2.getId()));
+    }
     @Override
     public String toString() {
         return "USTATeamMatchLine{" +

@@ -62,7 +62,7 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{id}/teams")
-    public ResponseEntity<Set<USTATeam>> playerTeams(@PathVariable("id") String id
+    public ResponseEntity<Set<USTATeamEntity>> playerTeams(@PathVariable("id") String id
     ) {
         Optional<PlayerEntity> player = playerRepo.findById(Long.valueOf(id));
 

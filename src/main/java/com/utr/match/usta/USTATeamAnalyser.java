@@ -1,19 +1,25 @@
 package com.utr.match.usta;
 
 import com.utr.match.entity.*;
-import com.utr.player.SingleAnalysisResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import springfox.documentation.annotations.Cacheable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-@Component
+@Service
 @Scope("singleton")
 public class USTATeamAnalyser {
+
+    private static final Logger logger = LoggerFactory.getLogger(USTATeamAnalyser.class);
 
     @Autowired
     USTATeamRepository teamRepository;
@@ -23,78 +29,44 @@ public class USTATeamAnalyser {
 
     public USTATeamAnalysisResult compareTeam(String teamId1, String teamId2) {
 
-
-        USTATeam team1 = teamRepository.findById(Long.valueOf(teamId1)).get();
-        List<USTATeamMatch> team1Matches = matchRepository.findByTeamOrderByMatchDateAsc(team1);
-
-        USTATeam team2 = teamRepository.findById(Long.valueOf(teamId2)).get();
-        List<USTATeamMatch> team2Matches = matchRepository.findByTeamOrderByMatchDateAsc(team2);
+        USTATeam team1 = getUstaTeam(teamId1);
+        USTATeam team2 = getUstaTeam(teamId2);
 
         USTATeamAnalysisResult result = new USTATeamAnalysisResult(team1, team2);
 
         Map<String, List<USTATeamScoreCard>> candidateCards = new HashMap<>();
 
-        for (USTATeamMatch match: team1Matches) {
-            if (match.getScoreCard() != null ) {
-                USTATeamScoreCard card = match.getScoreCard();
-                if (card.getGuestTeamName().equals(team1.getName())) {
-                    String teamName = card.getHomeTeamName();
-                    if (teamName.equals(team2.getName())) {
-                        result.getPastScores().add(card);
-                    } else {
-                        List<USTATeamScoreCard> cards = candidateCards.getOrDefault(teamName, new ArrayList<>());
-                        cards.add(card);
-                        candidateCards.put(teamName, cards);
-                    }
-                }
-                if (card.getHomeTeamName().equals(team1.getName())) {
-                    String teamName = card.getGuestTeamName();
-                    if (teamName.equals(team2.getName())) {
-                        result.getPastScores().add(card);
-                    } else {
-                        List<USTATeamScoreCard> cards = candidateCards.getOrDefault(teamName, new ArrayList<>());
-                        cards.add(card);
-                        candidateCards.put(teamName, cards);
-                    }
-                }
+        Set<String> team2Opponents = team2.getOpponentTeams();
+        for (String teamName: team1.getOpponentTeams()) {
+            if (team2Opponents.contains(teamName)) {
+                List<USTATeamScoreCard> cards = candidateCards.getOrDefault(teamName, new ArrayList<>());
+                cards.addAll(team1.getScores(teamName));
+                cards.addAll(team2.getScores(teamName));
+                candidateCards.put(teamName, cards);
+                result.getMatchesWithSameTeam().put(teamName, cards);
             }
         }
 
-        for (USTATeamMatch match: team2Matches) {
-            if (match.getScoreCard() != null ) {
-                USTATeamScoreCard card = match.getScoreCard();
-                if (card.getGuestTeamName().equals(team2.getName())) {
-                    String teamName = card.getHomeTeamName();
-                    if (teamName.equals(team1.getName())) {
-                        continue;
-                    } else {
-                        if (candidateCards.containsKey(teamName)) {
-                            List<USTATeamScoreCard> cards = candidateCards.get(teamName);
-                            if (!result.getMatchesWithSameTeam().containsKey(teamName)) {
-                                result.getMatchesWithSameTeam().put(teamName, cards);
-                            }
-                            result.getMatchesWithSameTeam().get(teamName).add(card);
-                        }
-                    }
-                }
-                if (card.getHomeTeamName().equals(team2.getName())) {
-                    String teamName = card.getGuestTeamName();
-                    if (teamName.equals(team2.getName())) {
-                        result.getPastScores().add(card);
-                    } else {
-                        if (candidateCards.containsKey(teamName)) {
-                            List<USTATeamScoreCard> cards = candidateCards.get(teamName);
-                            if (!result.getMatchesWithSameTeam().containsKey(teamName)) {
-                                result.getMatchesWithSameTeam().put(teamName, cards);
-                            }
-                            result.getMatchesWithSameTeam().get(teamName).add(card);
-                        }
-                    }
-                }
-            }
+        if (team1.getOpponentTeams().contains(team2.getTeamName())) {
+            result.getPastScores().addAll(team1.getScores(team2.getTeamName()));
         }
 
         return result;
 
+    }
+
+    @Cacheable("team")
+    private USTATeam getUstaTeam(String teamId) {
+        logger.debug("Get team from db by id :" + teamId);
+        USTATeamEntity teamEntity = teamRepository.findById(Long.valueOf(teamId)).get();
+        USTATeam team = new USTATeam(teamEntity);
+
+        logger.debug("Find all matches for team :" + teamEntity.getName());
+        for (USTATeamMatch match: matchRepository.findByTeamOrderByMatchDateAsc(teamEntity)) {
+            if (match.getScoreCard() != null) {
+                team.addScore(match.getScoreCard());
+            }
+        }
+        return team;
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.boot.json.JsonParserFactory;
 import java.sql.Timestamp;
 import java.util.Map;
 
-public class PlayerParser {
+public class PlayerParser extends UTRJSONHandler {
     String playerId;
 
     public PlayerParser(String playerId) {
@@ -17,7 +17,7 @@ public class PlayerParser {
 
     public Player parseResult(String playerJsonString) {
 
-        Map<String, Object> playerJson = JsonParserFactory.getJsonParser().parseMap(playerJsonString);
+        Map<String, Object> playerJson = parseJsonMap(playerJsonString);
 
         return parsePlayer(playerJson);
 

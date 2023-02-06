@@ -1,6 +1,6 @@
 package com.utr.match.usta;
 
-import com.utr.match.entity.USTATeam;
+import com.utr.match.entity.USTATeamEntity;
 import com.utr.match.entity.USTATeamScoreCard;
 
 import java.util.ArrayList;
