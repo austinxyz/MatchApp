@@ -1,7 +1,7 @@
 package com.utr.match.usta;
 
 import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.USTATeam;
+import com.utr.match.entity.USTATeamEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -26,7 +26,7 @@ public class USTASiteParser {
     public USTASiteParser() {
     }
 
-    public JSONArray parseTeamMatches(USTATeam team) throws IOException {
+    public JSONArray parseTeamMatches(USTATeamEntity team) throws IOException {
         JSONArray result = new JSONArray();
 
         Document doc = Jsoup.connect(team.getLink()).get();
@@ -208,10 +208,10 @@ public class USTASiteParser {
         return teams;
     }
 
-    public USTATeam parseUSTATeam(String teamURL) throws IOException {
+    public USTATeamEntity parseUSTATeam(String teamURL) throws IOException {
         Document doc = Jsoup.connect(teamURL).get();
         String title = doc.title();
-        USTATeam team = new USTATeam();
+        USTATeamEntity team = new USTATeamEntity();
         team.setName(getTeamName(title));
         team.setAlias(getAlias(title));
         team.setLink(teamURL);
@@ -267,7 +267,7 @@ public class USTASiteParser {
         return team;
     }
 
-    private void parseAreaInfo(Element tr, USTATeam team) {
+    private void parseAreaInfo(Element tr, USTATeamEntity team) {
         Element parent = tr.parent().parent();
         Element td = parent.children().get(1);
         String text = td.text();
@@ -293,7 +293,7 @@ public class USTASiteParser {
         return name;
     }
 
-    private void parseDivisionInfo(Document doc, USTATeam team) {
+    private void parseDivisionInfo(Document doc, USTATeamEntity team) {
         Element ele = doc.body().children().get(6);
         String divisionName = ele.children().get(0).children().get(0).children().get(1).children().get(0).text();
         String flight = "1";

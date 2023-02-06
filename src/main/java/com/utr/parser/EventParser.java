@@ -3,7 +3,6 @@ package com.utr.parser;
 import com.utr.model.Division;
 import com.utr.model.Event;
 import com.utr.model.Player;
-import org.springframework.boot.json.JsonParserFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class EventParser {
+public class EventParser extends UTRJSONHandler {
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     public EventParser() {
@@ -20,7 +19,11 @@ public class EventParser {
     public Event buildEvent(String eventJsonString, String eventId) {
         Event event = new Event(eventId);
 
-        Map<String, Object> eventJson = JsonParserFactory.getJsonParser().parseMap(eventJsonString);
+        Map<String, Object> eventJson = parseJsonMap(eventJsonString);
+
+        if (eventJson == null) {
+            return event;
+        }
 
         event.setName((String)eventJson.get("name"));
 
@@ -90,9 +93,13 @@ public class EventParser {
     }
 
     public List<Event> buildEvents(String clubEventsJson) {
-        List eventsJson = JsonParserFactory.getJsonParser().parseList(clubEventsJson);
+        List eventsJson = parseJsonList(clubEventsJson);
 
         List<Event> events = new ArrayList<>();
+
+        if (eventsJson == null) {
+            return events;
+        }
 
         for (Object eventJsonObject: eventsJson) {
             Map<String, Object> eventJson = (Map<String, Object>)eventJsonObject;
@@ -113,4 +120,5 @@ public class EventParser {
 
         return events;
     }
+
 }

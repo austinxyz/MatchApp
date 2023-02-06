@@ -1,9 +1,12 @@
 package com.utr.parser;
 
+import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.Club;
 import com.utr.model.Event;
 import com.utr.model.Player;
 import com.utr.model.PlayerResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -17,6 +20,7 @@ import java.util.List;
 @Component
 public class UTRParser {
 
+    private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
     public UTRParser() {
     }
 
@@ -136,14 +140,14 @@ public class UTRParser {
         String accessToken = TOKEN;
         headers.set("Authorization", "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         try {
             String requestJson = "{}";
             HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
             ResponseEntity<String> response = restTemplate.exchange(getCallURL, HttpMethod.GET, entity, String.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            ex.printStackTrace();
+            logger.debug(ex.toString());
+            logger.debug("Call REST API failed: " + getCallURL);
         }
         return "";
     }

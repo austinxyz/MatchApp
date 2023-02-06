@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PlayerResultParser {
+public class PlayerResultParser extends UTRJSONHandler {
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     String playerId;
@@ -25,7 +25,11 @@ public class PlayerResultParser {
             return result;
         }
 
-        Map<String, Object> resultJson = JsonParserFactory.getJsonParser().parseMap(resultJsonString);
+        Map<String, Object> resultJson = parseJsonMap(resultJsonString);
+
+        if (resultJson == null) {
+            return result;
+        }
 
         result.setWinsNumber((Integer) resultJson.get("wins"));
         result.setLossesNumber((Integer) resultJson.get("losses"));

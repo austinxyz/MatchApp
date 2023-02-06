@@ -49,9 +49,9 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams")
-    public ResponseEntity<List<USTATeam>> teams(
+    public ResponseEntity<List<USTATeamEntity>> teams(
     ) {
-        List<USTATeam> teams = teamRepository.findAll();
+        List<USTATeamEntity> teams = teamRepository.findAll();
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -62,9 +62,9 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}")
-    public ResponseEntity<USTATeam> team(@PathVariable("id") String id
+    public ResponseEntity<USTATeamEntity> team(@PathVariable("id") String id
     ) {
-        Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+        Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
         if (team.isPresent()) {
             return ResponseEntity.ok(prepareUTRData(team.get()));
@@ -73,7 +73,7 @@ public class USTAController {
         }
     }
 
-    private USTATeam prepareUTRData(USTATeam ustaTeam) {
+    private USTATeamEntity prepareUTRData(USTATeamEntity ustaTeam) {
         for (PlayerEntity player : ustaTeam.getPlayers()) {
             if (player.getUtrId() == null || player.getUtrId().trim().equals("")) {
                 continue;
@@ -107,9 +107,9 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search/teams")
-    public ResponseEntity<List<USTATeam>> searchTeam(@RequestParam(value = "query") String query
+    public ResponseEntity<List<USTATeamEntity>> searchTeam(@RequestParam(value = "query") String query
     ) {
-        List<USTATeam> teams = teamRepository.findByNameLike(query);
+        List<USTATeamEntity> teams = teamRepository.findByNameLike("%"+query+"%");
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -120,10 +120,10 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/divisions/{divId}/teams")
-    public ResponseEntity<List<USTATeam>> getTeamsByDivision(@PathVariable("divId") String divId
+    public ResponseEntity<List<USTATeamEntity>> getTeamsByDivision(@PathVariable("divId") String divId
     ) {
 
-        List<USTATeam> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(divId));
+        List<USTATeamEntity> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(divId));
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -148,9 +148,9 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/flights/{flightId}/teams")
-    public ResponseEntity<List<USTATeam>> getTeamByFlight(@PathVariable("flightId") String flightId
+    public ResponseEntity<List<USTATeamEntity>> getTeamByFlight(@PathVariable("flightId") String flightId
     ) {
-        List<USTATeam> teams = teamRepository.findByUstaFlight_Id(Long.valueOf(flightId));
+        List<USTATeamEntity> teams = teamRepository.findByUstaFlight_Id(Long.valueOf(flightId));
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -203,13 +203,13 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/utrs")
-    public ResponseEntity<USTATeam> updatePlayersUTRId(@PathVariable("id") String id,
-                                                       @RequestParam("action") String action
+    public ResponseEntity<USTATeamEntity> updatePlayersUTRId(@PathVariable("id") String id,
+                                                             @RequestParam("action") String action
     ) {
 
         if (action.equals("refreshID")) {
 
-            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+            Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
             if (team.isPresent()) {
                 importor.updateTeamPlayersUTRID(team.get());
@@ -221,7 +221,7 @@ public class USTAController {
 
         if (action.equals("refreshValue")) {
 
-            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+            Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
             if (team.isPresent()) {
                 importor.updateTeamUTRInfo(team.get());
@@ -237,16 +237,16 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/players")
-    public ResponseEntity<USTATeam> updatePlayers(@PathVariable("id") String id,
-                                                    @RequestParam("action") String action
+    public ResponseEntity<USTATeamEntity> updatePlayers(@PathVariable("id") String id,
+                                                        @RequestParam("action") String action
     ) {
 
         if (action.equals("refresh")) {
 
-            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+            Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
             if (team.isPresent()) {
-                USTATeam existTeam = team.get();
+                USTATeamEntity existTeam = team.get();
 
                 existTeam = importor.importUSTATeam(existTeam.getLink());
 
@@ -260,16 +260,16 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/drs")
-    public ResponseEntity<USTATeam> updatePlayersDR(@PathVariable("id") String id,
-                                                    @RequestParam("action") String action
+    public ResponseEntity<USTATeamEntity> updatePlayersDR(@PathVariable("id") String id,
+                                                          @RequestParam("action") String action
     ) {
 
         if (action.equals("refresh")) {
 
-            Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+            Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
             if (team.isPresent()) {
-                USTATeam existTeam = team.get();
+                USTATeamEntity existTeam = team.get();
 
                 importor.updateTeamPlayersDR(existTeam);
 
@@ -286,7 +286,7 @@ public class USTAController {
     public ResponseEntity<List<USTATeamMatch>> getTeamMatchScores(@PathVariable("id") String id,
                                                                   @RequestParam(value = "action", defaultValue = "fetch") String action) {
 
-        Optional<USTATeam> team = teamRepository.findById(Long.valueOf(id));
+        Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
         if (action.equals("fetch")) {
 

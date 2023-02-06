@@ -2,7 +2,6 @@ package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.utr.match.model.Line;
 
 import javax.persistence.*;
 import java.util.*;
@@ -76,7 +75,7 @@ public class USTATeamScoreCard {
     }
 
     @JsonIgnore
-    public USTATeam getHomeTeam() {
+    public USTATeamEntity getHomeTeam() {
         if (this.lineScores.size() > 0) {
             USTATeamLineScore lineScore = this.lineScores.iterator().next();
             return lineScore.getHomeLine().getMatch().getTeam();
@@ -85,7 +84,7 @@ public class USTATeamScoreCard {
     }
 
     @JsonIgnore
-    public USTATeam getGuestTeam() {
+    public USTATeamEntity getGuestTeam() {
         if (this.lineScores.size() > 0) {
             USTATeamLineScore lineScore = this.lineScores.iterator().next();
             return lineScore.getGuestLine().getMatch().getTeam();
@@ -99,8 +98,18 @@ public class USTATeamScoreCard {
     }
 
     @JsonProperty
+    public int getHomeTeamPoint() {
+        return this.getScore(this.homeTeamName);
+    }
+
+    @JsonProperty
     public String getGuestTeamName() {
         return this.guestTeamName;
+    }
+
+    @JsonProperty
+    public int getGuestTeamPoint() {
+        return this.getScore(this.guestTeamName);
     }
 
     public void setHomeTeamName(String homeTeamName) {
@@ -126,5 +135,36 @@ public class USTATeamScoreCard {
             }
         }
         return null;
+    }
+
+    public String getOpponentTeam(String teamName) {
+        if (this.getHomeTeamName().equals(teamName)) {
+            return this.getGuestTeamName();
+        }
+
+        if (this.getGuestTeamName().equals(teamName)) {
+            return this.getHomeTeamName();
+        }
+
+        return "Not in Score Card";
+    }
+
+    public int getScore(String teamName) {
+        if (this.getHomeTeamName().equals(teamName)) {
+            return this.getLineScores().iterator().next().getHomeLine().getMatch().getPoint();
+        }
+        if (this.getGuestTeamName().equals(teamName)) {
+            return this.getLineScores().iterator().next().getGuestLine().getMatch().getPoint();
+        }
+        return 0;
+    }
+
+    public boolean isWinner(String teamName) {
+        return getScore(teamName) > getScore(this.getOpponentTeam(teamName));
+    }
+
+    @JsonProperty
+    public boolean isHomeWin() {
+        return isWinner(this.getHomeTeamName());
     }
 }

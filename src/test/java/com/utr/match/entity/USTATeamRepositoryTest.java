@@ -1,7 +1,6 @@
 package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
-import com.utr.match.entity.*;
 import com.utr.model.Player;
 import com.utr.parser.UTRParser;
 import com.utr.match.usta.USTASiteParser;
@@ -47,7 +46,7 @@ class USTATeamRepositoryTest {
 
         if (division.isPresent()) {
 
-            USTATeam team = new USTATeam("VALLEY CHURCH 40AM3.5A", division.get());
+            USTATeamEntity team = new USTATeamEntity("VALLEY CHURCH 40AM3.5A", division.get());
 
             team.setAlias("Federoar");
             team.setArea("South Bay");
@@ -66,7 +65,7 @@ class USTATeamRepositoryTest {
 
         List<PlayerEntity> players = playerRepository.findByNameLike(playerName);
 
-        USTATeam team = ustaTeamRepository.findById(1L).get();
+        USTATeamEntity team = ustaTeamRepository.findById(1L).get();
 
         PlayerEntity player = null;
         if (!players.isEmpty()) {
@@ -97,7 +96,7 @@ class USTATeamRepositoryTest {
 
     @Test
     void getTeam() {
-        USTATeam team = ustaTeamRepository.findById(1L).get();
+        USTATeamEntity team = ustaTeamRepository.findById(1L).get();
 
         System.out.println(team.getAreaCode());
 
@@ -115,7 +114,7 @@ class USTATeamRepositoryTest {
         PlayerEntity player = playerRepository.findByNameLike("%Lucy%").get(0);
         long start = System.currentTimeMillis();
         System.out.println(player.getName());
-        for (USTATeam team :player.getTeams()) {
+        for (USTATeamEntity team :player.getTeams()) {
             System.out.println(team.getName());
         }
         System.out.println(System.currentTimeMillis() - start);
@@ -124,13 +123,18 @@ class USTATeamRepositoryTest {
 
     @Test
     void getTeamScore() {
-        USTATeam team = ustaTeamRepository.findById(1L).get();
+        USTATeamEntity team = ustaTeamRepository.findById(1L).get();
 
         long start = System.currentTimeMillis();
 
         List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team);
         for (USTATeamMatch match :matches) {
-            System.out.println(match.toString());
+            USTATeamScoreCard scoreCard = match.getScoreCard();
+
+            if (scoreCard!=null) {
+                System.out.println(scoreCard.getGuestTeamPoint());
+                System.out.println(scoreCard.getHomeTeamPoint());
+            }
         }
         System.out.println(System.currentTimeMillis() - start);
 
@@ -142,7 +146,7 @@ class USTATeamRepositoryTest {
         USTASiteParser util = new USTASiteParser();
         try {
             String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96701";
-            USTATeam team = util.parseUSTATeam(teamURL);
+            USTATeamEntity team = util.parseUSTATeam(teamURL);
 
             USTADivision division = divisionRepository.findByName(team.getDivisionName());
 
@@ -151,12 +155,12 @@ class USTATeamRepositoryTest {
                 return;
             }
 
-            USTATeam existTeam = ustaTeamRepository.findByNameAndDivision_Id(team.getName(), division.getId());
+            USTATeamEntity existTeam = ustaTeamRepository.findByNameAndDivision_Id(team.getName(), division.getId());
 
             if (existTeam != null) {
                 System.out.println("team " + team.getName() + " is existed");
             } else {
-                USTATeam newTeam = new USTATeam();
+                USTATeamEntity newTeam = new USTATeamEntity();
                 newTeam.setName(team.getName());
                 newTeam.setAlias(team.getAlias());
                 newTeam.setLink(teamURL);
@@ -199,7 +203,7 @@ class USTATeamRepositoryTest {
 
         UTRParser parser = new UTRParser();
 
-        USTATeam existTeam = ustaTeamRepository.findById(3L).get();
+        USTATeamEntity existTeam = ustaTeamRepository.findById(3L).get();
 
         if (existTeam == null) {
             System.out.println("team " + existTeam.getName() + " is not existed");
@@ -258,9 +262,9 @@ class USTATeamRepositoryTest {
         USTASiteParser util = new USTASiteParser();
         try {
             String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96701";
-            USTATeam team = util.parseUSTATeam(teamURL);
+            USTATeamEntity team = util.parseUSTATeam(teamURL);
 
-            USTATeam existTeam = ustaTeamRepository.findByNameAndDivision_Name(team.getName(), team.getDivisionName());
+            USTATeamEntity existTeam = ustaTeamRepository.findByNameAndDivision_Name(team.getName(), team.getDivisionName());
 
             for (PlayerEntity player : existTeam.getPlayers()) {
 
@@ -305,11 +309,11 @@ class USTATeamRepositoryTest {
         try {
 
 
-            List<USTATeam> existTeams = ustaTeamRepository.findAll();
+            List<USTATeamEntity> existTeams = ustaTeamRepository.findAll();
 
-            for (USTATeam existTeam : existTeams) {
+            for (USTATeamEntity existTeam : existTeams) {
                if (existTeam.getCaptain() == null ) {
-                   USTATeam team = util.parseUSTATeam(existTeam.getLink());
+                   USTATeamEntity team = util.parseUSTATeam(existTeam.getLink());
                    existTeam.setArea(team.getArea());
                    existTeam.setFlight(team.getFlight());
                    List<PlayerEntity> captains = playerRepository.findByNameLike(team.getCaptainName());
@@ -329,7 +333,7 @@ class USTATeamRepositoryTest {
     @Test
     void createFlights() {
 
-        for (USTATeam team : ustaTeamRepository.findAll()) {
+        for (USTATeamEntity team : ustaTeamRepository.findAll()) {
             String flightStr = team.getFlight();
             int flightNo = Integer.parseInt(flightStr);
 
@@ -358,7 +362,7 @@ class USTATeamRepositoryTest {
     @Test
     void queryMatchScore() {
 
-        USTATeam team = ustaTeamRepository.findById(77L).get();
+        USTATeamEntity team = ustaTeamRepository.findById(77L).get();
         for (USTATeamMatch match: matchRepository.findByTeamOrderByMatchDateAsc(team)) {
             if (match.getScoreCard()!=null) {
                 USTATeamScoreCard card = match.getScoreCard();
@@ -379,7 +383,7 @@ class USTATeamRepositoryTest {
     @Test
     void updateAgeRange() {
 
-        for (USTATeam team : ustaTeamRepository.findByDivision_IdOrderByUstaFlightAsc(4L)){
+        for (USTATeamEntity team : ustaTeamRepository.findByDivision_IdOrderByUstaFlightAsc(4L)){
             for (PlayerEntity player: team.getPlayers()) {
 
                 if (player.getAgeRange() == null || !player.getAgeRange().equals("40+")) {

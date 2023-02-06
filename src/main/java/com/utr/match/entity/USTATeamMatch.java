@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,18 +35,18 @@ public class USTATeamMatch {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "team_id")
-    private USTATeam team;
+    private USTATeamEntity team;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "opp_team_id")
-    private USTATeam opponentTeam;
+    private USTATeamEntity opponentTeam;
 
     @JsonIgnore
     @OneToMany(mappedBy = "match", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<USTATeamMatchLine> lines;
 
-    public USTATeamMatch(USTATeam team) {
+    public USTATeamMatch(USTATeamEntity team) {
         this.team = team;
         this.lines = new HashSet<>();
     }
@@ -93,7 +91,7 @@ public class USTATeamMatch {
         this.scoreCard = scoreCard;
     }
 
-    public USTATeam getTeam() {
+    public USTATeamEntity getTeam() {
         return team;
     }
 
@@ -101,11 +99,11 @@ public class USTATeamMatch {
         return lines;
     }
 
-    public USTATeam getOpponentTeam() {
+    public USTATeamEntity getOpponentTeam() {
         return opponentTeam;
     }
 
-    public void setOpponentTeam(USTATeam opponentTeam) {
+    public void setOpponentTeam(USTATeamEntity opponentTeam) {
         this.opponentTeam = opponentTeam;
     }
 

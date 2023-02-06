@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.utr.match.usta.USTATeamPair;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -113,6 +114,69 @@ public class USTATeamLineScore {
 
     public void setGuestLine(USTATeamMatchLine guestLine) {
         this.guestLine = guestLine;
+    }
+
+    public boolean isWinner(PlayerEntity player1, PlayerEntity player2) {
+        if (homeLine.isPair(player1, player2)) {
+            return this.homeTeamWin;
+        }
+
+        if (guestLine.isPair(player1, player2)) {
+            return !this.homeTeamWin;
+        }
+        return false;
+    }
+
+    public boolean isWinner(PlayerEntity player1) {
+        if (homeLine.getPlayer1() != null && homeLine.getPlayer1().getId() == player1.getId() && homeLine.getPlayer2() == null) {
+            return this.homeTeamWin;
+        }
+        if (guestLine.getPlayer1() != null && guestLine.getPlayer1().getId() == player1.getId() && guestLine.getPlayer2() == null) {
+            return !this.homeTeamWin;
+        }
+        return false;
+    }
+
+    public boolean isWinnerTeam(String teamName) {
+        if (this.getScoreCard().getHomeTeamName().equals(teamName)) {
+            return this.homeTeamWin;
+        }
+
+        if (this.getScoreCard().getGuestTeamName().equals(teamName)) {
+            return !this.homeTeamWin;
+        }
+
+        return false;
+    }
+
+    @JsonIgnore
+    public USTATeamPair getWinnerPair() {
+        if (this.homeTeamWin) {
+            return new USTATeamPair(this.getHomeLine().getPlayer1(), this.getHomeLine().getPlayer2());
+        } else {
+            return new USTATeamPair(this.getGuestLine().getPlayer1(), this.getGuestLine().getPlayer2());
+        }
+    }
+
+    @JsonIgnore
+    public USTATeamPair getLoserPair() {
+        if (!this.homeTeamWin) {
+            return new USTATeamPair(this.getHomeLine().getPlayer1(), this.getHomeLine().getPlayer2());
+        } else {
+            return new USTATeamPair(this.getGuestLine().getPlayer1(), this.getGuestLine().getPlayer2());
+        }
+    }
+
+    public USTATeamPair getPair(String teamName) {
+        if (this.getScoreCard().getHomeTeamName().equals(teamName)) {
+            return new USTATeamPair(this.getHomeLine().getPlayer1(), this.getHomeLine().getPlayer2());
+        }
+
+        if (this.getScoreCard().getGuestTeamName().equals(teamName)) {
+            return new USTATeamPair(this.getGuestLine().getPlayer1(), this.getGuestLine().getPlayer2());
+        }
+
+        return null;
     }
 
     @Override

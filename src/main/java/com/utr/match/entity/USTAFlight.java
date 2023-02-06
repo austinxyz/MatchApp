@@ -1,12 +1,9 @@
 package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,7 +26,7 @@ public class USTAFlight {
 
     @JsonIgnore
     @OneToMany(mappedBy = "ustaFlight", fetch = FetchType.LAZY)
-    private Set<USTATeam> teams;
+    private Set<USTATeamEntity> teams;
 
     @JsonIgnore
     @OneToMany(mappedBy = "flight", fetch = FetchType.LAZY)
@@ -63,7 +60,7 @@ public class USTAFlight {
         this.area = area;
     }
 
-    public Set<USTATeam> getTeams() {
+    public Set<USTATeamEntity> getTeams() {
         return teams;
     }
 

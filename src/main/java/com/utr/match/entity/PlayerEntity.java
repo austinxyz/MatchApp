@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -71,7 +69,7 @@ public class PlayerEntity {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
-    private Set<USTATeam> teams;
+    private Set<USTATeamEntity> teams;
 
     @Column(name="dutr")
     Double dUTR;
@@ -333,7 +331,7 @@ public class PlayerEntity {
         this.ustaNorcalId = ustaNorcalId;
     }
 
-    public Set<USTATeam> getTeams() {
+    public Set<USTATeamEntity> getTeams() {
         return teams;
     }
 

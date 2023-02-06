@@ -1,7 +1,6 @@
 package com.utr.match.usta;
 
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.USTATeam;
+import com.utr.match.entity.USTATeamEntity;
 import com.utr.parser.UTRParser;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,8 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class USTASiteParserTest {
 
@@ -38,7 +35,7 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
         UTRParser parser = new UTRParser();
 
-        USTATeam team = null;
+        USTATeamEntity team = null;
 
         try {
             team = util.parseUSTATeam("https://www.ustanorcal.com/Teaminfo.asp?id=97084");
@@ -106,7 +103,7 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
 
         try {
-            USTATeam team = util.parseUSTATeam("https://www.ustanorcal.com/TeamInfo.asp?id=92360");
+            USTATeamEntity team = util.parseUSTATeam("https://www.ustanorcal.com/TeamInfo.asp?id=92360");
             System.out.println(team.getDivisionName());
             JSONArray matches = util.parseTeamMatches(team);
 
