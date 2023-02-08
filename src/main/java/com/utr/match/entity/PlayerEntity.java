@@ -130,8 +130,8 @@ public class PlayerEntity {
         this.sUTRStatus = sUTRStatus;
     }
 
-    public Double getDynamicRating() {
-        return dynamicRating;
+    public double getDynamicRating() {
+        return dynamicRating==null? 0.0d: dynamicRating.doubleValue();
     }
 
     public void setDynamicRating(Double dynamicRating) {

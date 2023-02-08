@@ -1,6 +1,7 @@
 package com.utr.match.usta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.utr.match.entity.PlayerEntity;
 
 public class USTATeamMember {
@@ -38,11 +39,17 @@ public class USTATeamMember {
         return player.getGender();
     }
 
+    @JsonProperty("ustaRating")
     public String getUSTARating() {
         return player.getUstaRating();
     }
 
-    public Double getDynamicRating() {
+    @JsonProperty("ustaNorcalId")
+    public String getUstaNorcalId() {
+        return player.getUstaNorcalId();
+    }
+
+    public double getDynamicRating() {
         return player.getDynamicRating();
     }
 
@@ -84,5 +91,13 @@ public class USTATeamMember {
 
     public void setLostNo(int lostNo) {
         this.lostNo = lostNo;
+    }
+
+    public float getLevel() {
+        String rating = this.player.getUstaRating();
+        if (rating != null && rating.length() >=3) {
+            return Float.parseFloat(rating.substring(0,3));
+        }
+        return 0.0f;
     }
 }
