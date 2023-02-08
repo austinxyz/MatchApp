@@ -6,6 +6,7 @@ import com.utr.match.entity.PlayerEntity;
 
 public class USTATeamMember {
 
+    @JsonIgnore
     PlayerEntity player;
 
     int winNo;
@@ -100,4 +101,34 @@ public class USTATeamMember {
         }
         return 0.0f;
     }
+
+    public String getUtrId() {
+        return player.getUtrId();
+    }
+
+    public String getUstaId() {
+        return player.getUstaId();
+    }
+
+    public String getNoncalLink() {
+        return player.getNoncalLink();
+    }
+
+    public String getTennisRecordLink() {
+        return player.getTennisRecordLink();
+    }
+
+    public boolean isLefty() {
+        return player.isLefty();
+    }
+
+    public String getTennisLinkURL() {
+        return player.getTennisLinkURL();
+    }
+
+    public String getAgeRange() {
+        return player.getAgeRange();
+    }
+
+
 }
