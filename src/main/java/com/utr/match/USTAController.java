@@ -2,6 +2,7 @@ package com.utr.match;
 
 
 import com.utr.match.entity.*;
+import com.utr.match.usta.USTATeam;
 import com.utr.match.usta.USTATeamAnalyser;
 import com.utr.match.usta.USTATeamAnalysisResult;
 import com.utr.match.usta.USTATeamImportor;
@@ -62,48 +63,49 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}")
-    public ResponseEntity<USTATeamEntity> team(@PathVariable("id") String id
+    public ResponseEntity<USTATeam> team(@PathVariable("id") String id
     ) {
         Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
         if (team.isPresent()) {
-            return ResponseEntity.ok(prepareUTRData(team.get()));
+            USTATeam ustaTeam = new USTATeam(team.get());
+            return ResponseEntity.ok(ustaTeam);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    private USTATeamEntity prepareUTRData(USTATeamEntity ustaTeam) {
-        for (PlayerEntity player : ustaTeam.getPlayers()) {
-            if (player.getUtrId() == null || player.getUtrId().trim().equals("")) {
-                continue;
-            }
-
-            if (player.getUtrFetchedTime() != null) {
-                continue;
-            }
-            Player utrPlayer = loader.getPlayer(player.getUtrId());
-
-            if (player.getUtrFetchedTime() != null && utrPlayer.getUtrFetchedTime().before(player.getUtrFetchedTime())) {
-                //the time get utr info from utr website is early the time stored in db, no need to refresh from utr website.
-                continue;
-            }
-            player.setDUTR(utrPlayer.getdUTR());
-            player.setSUTR(utrPlayer.getsUTR());
-            player.setDUTRStatus(utrPlayer.getdUTRStatus());
-            player.setSUTRStatus(utrPlayer.getsUTRStatus());
-
-            if (utrPlayer.getSuccessRate() > 0.0) {
-                player.setSuccessRate(utrPlayer.getSuccessRate());
-            }
-            if (utrPlayer.getWholeSuccessRate() > 0.0) {
-                player.setWholeSuccessRate(utrPlayer.getWholeSuccessRate());
-            }
-            //player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
-
+/*private USTATeamEntity prepareUTRData(USTATeamEntity ustaTeam) {
+    for (PlayerEntity player : ustaTeam.getPlayers()) {
+        if (player.getUtrId() == null || player.getUtrId().trim().equals("")) {
+            continue;
         }
-        return ustaTeam;
+
+        if (player.getUtrFetchedTime() != null) {
+            continue;
+        }
+        Player utrPlayer = loader.getPlayer(player.getUtrId());
+
+        if (player.getUtrFetchedTime() != null && utrPlayer.getUtrFetchedTime().before(player.getUtrFetchedTime())) {
+            //the time get utr info from utr website is early the time stored in db, no need to refresh from utr website.
+            continue;
+        }
+        player.setDUTR(utrPlayer.getdUTR());
+        player.setSUTR(utrPlayer.getsUTR());
+        player.setDUTRStatus(utrPlayer.getdUTRStatus());
+        player.setSUTRStatus(utrPlayer.getsUTRStatus());
+
+        if (utrPlayer.getSuccessRate() > 0.0) {
+            player.setSuccessRate(utrPlayer.getSuccessRate());
+        }
+        if (utrPlayer.getWholeSuccessRate() > 0.0) {
+            player.setWholeSuccessRate(utrPlayer.getWholeSuccessRate());
+        }
+        //player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+
     }
+    return ustaTeam;
+}*/
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search/teams")
@@ -203,7 +205,7 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/utrs")
-    public ResponseEntity<USTATeamEntity> updatePlayersUTRId(@PathVariable("id") String id,
+    public ResponseEntity<USTATeam> updatePlayersUTRId(@PathVariable("id") String id,
                                                              @RequestParam("action") String action
     ) {
 
@@ -212,9 +214,10 @@ public class USTAController {
             Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
             if (team.isPresent()) {
-                importor.updateTeamPlayersUTRID(team.get());
+                USTATeamEntity existTeam = team.get();
+                importor.updateTeamPlayersUTRID(existTeam);
 
-                return new ResponseEntity<>(team.get(), HttpStatus.OK);
+                return new ResponseEntity<>(new USTATeam(existTeam), HttpStatus.OK);
             }
 
         }
@@ -224,9 +227,10 @@ public class USTAController {
             Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
             if (team.isPresent()) {
-                importor.updateTeamUTRInfo(team.get());
+                USTATeamEntity existTeam = team.get();
+                importor.updateTeamUTRInfo(existTeam);
 
-                return new ResponseEntity<>(team.get(), HttpStatus.OK);
+                return new ResponseEntity<>(new USTATeam(existTeam), HttpStatus.OK);
             }
 
         }
@@ -237,7 +241,7 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/players")
-    public ResponseEntity<USTATeamEntity> updatePlayers(@PathVariable("id") String id,
+    public ResponseEntity<USTATeam> updatePlayers(@PathVariable("id") String id,
                                                         @RequestParam("action") String action
     ) {
 
@@ -250,7 +254,7 @@ public class USTAController {
 
                 existTeam = importor.importUSTATeam(existTeam.getLink());
 
-                return new ResponseEntity<>(existTeam, HttpStatus.OK);
+                return new ResponseEntity<>(new USTATeam(existTeam), HttpStatus.OK);
             }
 
         }
@@ -260,7 +264,7 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/drs")
-    public ResponseEntity<USTATeamEntity> updatePlayersDR(@PathVariable("id") String id,
+    public ResponseEntity<USTATeam> updatePlayersDR(@PathVariable("id") String id,
                                                           @RequestParam("action") String action
     ) {
 
@@ -273,7 +277,7 @@ public class USTAController {
 
                 importor.updateTeamPlayersDR(existTeam);
 
-                return new ResponseEntity<>(existTeam, HttpStatus.OK);
+                return new ResponseEntity<>(new USTATeam(existTeam), HttpStatus.OK);
             }
 
         }
@@ -308,6 +312,25 @@ public class USTAController {
 
                 return new ResponseEntity<>(matches, HttpStatus.OK);
             }
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams/{id}/lineStat")
+    public ResponseEntity<USTATeam> getTeamLineStat(@PathVariable("id") String id)  {
+
+        Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
+
+        if (team.isPresent()) {
+            USTATeam ustaTeam = new USTATeam(team.get());
+            for (USTATeamMatch match: matchRepository.findByTeamOrderByMatchDateAsc(team.get())) {
+                if (match.getScoreCard() != null) {
+                    ustaTeam.addScore(match.getScoreCard());
+                }
+            }
+            return new ResponseEntity<>(ustaTeam, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

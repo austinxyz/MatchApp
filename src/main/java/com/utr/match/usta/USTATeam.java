@@ -2,15 +2,12 @@ package com.utr.match.usta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.USTATeamEntity;
-import com.utr.match.entity.USTATeamLineScore;
-import com.utr.match.entity.USTATeamScoreCard;
+import com.utr.match.entity.*;
 
 import java.util.*;
 
 public class USTATeam {
-    @JsonProperty("team")
+    @JsonIgnore
     USTATeamEntity teamEntity;
 
     @JsonIgnore
@@ -193,7 +190,7 @@ public class USTATeam {
     }
 
     @JsonProperty
-    public Long getId() {
+    public long getId() {
         return this.teamEntity.getId();
     }
 
@@ -303,4 +300,37 @@ public class USTATeam {
     public USTATeamEntity getTeamEntity() {
         return teamEntity;
     }
+
+    public String getAlias() {
+        return teamEntity.getAlias();
+    }
+
+    public String getName() {
+        return teamEntity.getName();
+    }
+
+    public String getArea() {
+        return teamEntity.getArea();
+    }
+
+    public String getFlight(){
+        return teamEntity.getFlight();
+    }
+
+    public PlayerEntity getCaptain() {
+        return teamEntity.getCaptain();
+    }
+
+    public String getLink() {
+        return teamEntity.getLink();
+    }
+
+    public String getTennisRecordLink() {
+        return teamEntity.getTennisRecordLink();
+    }
+
+    public String getCaptainName() {
+        return teamEntity.getCaptainName();
+    }
+
 }
