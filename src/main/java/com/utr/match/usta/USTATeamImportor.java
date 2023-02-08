@@ -507,7 +507,7 @@ public class USTATeamImportor {
 
             for (PlayerEntity player : team.getPlayers()) {
 
-                PlayerEntity existedPlayer = existTeam.getPlayer(player.getName());
+                PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
 
                 if (existedPlayer != null) {
                     existedPlayer.setNoncalLink(player.getNoncalLink());
@@ -635,7 +635,7 @@ public class USTATeamImportor {
 
                 playerRepository.save(existPlayer);
 
-                logger.debug("player " + existPlayer.getId() + " " + existPlayer.getName() + " dr " + player.getDynamicRating().toString() + " updated");
+                logger.debug("player " + existPlayer.getId() + " " + existPlayer.getName() + " dr " + player.getDynamicRating() + " updated");
             }
 
         } catch (IOException e) {

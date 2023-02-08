@@ -80,4 +80,12 @@ public class USTADoubleLineStat {
     public String getLineName() {
         return lineName;
     }
+
+    public float getWinPrecent() {
+        if (this.lostMatchNo + this.winMatchNo == 0) {
+            return 0.0f;
+        }
+
+        return (float)this.winMatchNo/(float)(this.lostMatchNo+this.winMatchNo);
+    }
 }

@@ -55,7 +55,6 @@ public class USTATeamAnalyser {
 
     }
 
-    @Cacheable("team")
     private USTATeam getUstaTeam(String teamId) {
         logger.debug("Get team from db by id :" + teamId);
         USTATeamEntity teamEntity = teamRepository.findById(Long.valueOf(teamId)).get();

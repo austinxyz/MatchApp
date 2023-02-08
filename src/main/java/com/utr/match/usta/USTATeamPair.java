@@ -66,8 +66,15 @@ public class USTATeamPair {
         return player1.getDUTR() + player2.getDUTR();
     }
 
+    public double getTotalDR() {
+        return player1.getDynamicRating() + player2.getDynamicRating();
+    }
+
     public float getSuccessRate() {
-        return (float)winMatchNo / (winMatchNo + lostMatchNo);
+        if (winMatchNo + lostMatchNo == 0) {
+            return 0;
+        }
+        return (float)winMatchNo / (float)(winMatchNo + lostMatchNo);
     }
 
     public String getPlayerNames() {
