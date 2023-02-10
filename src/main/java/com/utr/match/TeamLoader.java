@@ -62,6 +62,9 @@ public class TeamLoader {
             player = players.get(utrId);
         } else {
             player = parser.parsePlayer(utrId);
+            if (player == null) {
+                return player;
+            }
             players.put(player.getId(), player);
             fetchedTimes.put(utrId, new Timestamp(System.currentTimeMillis()));
         }

@@ -7,8 +7,10 @@ import com.utr.match.entity.*;
 import java.util.*;
 
 public class USTATeam {
-    @JsonIgnore
+    @JsonProperty("team")
     USTATeamEntity teamEntity;
+
+    List<USTATeamMatch> matches;
 
     @JsonIgnore
     Map<String, List<USTATeamScoreCard>> scores;
@@ -86,6 +88,7 @@ public class USTATeam {
         this.scores = new HashMap<>();
         this.doubleLineStats = new HashMap<>();
         this.singleLineStats = new HashMap<>();
+        this.matches = new ArrayList<>();
 
     }
 
@@ -102,7 +105,14 @@ public class USTATeam {
         this.level = Float.parseFloat(levelStr);
     }
 
-    public void addScore(USTATeamScoreCard scoreCard) {
+    public void addMatch(USTATeamMatch match) {
+        this.matches.add(match);
+        if (match.getScoreCard() != null) {
+            this.addScore(match.getScoreCard());
+        }
+    }
+
+    private void addScore(USTATeamScoreCard scoreCard) {
 
         String oppTeamName = scoreCard.getOpponentTeam(this.teamEntity.getName());
         List<USTATeamScoreCard> oppTeamScores = this.scores.getOrDefault(oppTeamName, new ArrayList<>());
@@ -159,12 +169,24 @@ public class USTATeam {
 
     }
 
-    private USTATeamMember getTeamMember(PlayerEntity player) {
+    public USTATeamMember getTeamMember(PlayerEntity player) {
         if (player == null) {
             return null;
         }
         for (USTATeamMember member : this.players) {
             if (member.getId() == player.getId()) {
+                return member;
+            }
+        }
+        return null;
+    }
+
+    public USTATeamMember getTeamMemberByName(String name) {
+        if (name == null) {
+            return null;
+        }
+        for (USTATeamMember member : this.players) {
+            if (member.getName().equals(name)) {
                 return member;
             }
         }
@@ -333,4 +355,11 @@ public class USTATeam {
         return teamEntity.getCaptainName();
     }
 
+    public List<USTATeamMatch> getMatches() {
+        return matches;
+    }
+
+    public String getAreaCode() {
+        return teamEntity.getAreaCode();
+    }
 }

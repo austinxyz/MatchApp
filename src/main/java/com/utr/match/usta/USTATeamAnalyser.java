@@ -22,15 +22,12 @@ public class USTATeamAnalyser {
     private static final Logger logger = LoggerFactory.getLogger(USTATeamAnalyser.class);
 
     @Autowired
-    USTATeamRepository teamRepository;
-
-    @Autowired
-    USTATeamMatchRepository matchRepository;
+    USTAService service;
 
     public USTATeamAnalysisResult compareTeam(String teamId1, String teamId2) {
 
-        USTATeam team1 = getUstaTeam(teamId1);
-        USTATeam team2 = getUstaTeam(teamId2);
+        USTATeam team1 = service.getTeam(teamId1, true);
+        USTATeam team2 = service.getTeam(teamId2, true);
 
         USTATeamAnalysisResult result = new USTATeamAnalysisResult(team1, team2);
 
@@ -55,17 +52,4 @@ public class USTATeamAnalyser {
 
     }
 
-    private USTATeam getUstaTeam(String teamId) {
-        logger.debug("Get team from db by id :" + teamId);
-        USTATeamEntity teamEntity = teamRepository.findById(Long.valueOf(teamId)).get();
-        USTATeam team = new USTATeam(teamEntity);
-
-        logger.debug("Find all matches for team :" + teamEntity.getName());
-        for (USTATeamMatch match: matchRepository.findByTeamOrderByMatchDateAsc(teamEntity)) {
-            if (match.getScoreCard() != null) {
-                team.addScore(match.getScoreCard());
-            }
-        }
-        return team;
-    }
 }
