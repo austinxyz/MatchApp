@@ -18,7 +18,7 @@ public class PlayerResultParser extends UTRJSONHandler {
         this.playerId = playerId;
     }
 
-    PlayerResult parseResult(String resultJsonString) {
+    PlayerResult parseResult(String resultJsonString, boolean includeEvents) {
         PlayerResult result = new PlayerResult(playerId);
 
         if (resultJsonString == null || resultJsonString.equals("")) {
@@ -35,6 +35,10 @@ public class PlayerResultParser extends UTRJSONHandler {
         result.setLossesNumber((Integer) resultJson.get("losses"));
         result.setWithdrawsNumber((Integer) resultJson.get("withdrawls"));
 
+        if (!includeEvents) {
+            return result;
+        }
+
         List events = (List) resultJson.get("events");
 
         for (Object eventJson : events) {
@@ -43,6 +47,7 @@ public class PlayerResultParser extends UTRJSONHandler {
 
         return result;
     }
+
 
     private PlayerEvent parsePlayerEvent(Map<String, Object> eventJson, PlayerResult result) {
 

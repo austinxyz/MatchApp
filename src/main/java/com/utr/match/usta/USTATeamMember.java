@@ -130,5 +130,7 @@ public class USTATeamMember {
         return player.getAgeRange();
     }
 
-
+    public void setPlayer(PlayerEntity player) {
+        this.player = player;
+    }
 }

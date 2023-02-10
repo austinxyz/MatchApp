@@ -85,12 +85,21 @@ public class UTRParser {
 
     public PlayerResult parsePlayerResult(String playerId) {
         PlayerResultParser resultParser = new PlayerResultParser(playerId);
-        return resultParser.parseResult(getResultJson(playerId, true));
+        return resultParser.parseResult(getResultJson(playerId, true), true);
     }
 
     public PlayerResult parsePlayerResult(String playerId, boolean latest) {
         PlayerResultParser resultParser = new PlayerResultParser(playerId);
-        return resultParser.parseResult(getResultJson(playerId, latest));
+        return resultParser.parseResult(getResultJson(playerId, latest), true);
+    }
+
+    public float getWinPercent(String playerId, boolean latest) {
+        PlayerResultParser resultParser = new PlayerResultParser(playerId);
+        PlayerResult result = resultParser.parseResult(getResultJson(playerId, latest), false);
+        if (result.getLossesNumber() + result.getWinsNumber() == 0) {
+            return 0.0f;
+        }
+        return (float)result.getWinsNumber()/(float)(result.getLossesNumber() + result.getWinsNumber());
     }
 
     private String getResultJson(String playerId, boolean latest) {

@@ -1,21 +1,19 @@
 package com.utr.match;
 
 
-import com.utr.match.entity.*;
+import com.utr.match.entity.PlayerEntity;
+import com.utr.match.entity.PlayerRepository;
+import com.utr.match.usta.USTAService;
+import com.utr.match.usta.USTATeam;
 import com.utr.match.usta.USTATeamImportor;
-import com.utr.model.Player;
+import com.utr.match.usta.USTATeamMember;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/players")
@@ -25,36 +23,26 @@ public class PlayerController {
     PlayerRepository playerRepo;
 
     @Autowired
+    USTAService service;
+
+    @Autowired
     USTATeamImportor importor;
 
     @Autowired
     TeamLoader loader;
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/")
-    public ResponseEntity<List<PlayerEntity>> players(
-    ) {
-        List<PlayerEntity> players = playerRepo.findAll();
-
-        if (players.size() > 0) {
-            return ResponseEntity.ok(players);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @CrossOrigin(origins = "*")
     @GetMapping("/{id}")
-    public ResponseEntity<PlayerEntity> player(@PathVariable("id") String id,
-                                                     @RequestParam("action") String action
+    public ResponseEntity<USTATeamMember> player(@PathVariable("id") String id,
+                                                 @RequestParam("action") String action
     ) {
-        Optional<PlayerEntity> player = playerRepo.findById(Long.valueOf(id));
+        USTATeamMember member = service.getMember(id);
 
-        if (player.isPresent()) {
+        if (member != null) {
             if (action.equals("updateUTRId")) {
-                return ResponseEntity.ok(importor.updatePlayerUTRID(player.get()));
+                importor.updatePlayerUTRID(member);
             }
-            return ResponseEntity.ok(player.get());
+            return ResponseEntity.ok(member);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -62,12 +50,12 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{id}/teams")
-    public ResponseEntity<Set<USTATeamEntity>> playerTeams(@PathVariable("id") String id
+    public ResponseEntity<List<USTATeam>> playerTeams(@PathVariable("id") String id
     ) {
-        Optional<PlayerEntity> player = playerRepo.findById(Long.valueOf(id));
+        List<USTATeam> teams = service.getTeamsByPlayer(id);
 
-        if (player.isPresent()) {
-            return ResponseEntity.ok(player.get().getTeams());
+        if (teams.size() > 0) {
+            return ResponseEntity.ok(teams);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -75,29 +63,12 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search")
-    public ResponseEntity<List<PlayerEntity>> searchByName(@RequestParam("name") String name
+    public ResponseEntity<List<USTATeamMember>> searchByName(@RequestParam("name") String name
     ) {
-        List<PlayerEntity> players;
+        List<USTATeamMember> members = service.searchMembersByName(name);
 
-        if (isUTRId(name)) {
-            players = new ArrayList<>();
-            PlayerEntity player = playerRepo.findByUtrId(name);
-            if (player != null) {
-                players.add(player);
-            }
-        } else {
-
-            String likeString = "%" + name + "%";
-            players = playerRepo.findByNameLike(likeString);
-            String reverseString = "%" + reverseName(name) + "%";
-
-            if (!likeString.equals(reverseString)) {
-                players.addAll(playerRepo.findByNameLike(reverseString));
-            }
-        }
-
-        if (players.size() > 0) {
-            return ResponseEntity.ok(players);
+        if (members.size() > 0) {
+            return ResponseEntity.ok(members);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -105,49 +76,21 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/searchUTR")
-    public ResponseEntity<List<PlayerEntity>> searchByUTR(@RequestParam("USTARating") String ustaRating,
-                                                          @RequestParam(value = "utrLimit", defaultValue = "16.0") String utrLimitValue,
-                                                          @RequestParam(value = "utr", defaultValue = "0.0") String utrValue,
-                                                          @RequestParam(value = "type", defaultValue = "double") String type,
-                                                          @RequestParam(value = "gender", defaultValue = "M") String gender,
-                                                          @RequestParam(value = "ageRange") String ageRange,
-                                                          @RequestParam(value = "ratedOnly", defaultValue = "false") String ratedOnlyStr,
-                                                          @RequestParam(value = "start", defaultValue = "0") int start,
-                                                          @RequestParam(value = "size", defaultValue = "10") int size
+    public ResponseEntity<List<USTATeamMember>> searchByUTR(@RequestParam("USTARating") String ustaRating,
+                                                            @RequestParam(value = "utrLimit", defaultValue = "16.0") String utrLimitValue,
+                                                            @RequestParam(value = "utr", defaultValue = "0.0") String utrValue,
+                                                            @RequestParam(value = "type", defaultValue = "double") String type,
+                                                            @RequestParam(value = "gender", defaultValue = "M") String gender,
+                                                            @RequestParam(value = "ageRange") String ageRange,
+                                                            @RequestParam(value = "ratedOnly", defaultValue = "false") String ratedOnlyStr,
+                                                            @RequestParam(value = "start", defaultValue = "0") int start,
+                                                            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        Pageable firstPage = PageRequest.of(start, size);
-        PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating));
-        PlayerSpecification UTRSpec;
-        PlayerSpecification utrLimitSpec;
-        PlayerSpecification ratedOnlySpec = null;
-        boolean ratedOnly = !ratedOnlyStr.equals("false");
-        if (type.equalsIgnoreCase("double")) {
-            UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf(utrValue)),
-                    new OrderByCriteria("dUTR", false));
-            utrLimitSpec = new PlayerSpecification(new SearchCriteria("dUTR", "<", utrLimitValue));
-            if (ratedOnly) {
-                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("dUTRStatus", ":", "Rated"));
-            }
-        } else {
-            UTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", Double.valueOf(utrValue)),
-                    new OrderByCriteria("sUTR", false));
-            utrLimitSpec = new PlayerSpecification(new SearchCriteria("sUTR", "<", utrLimitValue));
-            if (ratedOnly) {
-                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("sUTRStatus", ":", "Rated"));
-            }
-        }
-        PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
-        PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
-        Specification spec = Specification.where(ustaRatingSpec).and(utrLimitSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
+        List<USTATeamMember> members = service.searchByUTR(ustaRating, utrLimitValue,
+                utrValue, type, gender, ageRange, ratedOnlyStr, start, size);
 
-        if (ratedOnly && ratedOnlySpec!=null) {
-            spec = spec.and(ratedOnlySpec);
-        }
-
-        Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
-
-        if (!players.isEmpty()) {
-            return ResponseEntity.ok(players.get().collect(Collectors.toList()));
+        if (!members.isEmpty()) {
+            return ResponseEntity.ok(members);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -161,151 +104,49 @@ public class PlayerController {
                                                        @RequestParam(value = "type", defaultValue = "double") String type,
                                                        @RequestParam(value = "gender", defaultValue = "M") String gender,
                                                        @RequestParam(value = "ageRange") String ageRange
-                                                       ) {
+    ) {
 
+        Map<String, Object> result = service.statUTR(ustaRating, ratedOnlyStr,
+                ignoreZeroUTRStr, type, gender, ageRange);
 
-        Pageable firstPage = PageRequest.of(0, 1);
-        PlayerSpecification ratedOnlySpec = null;
-        PlayerSpecification ignoreZeroUTRSpec = null;
-
-        boolean ratedOnly = !ratedOnlyStr.equals("false");
-        boolean ignoreZeroUTR = !ignoreZeroUTRStr.equals("false");
-
-        OrderByCriteria orderBy;
-        if (type.equalsIgnoreCase("double")) {
-            orderBy = new OrderByCriteria("dUTR", false);
-            if (ratedOnly) {
-                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("dUTRStatus", ":", "Rated"));
-            }
-            if (ignoreZeroUTR) {
-                ignoreZeroUTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", 0.1D));
-            }
-        } else {
-            orderBy = new OrderByCriteria("sUTR", false);
-            if (ratedOnly) {
-                ratedOnlySpec = new PlayerSpecification(new SearchCriteria("sUTRStatus", ":", "Rated"));
-            }
-            if (ignoreZeroUTR) {
-                ignoreZeroUTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", 0.1D));
-            }
-        }
-
-        PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating), orderBy);
-        PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
-        PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
-
-        Specification spec = Specification.where(ustaRatingSpec).and(genderSpec).and(ageRangeSpec);
-
-        if (ratedOnly && ratedOnlySpec!=null) {
-            spec = spec.and(ratedOnlySpec);
-        }
-
-        if (ignoreZeroUTR && ignoreZeroUTRSpec!=null) {
-            spec = spec.and(ignoreZeroUTRSpec);
-        }
-
-        Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
-
-        if (!players.isEmpty()) {
-
-            Map<String, Object> result = new HashMap<>();
-            result.put("totalNumber", String.valueOf(players.getTotalElements()));
-            PlayerEntity topPlayer = players.get().collect(Collectors.toList()).get(0);
-            result.put("topPlayer", topPlayer);
-
-            Pageable midPage = PageRequest.of(players.getTotalPages()/2, 1);
-
-            players = playerRepo.findAll(spec, midPage);
-            PlayerEntity midPlayer = players.get().collect(Collectors.toList()).get(0);
-            result.put("midPlayer", midPlayer);
+        if (!result.isEmpty()) {
             return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    private boolean isUTRId(String name) {
-
-        char c = name.charAt(0);
-
-        return c >= '0' && c <= '9';
-    }
-
-    private String reverseName(String name) {
-
-        int index = name.indexOf(' ');
-        if (index > 0 && index < name.length() - 1) {
-            String first = name.substring(0, index);
-            String last = name.substring(index + 1);
-            return last + " " + first;
-        }
-
-        return name;
-    }
-
-
     @CrossOrigin(origins = "*")
     @PostMapping("/")
-    public PlayerEntity createPlayer(@RequestBody PlayerEntity player) {
+    public USTATeamMember createPlayer(@RequestBody PlayerEntity player) {
 
-        if (player.getUtrId() != null) {
-            PlayerEntity existedPlayer = playerRepo.findByUtrId(player.getUtrId());
-            if (existedPlayer != null) {
-                return existedPlayer;
-            }
-            Player utrPlayer = loader.getPlayer(player.getUtrId());
-            player.setFirstName(utrPlayer.getFirstName());
-            player.setLastName(utrPlayer.getLastName());
-            player.setGender(utrPlayer.getGender());
-        }
+        USTATeamMember member = service.createPlayer(player);
 
-        playerRepo.save(player);
-
-        return playerRepo.findByUtrId(player.getUtrId());
+        return member;
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/utr/{id}")
-    public ResponseEntity<PlayerEntity> updatePlayerUTR(@PathVariable("id") String utrId,
-                                                        @RequestParam(value = "action", defaultValue = "search") String action
+    public ResponseEntity<USTATeamMember> updatePlayerUTR(@PathVariable("id") String utrId,
+                                                          @RequestParam(value = "action", defaultValue = "search") String action
     ) {
 
         if (action.equals("refreshUTR")) {
 
-            PlayerEntity playerData = playerRepo.findByUtrId(utrId);
+            USTATeamMember member = service.updatePlayerUTR(utrId);
 
-            if (playerData == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            if (member != null) {
+                return ResponseEntity.ok(member);
+            } else {
+                return ResponseEntity.notFound().build();
             }
-
-            loader.searchPlayerResult(utrId, false);
-
-            loader.searchPlayerResult(utrId, true);
-
-            Player player = loader.getPlayer(utrId);
-
-            if (player == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-
-            playerData.setSUTR(player.getsUTR());
-            playerData.setDUTR(player.getdUTR());
-            playerData.setSUTRStatus(player.getsUTRStatus());
-            playerData.setDUTRStatus(player.getdUTRStatus());
-            playerData.setSuccessRate(player.getSuccessRate());
-            playerData.setWholeSuccessRate(player.getWholeSuccessRate());
-            playerData.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
-
-            playerRepo.save(playerData);
-
-            return new ResponseEntity<>(playerData, HttpStatus.OK);
         }
 
         if (action.equals("search")) {
-            PlayerEntity player = playerRepo.findByUtrId(utrId);
+            USTATeamMember member = service.updatePlayerUTR(utrId);
 
-            if (player != null) {
-                return ResponseEntity.ok(player);
+            if (member != null) {
+                return ResponseEntity.ok(member);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -316,19 +157,12 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @PutMapping("/{id}")
-    public ResponseEntity<PlayerEntity> updatePlayer(@PathVariable("id") long id, @RequestBody PlayerEntity player) {
-        Optional<PlayerEntity> playerData = playerRepo.findById(id);
+    public ResponseEntity<USTATeamMember> updatePlayer(@PathVariable("id") String id, @RequestBody PlayerEntity player) {
 
-        if (playerData.isPresent()) {
-            PlayerEntity _player = playerData.get();
-            _player.setUstaId(player.getUstaId());
-            _player.setUtrId(player.getUtrId());
-            _player.setUstaNorcalId(player.getUstaNorcalId());
-            _player.setSummary(player.getSummary());
-            _player.setMemo(player.getMemo());
-            _player.setLefty(player.isLefty());
+        USTATeamMember member = service.updatePlayer(id, player);
 
-            return new ResponseEntity<>(playerRepo.save(_player), HttpStatus.OK);
+        if (member != null) {
+            return new ResponseEntity<>(member, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -336,15 +170,15 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/usta/{norcalId}")
-    public ResponseEntity<PlayerEntity> getPlayerByNorcalId(@PathVariable("norcalId") String norcalId,
-                                                        @RequestParam(value = "action", defaultValue = "search") String action
+    public ResponseEntity<USTATeamMember> getPlayerByNorcalId(@PathVariable("norcalId") String norcalId,
+                                                              @RequestParam(value = "action", defaultValue = "search") String action
     ) {
 
         if (action.equals("search")) {
-            PlayerEntity player = playerRepo.findByUstaNorcalId(norcalId);
+            USTATeamMember member = service.getPlayerByNorcalId(norcalId);
 
-            if (player != null) {
-                return ResponseEntity.ok(player);
+            if (member != null) {
+                return ResponseEntity.ok(member);
             } else {
                 return ResponseEntity.notFound().build();
             }

@@ -1,8 +1,9 @@
 package com.utr.match.usta;
 
-import com.utr.match.TeamLoader;
 import com.utr.match.entity.*;
 import com.utr.model.Player;
+import com.utr.model.PlayerResult;
+import com.utr.parser.UTRParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -37,7 +38,8 @@ public class USTATeamImportor {
     @Autowired
     private PlayerRepository playerRepository;
     @Autowired
-    private TeamLoader loader;
+    private UTRParser parser;
+    //private TeamLoader loader;
     @Autowired
     private USTAFlightRepository ustaFlightRepository;
 
@@ -87,7 +89,7 @@ public class USTATeamImportor {
             }
         }
 
-        for (USTATeamMatch match: existedMatches) {
+        for (USTATeamMatch match : existedMatches) {
             if (match.getLines().size() > 1) {
                 continue;
             }
@@ -100,14 +102,14 @@ public class USTATeamImportor {
 
     private void removeMatch(List<USTATeamMatch> existedMatches, Date matchDate, Long opponentTeamId) {
         USTATeamMatch target = null;
-        for (USTATeamMatch match: existedMatches) {
+        for (USTATeamMatch match : existedMatches) {
             if (match.getMatchDate().equals(matchDate) && match.getOpponentTeamId().longValue() == opponentTeamId.longValue()) {
                 target = match;
                 break;
             }
         }
 
-        if (target!=null) {
+        if (target != null) {
             existedMatches.remove(target);
         }
     }
@@ -154,7 +156,6 @@ public class USTATeamImportor {
         homeMatch = createOrFetchMatch(homeMatch);
 
         guestMatch = createOrFetchMatch(guestMatch);
-
 
 
         if (homeMatch.getScoreCard() == null) {
@@ -214,7 +215,7 @@ public class USTATeamImportor {
 
                 if (changed) {
                     matchLineRepository.save(existedHomeLine);
-                    System.out.println("home line is updated" + existedHomeLine.toString());
+                    System.out.println("home line is updated" + existedHomeLine);
                     changed = false;
                 }
 
@@ -234,7 +235,7 @@ public class USTATeamImportor {
 
                 if (changed) {
                     matchLineRepository.save(existedGuestLine);
-                    System.out.println("guest line is updated" + existedGuestLine.toString());
+                    System.out.println("guest line is updated" + existedGuestLine);
                     changed = false;
                 }
             }
@@ -430,8 +431,8 @@ public class USTATeamImportor {
     }
 
     private USTATeamEntity fetchOrCreateTeam(JSONObject obj, boolean isHome, USTADivision division) {
-        String teamNameLabel = isHome? "homeTeamName":"guestTeamName";
-        String teamLinkLabel = isHome? "homeTeamLink":"guestTeamLink";
+        String teamNameLabel = isHome ? "homeTeamName" : "guestTeamName";
+        String teamLinkLabel = isHome ? "homeTeamLink" : "guestTeamLink";
 
         String teamName = obj.get(teamNameLabel).toString();
         String teamLink = obj.get(teamLinkLabel).toString();
@@ -445,10 +446,9 @@ public class USTATeamImportor {
     }
 
 
-    public USTATeamEntity importUSTATeam(String teamURL) {
-        USTATeamEntity team = createTeamAndAddPlayers(teamURL);
-        updatePlayerUSTANumber(teamURL);
-        return team;
+    public USTATeamEntity importUSTATeam(String teamLink) {
+        USTATeamEntity teamEntity = createTeamAndAddPlayers(teamLink);
+        return updatePlayerUSTANumber(teamEntity);
     }
 
     public List<USTATeamEntity> importUSTAFlight(String flightURL) {
@@ -532,13 +532,13 @@ public class USTATeamImportor {
 
             List<PlayerEntity> toRemovePlayers = new ArrayList<>();
 
-            for (PlayerEntity player: existTeam.getPlayers()) {
+            for (PlayerEntity player : existTeam.getPlayers()) {
                 if (team.getPlayer(player.getName()) == null) {
                     toRemovePlayers.add(player);
                 }
             }
 
-            for (PlayerEntity player: toRemovePlayers) {
+            for (PlayerEntity player : toRemovePlayers) {
                 existTeam.getPlayers().remove(player);
             }
 
@@ -583,40 +583,37 @@ public class USTATeamImportor {
             return;
         }
 
-        updateTeamPlayersUTRID(existTeam);
+
+        updateTeamPlayersUTRID(new USTATeam(existTeam));
 
 
     }
 
-    public void updateTeamPlayersUTRID(USTATeamEntity existTeam) {
-        for (PlayerEntity player : existTeam.getPlayers()) {
+    public void updateTeamPlayersUTRID(USTATeam existTeam) {
+        for (USTATeamMember member : existTeam.getPlayers()) {
 
-            updatePlayerUTRID(player);
+            updatePlayerUTRID(member);
 
         }
     }
 
-    public PlayerEntity updatePlayerUTRID(PlayerEntity player) {
+    public void updatePlayerUTRID(USTATeamMember member) {
 
-        PlayerEntity result = player;
-
-        List<Player> utrplayers = loader.queryPlayer(player.getName(), 5);
-
-        if (player.getUtrId() == null) {
-            String candidateUTRId = findUTRID(utrplayers, player);
+        if (member.getUtrId() == null || member.getUtrId().trim().equals("")) {
+            List<Player> utrplayers = parser.searchPlayers(member.getName(), 5);
+            String candidateUTRId = findUTRID(utrplayers, member);
             if (candidateUTRId != null) {
-                player.setUtrId(candidateUTRId);
-                result = playerRepository.save(player);
-                logger.debug("Player:" + player.getName() + " utr: " + player.getUtrId() + " Saved ");
+                member.getPlayer().setUtrId(candidateUTRId);
+                PlayerEntity result = playerRepository.save(member.getPlayer());
+                member.setPlayer(result);
+                logger.debug("Player:" + member.getName() + " utr: " + member.getUtrId() + " Saved ");
             } else {
-                logger.debug("Player:" + player.getName() + " has no UTRId");
+                logger.debug("Player:" + member.getName() + " has no UTRId");
             }
         }
-
-        return result;
     }
 
-    public void updateTeamPlayersDR(USTATeamEntity team) {
+    public void updateTeamPlayersDR(USTATeam team) {
 
         USTASiteParser util = new USTASiteParser();
 
@@ -624,16 +621,18 @@ public class USTATeamImportor {
             List<PlayerEntity> players = util.getTeamDynamicRating(team.getTennisRecordLink());
 
             for (PlayerEntity player : players) {
-                PlayerEntity existPlayer = team.getPlayer(player.getName());
+                USTATeamMember existPlayer = team.getTeamMemberByName(player.getName());
 
                 if (existPlayer == null) {
                     continue;
                 }
 
-                existPlayer.setDynamicRating(player.getDynamicRating());
-                existPlayer.setDrFetchedTime(new Timestamp(System.currentTimeMillis()));
+                existPlayer.getPlayer().setDynamicRating(player.getDynamicRating());
+                existPlayer.getPlayer().setDrFetchedTime(new Timestamp(System.currentTimeMillis()));
 
-                playerRepository.save(existPlayer);
+                PlayerEntity result = playerRepository.save(existPlayer.getPlayer());
+
+                existPlayer.setPlayer(result);
 
                 logger.debug("player " + existPlayer.getId() + " " + existPlayer.getName() + " dr " + player.getDynamicRating() + " updated");
             }
@@ -644,9 +643,9 @@ public class USTATeamImportor {
 
     }
 
-    public void updateTeamUTRInfo(USTATeamEntity existTeam) {
+    public void updateTeamUTRInfo(USTATeam existTeam) {
 
-        for (PlayerEntity player : existTeam.getPlayers()) {
+        for (USTATeamMember player : existTeam.getPlayers()) {
 
             updatePlayerUTRInfo(player, false);
 
@@ -655,65 +654,66 @@ public class USTATeamImportor {
 
     }
 
-    public PlayerEntity updatePlayerUTRInfo(PlayerEntity player, boolean forceUpdate) {
-        if (player.isRefreshedUTR() && !forceUpdate) {
-            logger.debug(player.getName() + " has latest UTR, skip");
-            return player;
+    public USTATeamMember updatePlayerUTRInfo(USTATeamMember member, boolean forceUpdate) {
+        if (member.isRefreshedUTR() && !forceUpdate) {
+            logger.debug(member.getName() + " has latest UTR, skip");
+            return member;
         }
 
-        String utrId = player.getUtrId();
+        String utrId = member.getUtrId();
 
         if (utrId == null || utrId.equals("")) {
-            logger.debug(player.getName() + " has no UTR, no need to refresh");
+            logger.debug(member.getName() + " has no UTR ID, no need to refresh");
 
-            if (player.getDUTR() > 0.0 || player.getSUTR() > 0.0) {
-                if (player.getDUTR() > 0.0) {
-                    player.setDUTR(0.0);
-                    player.setDUTRStatus("");
+            if (member.getDUTR() > 0.0 || member.getSUTR() > 0.0) {
+                if (member.getDUTR() > 0.0) {
+                    member.getPlayer().setDUTR(0.0);
+                    member.getPlayer().setDUTRStatus("");
                 }
 
-                if (player.getSUTR() > 0.0) {
-                    player.setSUTR(0.0);
-                    player.setSUTRStatus("");
+                if (member.getSUTR() > 0.0) {
+                    member.getPlayer().setSUTR(0.0);
+                    member.getPlayer().setSUTRStatus("");
                 }
 
-                player.setWholeSuccessRate(0.0f);
-                player.setSuccessRate(0.0f);
-                player = playerRepository.save(player);
+                member.getPlayer().setWholeSuccessRate(0.0f);
+                member.getPlayer().setSuccessRate(0.0f);
+                PlayerEntity player = playerRepository.save(member.getPlayer());
+                member.setPlayer(player);
             }
 
-            return player;
+            return member;
         }
 
-        logger.debug(player.getName() + " start to query utr and win ratio");
+        logger.debug(member.getName() + " start to query utr and win ratio");
 
-        loader.searchPlayerResult(utrId, false);
+        float successRate = parser.getWinPercent(utrId, true);
+        float wholeSuccessRate = parser.getWinPercent(utrId, false);
+        member.getPlayer().setSuccessRate(successRate);
+        member.getPlayer().setWholeSuccessRate(wholeSuccessRate);
 
-        loader.searchPlayerResult(utrId, true);
-
-        Player utrplayer = loader.getPlayer(utrId);
+        Player utrplayer = parser.parsePlayer(utrId);
 
         if (utrplayer == null) {
-            return player;
+            return member;
         }
 
+        member.getPlayer().setSUTR(utrplayer.getsUTR());
+        member.getPlayer().setDUTR(utrplayer.getdUTR());
+        member.getPlayer().setSUTRStatus(utrplayer.getsUTRStatus());
+        member.getPlayer().setDUTRStatus(utrplayer.getdUTRStatus());
+        member.getPlayer().setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
 
-        player.setSUTR(utrplayer.getsUTR());
-        player.setDUTR(utrplayer.getdUTR());
-        player.setSUTRStatus(utrplayer.getsUTRStatus());
-        player.setDUTRStatus(utrplayer.getdUTRStatus());
-        player.setSuccessRate(utrplayer.getSuccessRate());
-        player.setWholeSuccessRate(utrplayer.getWholeSuccessRate());
-        player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+        PlayerEntity player = playerRepository.save(member.getPlayer());
 
-        player = playerRepository.save(player);
+        member.setPlayer(player);
 
-        logger.debug(player.getName() + " utr is updated");
+        logger.debug(member.getName() + " utr is updated");
 
-        return player;
+        return member;
     }
 
-    private String findUTRID(List<Player> players, PlayerEntity player) {
+    private String findUTRID(List<Player> players, USTATeamMember player) {
         if (players.size() == 1) {
             return players.get(0).getId();
         }
@@ -738,11 +738,11 @@ public class USTATeamImportor {
         return candidateUTRIds.size() > 0 ? candidateUTRIds.get(0) : "";
     }
 
-    public void updatePlayerUSTANumber(String teamURL) {
+    public USTATeamEntity updatePlayerUSTANumber(USTATeamEntity teamEntity) {
 
         USTASiteParser util = new USTASiteParser();
         try {
-            USTATeamEntity team = util.parseUSTATeam(teamURL);
+            USTATeamEntity team = util.parseUSTATeam(teamEntity.getLink());
 
             USTATeamEntity existTeam = ustaTeamRepository.findByNameAndDivision_Name(team.getName(), team.getDivisionName());
 
@@ -767,6 +767,8 @@ public class USTATeamImportor {
                 playerRepository.save(player);
                 logger.debug("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
             }
+
+            return existTeam;
 
         } catch (IOException e) {
             logger.error(e.toString());
