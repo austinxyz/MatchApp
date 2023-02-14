@@ -18,9 +18,9 @@ class USTATeamImportorTest {
 
 
     final String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=92360";
-    final String teamName = "VALLEY CHURCH 40AM3.5A";
+    final String teamName = "PALO ALTO TC/RINCONADA PK 18MX8.0D";
 
-    String divisionName = "2023 Adult 40 & Over Mens 3.5";
+    String divisionName = "2023 Mixed 18 & Over 8.0";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17728:2625&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";

@@ -4,6 +4,9 @@ import com.utr.model.*;
 import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 class UTRParserTest {
@@ -63,8 +66,18 @@ class UTRParserTest {
     @Test
     void parsePlayer() {
         UTRParser parser = new UTRParser();
-        Player player = parser.parsePlayer("2547696");
+        Player player = parser.getPlayer("2547696");
 
         System.out.println(player);
+    }
+
+    @Test
+    void TestDate() {
+
+            LocalDate date = LocalDate.now();
+            LocalDate fetchDate = date.minusDays(1);
+            System.out.println(Duration.between(date.atTime(0, 0), fetchDate.atTime(0, 0)).toDays());
+            System.out.println(ChronoUnit.DAYS.between(fetchDate, date));
+
     }
 }

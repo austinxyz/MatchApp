@@ -163,7 +163,7 @@ public class USTATeam {
                 m1.setLostNo(m1.getLostNo() + 1);
             }
             if (m2 != null) {
-                m2.setLostNo(m1.getLostNo() + 1);
+                m2.setLostNo(m2.getLostNo() + 1);
             }
         }
 

@@ -273,8 +273,17 @@ public class USTAController {
                 return new ResponseEntity<>(member, HttpStatus.OK);
             }
         }
+        if (action.equals("refreshUTRId")) {
 
-        if (action.equals("refreshValue")) {
+            if (member != null) {
+
+                member = importor.updatePlayerUTRID(member);
+
+                return new ResponseEntity<>(member, HttpStatus.OK);
+            }
+        }
+
+        if (action.equals("refreshUTRValue")) {
 
             if (member != null) {
 
@@ -321,9 +330,9 @@ public class USTAController {
     public ResponseEntity<USTATeamLineScore> updateLineScoreInfo(@PathVariable("id") long id, @RequestBody USTATeamLineScore score) {
         USTATeamLineScore newScore = ustaService.updateLineScoreInfo(id, score);
 
-        if (newScore == null) {
+        if (newScore != null) {
 
-            return new ResponseEntity<>(score, HttpStatus.OK);
+            return new ResponseEntity<>(newScore, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

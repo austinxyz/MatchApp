@@ -91,6 +91,9 @@ public class USTATeamMatchLine {
     }
 
     public boolean isPair(PlayerEntity player1, PlayerEntity player2) {
+        if (this.player1 == null || this.player2 == null) {
+            return false;
+        }
         return type.equals("D") && ((player1.getId() == this.player1.getId()
                 && player2.getId() == this.player2.getId())
                 || (player2.getId() == this.player1.getId()

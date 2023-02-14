@@ -27,6 +27,7 @@ public class EventDBLoader {
     private void convertEvent(EventEntity entity, Event event) {
 
         for (DivisionEntity divisionEntity: entity.getDivisions()) {
+            //System.out.println(divisionEntity.getName());
             Division div = event.getDivisionByName(divisionEntity.getName());
             div.setDisplayName(divisionEntity.getChineseName());
             convertDivision(divisionEntity, div);
@@ -53,7 +54,7 @@ public class EventDBLoader {
         return playerEntity.getLastName() + " " + playerEntity.getFirstName();
     }
 
-    private static String getUtr(PlayerEntity playerEntity) {
+    private String getUtr(PlayerEntity playerEntity) {
         String utr="0.0";
         if (playerEntity.getUtrs().size()>0) {
             utr = String.format("%.02f", playerEntity.getUtrs().iterator().next().getUtr());

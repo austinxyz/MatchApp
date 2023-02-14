@@ -597,7 +597,7 @@ public class USTATeamImportor {
         }
     }
 
-    public void updatePlayerUTRID(USTATeamMember member) {
+    public USTATeamMember updatePlayerUTRID(USTATeamMember member) {
 
         if (member.getUtrId() == null || member.getUtrId().trim().equals("")) {
             List<Player> utrplayers = parser.searchPlayers(member.getName(), 5);
@@ -611,6 +611,8 @@ public class USTATeamImportor {
                 logger.debug("Player:" + member.getName() + " has no UTRId");
             }
         }
+
+        return member;
     }
 
     public void updateTeamPlayersDR(USTATeam team) {
@@ -692,9 +694,10 @@ public class USTATeamImportor {
         member.getPlayer().setSuccessRate(successRate);
         member.getPlayer().setWholeSuccessRate(wholeSuccessRate);
 
-        Player utrplayer = parser.parsePlayer(utrId);
+        Player utrplayer = parser.getPlayer(utrId);
 
         if (utrplayer == null) {
+            logger.debug("failed to get player's utr, skipped");
             return member;
         }
 
