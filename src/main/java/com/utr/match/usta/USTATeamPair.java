@@ -26,6 +26,10 @@ public class USTATeamPair {
             return;
         }
 
+        if (player1 == null) {
+            return;
+        }
+
         if (player1.getName().compareTo(player2.getName()) < 0) {
             this.player1 = player1;
             this.player2 = player2;
@@ -45,6 +49,9 @@ public class USTATeamPair {
     }
 
     public void addScore(USTATeamLineScore score) {
+        if (player1 == null || player2 == null) {
+            return;
+        }
         if (score.isWinner(player1, player2)) {
             this.winMatchNo++;
             this.winScores.add(score);
@@ -63,11 +70,11 @@ public class USTATeamPair {
     }
 
     public double getTotalUTR() {
-        return player1.getDUTR() + player2.getDUTR();
+        return player1.getDUTR() + (player2==null? 0.0d: player2.getDUTR());
     }
 
     public double getTotalDR() {
-        return player1.getDynamicRating() + player2.getDynamicRating();
+        return player1.getDynamicRating() + (player2 == null? 0.0d : player2.getDynamicRating());
     }
 
     public float getSuccessRate() {
@@ -78,7 +85,7 @@ public class USTATeamPair {
     }
 
     public String getPlayerNames() {
-        return player1.getName() + ":" + player2.getName();
+        return player1.getName() + ":" + (player2 == null? "":player2.getName());
     }
 
     public List<USTATeamLineScore> getWinScores() {

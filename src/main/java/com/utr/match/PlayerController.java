@@ -28,9 +28,6 @@ public class PlayerController {
     @Autowired
     USTATeamImportor importor;
 
-    @Autowired
-    TeamLoader loader;
-
     @CrossOrigin(origins = "*")
     @GetMapping("/{id}")
     public ResponseEntity<USTATeamMember> player(@PathVariable("id") String id,
@@ -131,9 +128,9 @@ public class PlayerController {
                                                           @RequestParam(value = "action", defaultValue = "search") String action
     ) {
 
-        if (action.equals("refreshUTR")) {
+        if (action.equals("search")) {
 
-            USTATeamMember member = service.updatePlayerUTR(utrId);
+            USTATeamMember member = service.getMember(utrId);
 
             if (member != null) {
                 return ResponseEntity.ok(member);
@@ -142,8 +139,9 @@ public class PlayerController {
             }
         }
 
-        if (action.equals("search")) {
-            USTATeamMember member = service.updatePlayerUTR(utrId);
+        if (action.equals("refreshUTRValue")) {
+
+            USTATeamMember member = service.updatePlayerUTRValue(utrId);
 
             if (member != null) {
                 return ResponseEntity.ok(member);

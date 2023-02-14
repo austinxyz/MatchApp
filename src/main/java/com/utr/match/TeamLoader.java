@@ -25,12 +25,6 @@ public class TeamLoader {
     Map<String, Event> events;
     Map<String, Club> clubs;
 
-    Map<String, PlayerResult> playerResults;
-
-    Map<String, Player> players;
-
-    private Map<String, Timestamp> fetchedTimes;
-
     @Autowired
     UTRParser parser;
 
@@ -39,36 +33,15 @@ public class TeamLoader {
 
     private TeamLoader() {
 
-        playerResults = new HashMap<>();
         events = new HashMap<>();
         clubs = new HashMap<>();
-        players = new HashMap<>();
-        fetchedTimes = new HashMap<>();
 
     }
 
     public Player getPlayer(String utrId) {
-        Player player = null;
 
-        if (fetchedTimes.containsKey(utrId)) {
-            Timestamp fetchTime = fetchedTimes.get(utrId);
+        return parser.getPlayer(utrId);
 
-            if (System.currentTimeMillis() - fetchTime.getTime() > (long)24*60*60*1000 ) {
-                players.remove(utrId);
-            }
-        }
-
-        if (players.containsKey(utrId)) {
-            player = players.get(utrId);
-        } else {
-            player = parser.parsePlayer(utrId);
-            if (player == null) {
-                return player;
-            }
-            players.put(player.getId(), player);
-            fetchedTimes.put(utrId, new Timestamp(System.currentTimeMillis()));
-        }
-        return player;
     }
 
     public List<Player> queryPlayer(String query, int top) {
@@ -117,7 +90,6 @@ public class TeamLoader {
 
     private Event getOrFetchEvent(String eventId) {
         Event event;
-
 
         if (events.containsKey(eventId)) {
             event = events.get(eventId);
@@ -179,53 +151,15 @@ public class TeamLoader {
 
     public PlayerResult searchPlayerResult(String playerId, boolean latest) {
 
-        if (playerId == null || playerId.equals("")) {
+        PlayerResult result = parser.parsePlayerResult(playerId,latest);
+
+        if (result == null) {
             return null;
-        }
-
-        String key = playerId + (latest? "T":"F");
-
-        if (playerResults.containsKey(key)) {
-            return playerResults.get(key);
-        }
-
-        PlayerResult result = parser.parsePlayerResult(playerId, latest);
-        playerResults.put(key, result);
-
-        Player player = refreshUTR(result.getPlayer());
-
-
-        if (player !=null && (result.getWinsNumber() + result.getLossesNumber()) > 0) {
-            float successRate = (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber());
-            if (latest) {
-                player.setSuccessRate(successRate);
-            } else {
-                player.setWholeSuccessRate(successRate);
-            }
         }
 
         return result;
     }
 
-    private Player refreshUTR(Player newPlayer) {
-        if (newPlayer == null) {
-            return null;
-        }
-
-        Player player = null;
-        if (!players.containsKey(newPlayer.getId())) {
-            players.put(newPlayer.getId(), newPlayer);
-            player = newPlayer;
-        } else {
-            player = players.get(newPlayer.getId());
-            player.setsUTR(newPlayer.getsUTR());
-            player.setdUTR(newPlayer.getdUTR());
-        }
-
-        player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
-
-        return player;
-    }
 
     private void createPlayer(Team team, Player teamPlayer) {
 

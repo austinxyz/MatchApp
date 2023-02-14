@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @SpringBootTest
@@ -15,6 +16,8 @@ class TeamLoaderTest {
 
     @Autowired
     TeamLoader loader;
+
+    @Transactional
     @Test
     void initTeam() {
         Team team = loader.initTeam("ZJU-BYD");

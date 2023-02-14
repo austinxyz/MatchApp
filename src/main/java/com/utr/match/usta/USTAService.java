@@ -267,7 +267,15 @@ public class USTAService {
         return null;
     }
 
-    public USTATeamMember updatePlayerUTR(String utrId) {
+    public USTATeamMember updatePlayerUTRId(String utrId) {
+
+        USTATeamMember member = getMemberByUTRId(utrId);
+        member = importor.updatePlayerUTRID(member);
+
+        return member;
+    }
+
+    public USTATeamMember updatePlayerUTRValue(String utrId) {
 
         USTATeamMember member = getMemberByUTRId(utrId);
         member = importor.updatePlayerUTRInfo(member, true);

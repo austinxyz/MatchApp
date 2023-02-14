@@ -133,4 +133,8 @@ public class USTATeamMember {
     public void setPlayer(PlayerEntity player) {
         this.player = player;
     }
+
+    public String getArea() {
+        return player.getArea();
+    }
 }
