@@ -362,4 +362,15 @@ public class USTATeam {
     public String getAreaCode() {
         return teamEntity.getAreaCode();
     }
+
+    public boolean requiredUpdateScore() {
+        for (USTATeamMatch match: this.matches) {
+            if (match.getMatchDate().before(new Date())) {
+                if (match.getScoreCard() == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

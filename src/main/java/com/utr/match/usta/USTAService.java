@@ -48,18 +48,24 @@ public class USTAService {
 
         if (team.isPresent()) {
             USTATeam ustaTeam = new USTATeam(team.get());
+
             if (loadMatch) {
-                List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team.get());
-
-                for (USTATeamMatch match : matches) {
-                    ustaTeam.addMatch(match);
-                }
+                ustaTeam = loadMatch(ustaTeam);
             }
-
             return ustaTeam;
         }
 
         return null;
+    }
+
+    public USTATeam loadMatch(USTATeam ustaTeam) {
+        List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(ustaTeam.getTeamEntity());
+
+        for (USTATeamMatch match : matches) {
+            ustaTeam.addMatch(match);
+        }
+
+        return ustaTeam;
     }
 
 
