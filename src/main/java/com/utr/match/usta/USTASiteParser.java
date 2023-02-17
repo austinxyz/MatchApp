@@ -245,14 +245,14 @@ public class USTASiteParser {
 
                     team.getPlayers().add(playerEntity);
 
-                    logger.debug(playerEntity.getName() + "|"
+/*                    logger.debug(playerEntity.getName() + "|"
                             + playerEntity.getFirstName() + "|"
                             + playerEntity.getLastName() + "|"
                             + playerEntity.getArea() + "|"
                             + playerEntity.getGender() + "|"
                             + playerEntity.getUstaRating() + "|"
                             + playerEntity.getNoncalLink() + " | "
-                            + playerEntity.getTennisRecordLink());
+                            + playerEntity.getTennisRecordLink());*/
                 } else {
                     String captainInfo = tr.text();
                     if (captainInfo.trim().startsWith("Captain:")) {
@@ -263,7 +263,7 @@ public class USTASiteParser {
                 }
             }
         }
-        logger.debug(team.toString());
+//        logger.debug(team.toString());
         return team;
     }
 
@@ -311,7 +311,7 @@ public class USTASiteParser {
         }
         team.setDivisionName(divisionName);
         team.setFlight(flight);
-        logger.debug("Division Name: " + divisionName + " Flight: " + flight);
+//        logger.debug("Division Name: " + divisionName + " Flight: " + flight);
     }
 
     public Map<String, String> parseUSTANumber(String noncalLink) throws IOException {
@@ -401,8 +401,8 @@ public class USTASiteParser {
                 player.setArea(tr.children().get(1).text());
                 player.setTennisRecordLink("https://www.tennisrecord.com/" + href);
 
-                System.out.println(player.getName() + "|" + player.getArea() + "|" + player.getDynamicRating()
-                        + "|" + player.getTennisRecordLink());
+//                System.out.println(player.getName() + "|" + player.getArea() + "|" + player.getDynamicRating()
+//                        + "|" + player.getTennisRecordLink());
                 players.add(player);
             }
         }

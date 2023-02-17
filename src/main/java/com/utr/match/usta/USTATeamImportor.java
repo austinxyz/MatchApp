@@ -215,7 +215,7 @@ public class USTATeamImportor {
 
                 if (changed) {
                     matchLineRepository.save(existedHomeLine);
-                    System.out.println("home line is updated" + existedHomeLine);
+                    System.out.println("home line is updated " + existedHomeLine);
                     changed = false;
                 }
 
@@ -235,7 +235,7 @@ public class USTATeamImportor {
 
                 if (changed) {
                     matchLineRepository.save(existedGuestLine);
-                    System.out.println("guest line is updated" + existedGuestLine);
+                    System.out.println("guest line is updated " + existedGuestLine);
                     changed = false;
                 }
             }
@@ -510,14 +510,14 @@ public class USTATeamImportor {
                 PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
 
                 if (existedPlayer != null) {
-                    existedPlayer.setNoncalLink(player.getNoncalLink());
-                    existedPlayer.setUstaNorcalId(player.getUstaNorcalId());
-                    existedPlayer.setArea(player.getArea());
-                    //existedPlayer.setUstaRating(player.getUstaRating());
-                    setAgeRange(existedPlayer, division);
-                    existedPlayer = playerRepository.save(existedPlayer);
-
-                    logger.debug(player.getName() + " is existed, update USTA info");
+                    if (existedPlayer.getUstaNorcalId() == null) {
+                        existedPlayer.setNoncalLink(player.getNoncalLink());
+                        existedPlayer.setUstaNorcalId(player.getUstaNorcalId());
+                        existedPlayer.setArea(player.getArea());
+                        setAgeRange(existedPlayer, division);
+                        existedPlayer = playerRepository.save(existedPlayer);
+                        logger.debug(player.getName() + " is existed, update USTA info");
+                    }
                 } else {
                     setAgeRange(player, division);
                     existedPlayer = playerRepository.save(player);
@@ -631,6 +631,7 @@ public class USTATeamImportor {
 
                 existPlayer.getPlayer().setDynamicRating(player.getDynamicRating());
                 existPlayer.getPlayer().setDrFetchedTime(new Timestamp(System.currentTimeMillis()));
+                existPlayer.getPlayer().setTennisRecordLink(player.getTennisRecordLink());
 
                 PlayerEntity result = playerRepository.save(existPlayer.getPlayer());
 
@@ -697,7 +698,7 @@ public class USTATeamImportor {
         Player utrplayer = parser.getPlayer(utrId);
 
         if (utrplayer == null) {
-            logger.debug("failed to get player's utr, skipped");
+            logger.debug("failed to get player: " + member.getName() + "'s utr, skipped");
             return member;
         }
 
@@ -758,17 +759,23 @@ public class USTATeamImportor {
                         //player.setUstaRating(newPlayer.getUstaRating());
                         player.setArea(newPlayer.getArea());
                         player.setNoncalLink(newPlayer.getNoncalLink());
+                        player.setUstaNorcalId(newPlayer.getUstaNorcalId());
                     }
+                    playerRepository.save(player);
+                    logger.debug("Player:" + player.getName() + " non CAL ID: " + player.getUstaNorcalId() + " Saved ");
                 }
 
                 if (player.getNoncalLink() != null) {
-                    Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
-                    player.setUstaId(playerInfo.get("USTAID"));
-                    player.setUstaRating(playerInfo.get("Rating"));
+                    if (player.getUstaId() == null) {
+                        Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
+                        player.setUstaId(playerInfo.get("USTAID"));
+                        player.setUstaRating(playerInfo.get("Rating"));
+                        playerRepository.save(player);
+                        logger.debug("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
+                    } else {
+//                        logger.debug("Player:" + player.getName() + " nothing to update ");
+                    }
                 }
-
-                playerRepository.save(player);
-                logger.debug("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
             }
 
             return existTeam;
