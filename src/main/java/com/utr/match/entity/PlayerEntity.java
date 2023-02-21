@@ -68,8 +68,8 @@ public class PlayerEntity {
     private Set<EventUTR> utrs;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
-    private Set<USTATeamEntity> teams;
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY)
+    private Set<USTATeamMember> members;
 
     @Column(name="dutr")
     Double dUTR;
@@ -331,7 +331,12 @@ public class PlayerEntity {
         this.ustaNorcalId = ustaNorcalId;
     }
 
+    @JsonIgnore
     public Set<USTATeamEntity> getTeams() {
+        Set<USTATeamEntity> teams = new HashSet<>();
+        for (USTATeamMember member: this.members) {
+            teams.add(member.getTeam());
+        }
         return teams;
     }
 

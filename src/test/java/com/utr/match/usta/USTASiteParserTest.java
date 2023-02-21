@@ -1,5 +1,6 @@
 package com.utr.match.usta;
 
+import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTATeamEntity;
 import com.utr.parser.UTRParser;
 import org.json.JSONArray;
@@ -77,7 +78,9 @@ class USTASiteParserTest {
         try {
             util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=MITCHELL%20PK%2018MX7.0A&year=2023");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------");
-            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=SUNNYVALE%20TC/SUNNYVALE%20MTC%2040AM3.5B&year=2023");
+            for (PlayerEntity player: util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=SUNNYVALE%20TC/SUNNYVALE%20MTC%2040AM3.5B&year=2023")) {
+                System.out.println(player.getTennisRecordLink());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

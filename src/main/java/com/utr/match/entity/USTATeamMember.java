@@ -1,16 +1,70 @@
-package com.utr.match.usta;
+package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.utr.match.entity.PlayerEntity;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "usta_team_member")
 public class USTATeamMember {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE })
+    @JoinColumn(name = "player_id")
     PlayerEntity player;
 
-    int winNo;
-    int lostNo;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "usta_team_id")
+    private USTATeamEntity team;
+
+    public USTATeamEntity getTeam() {
+        return team;
+    }
+
+    public void setTeam(USTATeamEntity team) {
+        this.team = team;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public boolean isQualifiedPo() {
+        return qualifiedPo == null? false: qualifiedPo.booleanValue();
+    }
+
+    public void setQualifiedPo(boolean qualifiedPo) {
+        this.qualifiedPo = qualifiedPo;
+    }
+
+    @Column(name = "current_rating")
+    private String rating;
+
+    @Column(name = "win_no")
+    int winNo=0;
+
+    @Column(name = "lost_no")
+    int lostNo=0;
+
+    @Column(name = "qualified_po")
+    Boolean qualifiedPo;
+
+    public USTATeamMember() {
+
+    }
 
     public USTATeamMember(PlayerEntity player) {
         this.player = player;

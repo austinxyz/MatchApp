@@ -23,7 +23,7 @@ public class USTATeamScoreCard {
     private String guestTeamName;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flight_id")
     private USTAFlight flight;
 

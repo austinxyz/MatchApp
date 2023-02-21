@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "usta_team")
@@ -37,20 +38,25 @@ public class USTATeamEntity {
     @JoinColumn(name = "usta_division_id")
     private USTADivision division;
 
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "team", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private final List<USTATeamMember> players;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flight_id")
     private USTAFlight ustaFlight;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "usta_team_player",
-            joinColumns = {@JoinColumn(name = "usta_team_id")},
-            inverseJoinColumns = {@JoinColumn(name = "player_id")})
-    @OrderBy(" gender DESC, dutr DESC ")
-    private final List<PlayerEntity> players;
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = {
+//            CascadeType.PERSIST,
+//            CascadeType.MERGE
+//    })
+//    @JoinTable(name = "usta_team_player",
+//            joinColumns = {@JoinColumn(name = "usta_team_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "player_id")})
+//    @OrderBy(" gender DESC, dutr DESC ")
+//    private final List<USTATeamMember> players;
 
     @ManyToOne
     @JoinColumn(name = "captain_id")
@@ -118,7 +124,7 @@ public class USTATeamEntity {
         this.division = division;
     }
 
-    public List<PlayerEntity> getPlayers() {
+    public List<USTATeamMember> getPlayers() {
         return players;
     }
 
@@ -190,8 +196,8 @@ public class USTATeamEntity {
         this.tennisRecordLink = tennisRecordLink;
     }
 
-    public PlayerEntity getPlayer(String name) {
-        for (PlayerEntity player : this.players) {
+    public USTATeamMember getPlayer(String name) {
+        for (USTATeamMember player : this.players) {
             if (player.getName().equalsIgnoreCase(name)) {
                 return player;
             }

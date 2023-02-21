@@ -7,23 +7,23 @@ import javax.persistence.*;
 @Entity
 @Table(name = "usta_division")
 public class USTADivision {
+    @Column(name = "age_range")
+    String ageRange;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     @Column(name = "name")
     private String name;
-
     @Column(name = "level")
     private String level;
-
+    @Column(name = "link")
+    private String link;
+    @Column(name = "type")
+    private String type;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usta_league_id")
     private USTALeague league;
-
-    @Column(name="age_range")
-    String ageRange;
 
     public USTADivision(String name, String level, USTALeague league) {
         this.name = name;
@@ -32,6 +32,22 @@ public class USTADivision {
     }
 
     public USTADivision() {
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public long getId() {

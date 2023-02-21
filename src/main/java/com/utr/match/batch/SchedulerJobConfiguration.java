@@ -46,8 +46,8 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     // @Scheduled(cron = "*/5 * * * * *")
-    //@Scheduled(fixedDelayString = "PT60M", initialDelay = 3000)
-    @Scheduled(fixedDelayString = "PT12H", initialDelay = 1000)
+    @Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    //@Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
     public void refreshUTR() {
         LOG.debug("Start to refresh Player's UTR........");
 
@@ -62,20 +62,44 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         LOG.debug("Complete to update all Player's UTR........");
     }
 
-    private void updateTeamsUTRInfoByDivision(long divId) {
+    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    public void refreshDR() {
+        LOG.debug("Start to refresh Player's DR........");
+
+        List<USTADivision> divisions = service.getDivisionsByYear("2023");
+        Collections.shuffle(divisions);
+        for (USTADivision division: divisions) {
+            LOG.debug("Start to update UTR for division:" + division.getName());
+            updateTeamsDRInfoByDivision(division.getId());
+            LOG.debug("Complete updating UTR for division:" + division.getName());
+        }
+
+        LOG.debug("Complete to update all Player's DR........");
+    }
+
+    private void updateTeamsDRInfoByDivision(long divId) {
         List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
         Collections.shuffle(teams);
         for (USTATeam team : teams) {
-            LOG.debug("Start to update UTR & DR for team:" + team.getName());
-            importor.updateTeamUTRInfo(team);
-            LOG.debug("Team:" + team.getName() + " UTR update is completed");
+            LOG.debug("Start to update DR for team:" + team.getName());
             importor.updateTeamPlayersDR(team);
             LOG.debug("Team:" + team.getName() + " DR update is completed");
         }
     }
 
+    private void updateTeamsUTRInfoByDivision(long divId) {
+        List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
+        Collections.shuffle(teams);
+        for (USTATeam team : teams) {
+            LOG.debug("Start to update UTR for team:" + team.getName());
+            importor.updateTeamUTRInfo(team);
+            LOG.debug("Team:" + team.getName() + " UTR update is completed");
+        }
+    }
 
-    @Scheduled(fixedDelayString = "PT12H", initialDelay = 1000)
+
+    //@Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    @Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
     public void refreshScores() {
         LOG.debug("Start to refresh team's match score........");
 

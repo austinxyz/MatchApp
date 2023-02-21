@@ -90,4 +90,20 @@ public class USTASingleLineStat {
 
         return (float)this.winMatchNo/(float)(this.lostMatchNo+this.winMatchNo);
     }
+
+    @JsonProperty
+    public double averageUTR() {
+        if (singlers.size() == 0) {
+            return 0.0d;
+        }
+
+        double sum = 0.0d;
+
+        for (USTATeamSingle single: singlers.values()) {
+            sum += single.getSingleUTR();
+        }
+
+        return sum/singlers.size();
+
+    }
 }

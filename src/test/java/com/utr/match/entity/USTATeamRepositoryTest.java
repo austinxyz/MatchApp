@@ -88,7 +88,7 @@ class USTATeamRepositoryTest {
 
         if (player != null) {
             //Hibernate.initialize(team.getPlayers());
-            team.getPlayers().add(player);
+            team.getPlayers().add(new USTATeamMember(player));
             ustaTeamRepository.save(team);
             System.out.println(player);
         }
@@ -100,7 +100,7 @@ class USTATeamRepositoryTest {
 
         System.out.println(team.getAreaCode());
 
-        for (PlayerEntity player : team.getPlayers()) {
+        for (USTATeamMember player : team.getPlayers()) {
 
             System.out.println(player.getName() + ": update player set usta_noncal_link='https://www.ustanorcal.com/playermatches.asp?id=', usta_tennisrecord_link='https://www.tennisrecord.com/adult/profile.aspx?playername=' where id=" + player.getId());
 
@@ -171,7 +171,7 @@ class USTATeamRepositoryTest {
                 System.out.println("new team " + team.getName() + " is created");
             }
 
-            for (PlayerEntity player : team.getPlayers()) {
+            for (USTATeamMember player : team.getPlayers()) {
                 PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
 
                 if (existedPlayer != null) {
@@ -181,13 +181,13 @@ class USTATeamRepositoryTest {
                     playerRepository.save(existedPlayer);
                     System.out.println(player.getName() + " is existed, update USTA info");
                 } else {
-                    playerRepository.save(player);
+                    playerRepository.save(player.getPlayer());
                     existedPlayer = playerRepository.findByNameLike(player.getName()).get(0);
                     System.out.println("new player" + player.getName() + " is created");
                 }
 
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
-                    existTeam.getPlayers().add(existedPlayer);
+                    existTeam.getPlayers().add(new USTATeamMember(existedPlayer));
                     System.out.println(" add player " + player.getName() + " into team");
                 }
             }
@@ -210,15 +210,15 @@ class USTATeamRepositoryTest {
             return;
         }
 
-        for (PlayerEntity player : existTeam.getPlayers()) {
+        for (USTATeamMember player : existTeam.getPlayers()) {
 
             List<Player> utrplayers = parser.searchPlayers(player.getName(), 5);
 
             if (player.getUtrId() == null) {
-                String candidateUTRId = findUTRID(utrplayers, player);
+                String candidateUTRId = findUTRID(utrplayers, player.getPlayer());
                 if (candidateUTRId != null) {
-                    player.setUtrId(candidateUTRId);
-                    playerRepository.save(player);
+                    player.getPlayer().setUtrId(candidateUTRId);
+                    playerRepository.save(player.getPlayer());
                     System.out.println("Player:" + player.getName() + " utr: " + player.getUtrId() + " Saved ");
                 } else {
                     System.out.println("Player:" + player.getName() + " has no UTRId");
@@ -266,27 +266,27 @@ class USTATeamRepositoryTest {
 
             USTATeamEntity existTeam = ustaTeamRepository.findByNameAndDivision_Name(team.getName(), team.getDivisionName());
 
-            for (PlayerEntity player : existTeam.getPlayers()) {
+            for (USTATeamMember player : existTeam.getPlayers()) {
 
                 if (player.getNoncalLink() == null) {
-                    PlayerEntity newPlayer = team.getPlayer(player.getName());
+                    USTATeamMember newPlayer = team.getPlayer(player.getName());
 
                     if (newPlayer != null) {
                         //player.setUstaRating(newPlayer.getUstaRating());
-                        player.setArea(newPlayer.getArea());
-                        player.setNoncalLink(newPlayer.getNoncalLink());
+                        player.getPlayer().setArea(newPlayer.getArea());
+                        player.getPlayer().setNoncalLink(newPlayer.getNoncalLink());
                     }
                 }
 
                 if (player.getNoncalLink() != null) {
 
                     Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
-                    player.setUstaId(playerInfo.get("USTAID"));
-                    player.setUstaRating(playerInfo.get("Rating"));
+                    player.getPlayer().setUstaId(playerInfo.get("USTAID"));
+                    player.getPlayer().setUstaRating(playerInfo.get("Rating"));
                     //player.setTennisRecordLink(getTennisRecordLink(player));
                 }
 
-                playerRepository.save(player);
+                playerRepository.save(player.getPlayer());
                 System.out.println("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
 
             }
@@ -384,11 +384,11 @@ class USTATeamRepositoryTest {
     void updateAgeRange() {
 
         for (USTATeamEntity team : ustaTeamRepository.findByDivision_IdOrderByUstaFlightAsc(4L)){
-            for (PlayerEntity player: team.getPlayers()) {
+            for (USTATeamMember player: team.getPlayers()) {
 
                 if (player.getAgeRange() == null || !player.getAgeRange().equals("40+")) {
-                    player.setAgeRange("40+");
-                    playerRepository.save(player);
+                    player.getPlayer().setAgeRange("40+");
+                    playerRepository.save(player.getPlayer());
                     System.out.println(player.getName() + " is 40+");
                 }
             }
