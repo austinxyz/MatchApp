@@ -19,18 +19,18 @@ public class USTAFlight {
     @Column(name = "area")
     private String area;
 
+    @Column(name = "link")
+    private String link;
     @JsonIgnore
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usta_division_id")
     private USTADivision division;
-
     @JsonIgnore
     @OneToMany(mappedBy = "ustaFlight", fetch = FetchType.LAZY)
-    private Set<USTATeamEntity> teams;
-
+    private final Set<USTATeamEntity> teams;
     @JsonIgnore
     @OneToMany(mappedBy = "flight", fetch = FetchType.LAZY)
-    private Set<USTATeamScoreCard> teamScoreCards;
+    private final Set<USTATeamScoreCard> teamScoreCards;
 
     public USTAFlight(int flightNo, USTADivision division) {
         this.flightNo = flightNo;
@@ -42,6 +42,14 @@ public class USTAFlight {
     public USTAFlight() {
         this.teams = new HashSet<>();
         this.teamScoreCards = new HashSet<>();
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public long getId() {

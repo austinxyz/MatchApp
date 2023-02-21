@@ -168,22 +168,8 @@ class PlayerRepositoryTest {
 
         //String fullnameList = "Lee Tzong-Han";
         String fullnameList=
-        "Huang Andrew,"+
-        "Ye Kitty,"+
-        "Yu Jiahong,"+
-        "Zhang Lynda,"+
-        "Pan Lucy,"+
-        "Nie Wennie,"+
-        "Hu William,"+
-        "Liu Shang,"+
-        "Chiang Judy,"+
-        "Chen Bay,"+
-        "Wong Fang,"+
-        "Zong Qingqing,"+
-        "Wang Sharon,"+
-        "Li Sujuan,"+
-        "Xiao Chen,"+
-        "Zhang Jean";
+        //"Vasseghi Jing,"+
+        "Yang Chuo-Yun";
 
         for (String playerName: fullnameList.split(",")) {
             playerName = playerName.trim();
@@ -206,6 +192,10 @@ class PlayerRepositoryTest {
                     }
 
                     DivisionEntity division = divisionRepository.findByPlayers_Id(player.getId()).get();
+
+                    if (division == null) {
+                        continue;
+                    }
                     division.removePlayer(player.getId());
                     division.getPlayers().add(primaryPlayer);
                     divisionRepository.save(division);
@@ -235,22 +225,8 @@ class PlayerRepositoryTest {
     void verifyFullNameIssues() {
 
         String fullnameList=
-                "Huang Andrew,"+
-                        "Ye Kitty,"+
-                        "Yu Jiahong,"+
-                        "Zhang Lynda,"+
-                        "Pan Lucy,"+
-                        "Nie Wennie,"+
-                        "Hu William,"+
-                        "Liu Shang,"+
-                        "Chiang Judy,"+
-                        "Chen Bay,"+
-                        "Wong Fang,"+
-                        "Zong Qingqing,"+
-                        "Wang Sharon,"+
-                        "Li Sujuan,"+
-                        "Xiao Chen,"+
-                        "Zhang Jean";
+                "Vasseghi Jing,"+
+                "Yang Chuo-Yun";
 
         for (String playerName: fullnameList.split(",")) {
             playerName = playerName.trim();
@@ -286,22 +262,8 @@ class PlayerRepositoryTest {
     void cleanFullNameIssues() {
 
         String fullnameList=
-                "Huang Andrew,"+
-                        "Ye Kitty,"+
-                        "Yu Jiahong,"+
-                        "Zhang Lynda,"+
-                        "Pan Lucy,"+
-                        "Nie Wennie,"+
-                        "Hu William,"+
-                        "Liu Shang,"+
-                        "Chiang Judy,"+
-                        "Chen Bay,"+
-                        "Wong Fang,"+
-                        "Zong Qingqing,"+
-                        "Wang Sharon,"+
-                        "Li Sujuan,"+
-                        "Xiao Chen,"+
-                        "Zhang Jean";
+                "Vasseghi Jing,"+
+                        "Yang Chuo-Yun";
 
         for (String playerName: fullnameList.split(",")) {
             playerName = playerName.trim();

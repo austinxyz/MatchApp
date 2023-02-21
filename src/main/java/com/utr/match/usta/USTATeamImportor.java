@@ -2,7 +2,6 @@ package com.utr.match.usta;
 
 import com.utr.match.entity.*;
 import com.utr.model.Player;
-import com.utr.model.PlayerResult;
 import com.utr.parser.UTRParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,6 +34,9 @@ public class USTATeamImportor {
     private USTADivisionRepository divisionRepository;
     @Autowired
     private USTATeamRepository ustaTeamRepository;
+
+    @Autowired
+    private USTATeamMemberRepository ustaTeamMemberRepository;
     @Autowired
     private PlayerRepository playerRepository;
     @Autowired
@@ -67,7 +69,8 @@ public class USTATeamImportor {
 
             cleanUpMatches(matches, division, team);
         } catch (IOException | ParseException e) {
-            throw new RuntimeException(e);
+            logger.debug("Failed to update team score" + team.getName());
+            //throw new RuntimeException(e);
         }
 
     }
@@ -458,7 +461,11 @@ public class USTATeamImportor {
 
         try {
             for (String teamURL : util.parseUSTAFlight(flightURL)) {
-                teams.add(importUSTATeam(teamURL));
+                USTATeamEntity team = importUSTATeam(teamURL);
+
+                if (team !=null) {
+                    teams.add(team);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -505,9 +512,17 @@ public class USTATeamImportor {
                 logger.debug("new team " + existTeam.getName() + " with id: " + existTeam.getId() + " is created");
             }
 
-            for (PlayerEntity player : team.getPlayers()) {
+            for (USTATeamMember player : team.getPlayers()) {
 
                 PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
+
+                if (existedPlayer == null) {
+                    List<PlayerEntity> players = playerRepository.findByName(player.getName());
+
+                    if (players != null && players.size() >0) {
+                        existedPlayer = players.get(0);
+                    }
+                }
 
                 if (existedPlayer != null) {
                     if (existedPlayer.getUstaNorcalId() == null) {
@@ -519,26 +534,28 @@ public class USTATeamImportor {
                         logger.debug(player.getName() + " is existed, update USTA info");
                     }
                 } else {
-                    setAgeRange(player, division);
-                    existedPlayer = playerRepository.save(player);
+                    setAgeRange(player.getPlayer(), division);
+                    existedPlayer = playerRepository.save(player.getPlayer());
                     logger.debug("new player " + player.getName() + " is created");
                 }
 
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
-                    existTeam.getPlayers().add(existedPlayer);
+                    USTATeamMember member = new USTATeamMember(existedPlayer);
+                    member = ustaTeamMemberRepository.save(member);
+                    existTeam.getPlayers().add(member);
                     logger.debug(" add player " + player.getName() + " into team");
                 }
             }
 
-            List<PlayerEntity> toRemovePlayers = new ArrayList<>();
+            List<USTATeamMember> toRemovePlayers = new ArrayList<>();
 
-            for (PlayerEntity player : existTeam.getPlayers()) {
+            for (USTATeamMember player : existTeam.getPlayers()) {
                 if (team.getPlayer(player.getName()) == null) {
                     toRemovePlayers.add(player);
                 }
             }
 
-            for (PlayerEntity player : toRemovePlayers) {
+            for (USTATeamMember player : toRemovePlayers) {
                 existTeam.getPlayers().remove(player);
             }
 
@@ -549,11 +566,13 @@ public class USTATeamImportor {
                 }
             }
 
-            ustaTeamRepository.save(existTeam);
+            existTeam = ustaTeamRepository.save(existTeam);
             return existTeam;
         } catch (IOException e) {
             logger.error(e.toString());
-            throw new RuntimeException(e);
+
+            return null;
+            //throw new RuntimeException(e);
         }
 
     }
@@ -641,7 +660,8 @@ public class USTATeamImportor {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error(e.toString());
+            //throw new RuntimeException(e);
         }
 
     }
@@ -744,33 +764,37 @@ public class USTATeamImportor {
 
     public USTATeamEntity updatePlayerUSTANumber(USTATeamEntity teamEntity) {
 
+        if (teamEntity == null) {
+            return null;
+        }
+
         USTASiteParser util = new USTASiteParser();
         try {
             USTATeamEntity team = util.parseUSTATeam(teamEntity.getLink());
 
             USTATeamEntity existTeam = ustaTeamRepository.findByNameAndDivision_Name(team.getName(), team.getDivisionName());
 
-            for (PlayerEntity player : existTeam.getPlayers()) {
+            for (USTATeamMember player : existTeam.getPlayers()) {
 
                 if (player.getNoncalLink() == null) {
-                    PlayerEntity newPlayer = team.getPlayer(player.getName());
+                    USTATeamMember newPlayer = team.getPlayer(player.getName());
 
                     if (newPlayer != null) {
                         //player.setUstaRating(newPlayer.getUstaRating());
-                        player.setArea(newPlayer.getArea());
-                        player.setNoncalLink(newPlayer.getNoncalLink());
-                        player.setUstaNorcalId(newPlayer.getUstaNorcalId());
+                        player.getPlayer().setArea(newPlayer.getArea());
+                        player.getPlayer().setNoncalLink(newPlayer.getNoncalLink());
+                        player.getPlayer().setUstaNorcalId(newPlayer.getUstaNorcalId());
                     }
-                    playerRepository.save(player);
+                    playerRepository.save(player.getPlayer());
                     logger.debug("Player:" + player.getName() + " non CAL ID: " + player.getUstaNorcalId() + " Saved ");
                 }
 
                 if (player.getNoncalLink() != null) {
                     if (player.getUstaId() == null) {
                         Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
-                        player.setUstaId(playerInfo.get("USTAID"));
-                        player.setUstaRating(playerInfo.get("Rating"));
-                        playerRepository.save(player);
+                        player.getPlayer().setUstaId(playerInfo.get("USTAID"));
+                        player.getPlayer().setUstaRating(playerInfo.get("Rating"));
+                        playerRepository.save(player.getPlayer());
                         logger.debug("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
                     } else {
 //                        logger.debug("Player:" + player.getName() + " nothing to update ");
@@ -782,7 +806,8 @@ public class USTATeamImportor {
 
         } catch (IOException e) {
             logger.error(e.toString());
-            throw new RuntimeException(e);
+            return null;
+            //throw new RuntimeException(e);
         }
 
     }

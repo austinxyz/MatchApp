@@ -6,7 +6,7 @@ import com.utr.match.entity.PlayerRepository;
 import com.utr.match.usta.USTAService;
 import com.utr.match.usta.USTATeam;
 import com.utr.match.usta.USTATeamImportor;
-import com.utr.match.usta.USTATeamMember;
+import com.utr.match.entity.USTATeamMember;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

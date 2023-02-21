@@ -69,18 +69,9 @@ public class USTATeam {
 
         String gender = "";
 
-        for (PlayerEntity player: teamEntity.getPlayers()) {
-            USTATeamMember member = new USTATeamMember(player);
-            this.players.add(member);
-            if (gender.equals("")) {
-                gender = player.getGender();
-            }
+        this.players = teamEntity.getPlayers();
+        this.mixed = teamEntity.getName().indexOf("MX") > 0;
 
-            if (!gender.equals(player.getGender())) {
-                mixed = true;
-                
-            }
-        }
         updateTeamLevel(mixed, teamEntity.getName());
         
         this.singleMembers = new ArrayList<>(this.players);

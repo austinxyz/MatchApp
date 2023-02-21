@@ -2,6 +2,7 @@ package com.utr.match.usta;
 
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTATeamEntity;
+import com.utr.match.entity.USTATeamMember;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -243,7 +244,10 @@ public class USTASiteParser {
                     playerEntity.setNoncalLink(noncalLink);
                     playerEntity.setUstaNorcalId(noncalId);
 
-                    team.getPlayers().add(playerEntity);
+                    USTATeamMember member = new USTATeamMember(playerEntity);
+
+
+                    team.getPlayers().add(member);
 
 /*                    logger.debug(playerEntity.getName() + "|"
                             + playerEntity.getFirstName() + "|"

@@ -88,4 +88,20 @@ public class USTADoubleLineStat {
 
         return (float)this.winMatchNo/(float)(this.lostMatchNo+this.winMatchNo);
     }
+
+    @JsonProperty
+    public double averageUTRs() {
+        if (pairs.size() == 0) {
+            return 0.0d;
+        }
+
+        double sum = 0.0d;
+
+        for (USTATeamPair pair: pairs.values()) {
+            sum += pair.getTotalUTR();
+        }
+
+        return sum/pairs.size();
+
+    }
 }
