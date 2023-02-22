@@ -234,7 +234,7 @@ public class USTAController {
 
             if (team != null) {
 
-                importor.refreshTeamMatchesScores(team.getTeamEntity(), team.getTeamEntity().getDivision());
+                importor.refreshTeamMatchesScores(team, team.getTeamEntity().getDivision());
 
                 team = ustaService.getTeam(id, true);
 

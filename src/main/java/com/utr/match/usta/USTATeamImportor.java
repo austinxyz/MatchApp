@@ -57,22 +57,76 @@ public class USTATeamImportor {
     public USTATeamImportor() {
     }
 
-    public void refreshTeamMatchesScores(USTATeamEntity team, USTADivision division) {
+    public void refreshTeamMatchesScores(USTATeam team, USTADivision division) {
         USTASiteParser util = new USTASiteParser();
         try {
-            JSONArray matches = util.parseTeamMatches(team);
+            JSONArray matches = util.parseTeamMatches(team.getTeamEntity());
 
             for (int i = 0; i < matches.length(); i++) {
                 JSONObject scoreCardJSON = (JSONObject) matches.get(i);
-                handleScoreCard(division, team.getUstaFlight(), scoreCardJSON);
+                handleScoreCard(division, team.getTeamEntity().getUstaFlight(), scoreCardJSON);
             }
 
-            cleanUpMatches(matches, division, team);
+            cleanUpMatches(matches, division, team.getTeamEntity());
+
+            updatePlayerWinInfo(team);
+
         } catch (IOException | ParseException e) {
             logger.debug("Failed to update team score" + team.getName());
             //throw new RuntimeException(e);
         }
 
+    }
+
+    public void updatePlayerWinInfo(USTATeam team) {
+        List<USTATeamMatch> existedMatches = teamMatchRepository.findByTeamOrderByMatchDateAsc(team.getTeamEntity());
+
+        Map<String, Integer> playersWinInfo = new HashMap<>();
+        Map<String, Integer> playersLostInfo = new HashMap<>();
+
+        for (USTATeamMatch match : existedMatches) {
+            if (match.getScoreCard() == null) {
+                continue;
+            }
+            for (USTATeamLineScore lineScore: match.getScoreCard().getLineScores()) {
+                boolean win = lineScore.isWinnerTeam(team.getName());
+                USTATeamPair pair = lineScore.getPair(team.getName());
+                if (win) {
+                    updatePlayerWinInfo(playersWinInfo, pair.getPlayer1());
+                    updatePlayerWinInfo(playersWinInfo, pair.getPlayer2());
+                } else {
+                    updatePlayerWinInfo(playersLostInfo, pair.getPlayer1());
+                    updatePlayerWinInfo(playersLostInfo, pair.getPlayer2());
+                }
+            }
+        }
+
+        USTASiteParser util = new USTASiteParser();
+        try {
+            USTATeamEntity teamEntity =  util.parseUSTATeam(team.getLink());
+            for (USTATeamMember member: team.getPlayers()) {
+                member.setWinNo(playersWinInfo.getOrDefault(member.getName(), 0));
+                member.setLostNo(playersLostInfo.getOrDefault(member.getName(), 0));
+                USTATeamMember parsedMember = teamEntity.getPlayer(member.getName());
+                if (parsedMember !=null) {
+                    member.setQualifiedPo(parsedMember.isQualifiedPo());
+                }
+                ustaTeamMemberRepository.save(member);
+            }
+        } catch (IOException e) {
+            //throw new RuntimeException(e);
+            logger.debug("failed to parse team:" + team.getName());
+        }
+
+
+    }
+
+    private void updatePlayerWinInfo(Map<String, Integer> playersWinInfo, PlayerEntity player) {
+        if (player != null) {
+            int score = playersWinInfo.getOrDefault(player.getName(), 0);
+            score++;
+            playersWinInfo.put(player.getName(), score);
+        }
     }
 
     private void cleanUpMatches(JSONArray matches, USTADivision division, USTATeamEntity team) throws ParseException {
@@ -541,6 +595,7 @@ public class USTATeamImportor {
 
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
                     USTATeamMember member = new USTATeamMember(existedPlayer);
+                    member.setRating(player.getRating());
                     member = ustaTeamMemberRepository.save(member);
                     existTeam.getPlayers().add(member);
                     logger.debug(" add player " + player.getName() + " into team");

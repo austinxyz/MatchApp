@@ -46,8 +46,8 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     // @Scheduled(cron = "*/5 * * * * *")
-    @Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
-    //@Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
     public void refreshUTR() {
         LOG.debug("Start to refresh Player's UTR........");
 
@@ -98,8 +98,8 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
 
-    //@Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
-    @Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
     public void refreshScores() {
         LOG.debug("Start to refresh team's match score........");
 
@@ -121,9 +121,9 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
             if (team.requiredUpdateScore()) {
                 LOG.debug("Refresh team: " + team.getName() + " players' info");
                 importor.importUSTATeam(team.getLink());
-                LOG.debug("Start to update team:" + team.getName() + "'s match score\"");
-                importor.refreshTeamMatchesScores(team.getTeamEntity(), division);
-                LOG.debug("Team:" + team.getName() + "'s match score is updated\"");
+                LOG.debug("Start to update team:" + team.getName() + "'s match score");
+                importor.refreshTeamMatchesScores(team, division);
+                LOG.debug("Team:" + team.getName() + "'s match score is updated");
             } else {
                 LOG.debug("Team:" + team.getName() + " has no new match, no need to update");
             }

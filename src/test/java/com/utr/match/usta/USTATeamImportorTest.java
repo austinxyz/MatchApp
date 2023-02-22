@@ -102,7 +102,7 @@ class USTATeamImportorTest {
     void importTeamMatchs() {
         USTATeamEntity team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
         USTADivision division = divisionRepository.findByName(divisionName);
-        importor.refreshTeamMatchesScores(team, division);
+        importor.refreshTeamMatchesScores(new USTATeam(team), division);
     }
 
     @Test

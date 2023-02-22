@@ -122,42 +122,15 @@ public class USTATeam {
                         new USTADoubleLineStat(lineName, this.teamEntity.getName()));
                 doubleLineStat.addLineScore(lineScore);
                 this.doubleLineStats.put(lineName, doubleLineStat);
-                updateTeamMemberWLRatio(lineScore);
             }
             if (lineName.startsWith("S")) {
                 USTASingleLineStat singleLineStat = this.singleLineStats.getOrDefault(lineName,
                         new USTASingleLineStat(lineName, this.teamEntity.getName()));
                 singleLineStat.addLineScore(lineScore);
                 this.singleLineStats.put(lineName, singleLineStat);
-                updateTeamMemberWLRatio(lineScore);
             }
         }
         this.totalMatchNo++;
-    }
-
-    private void updateTeamMemberWLRatio(USTATeamLineScore lineScore) {
-
-        USTATeamPair pair = lineScore.getPair(this.getTeamName());
-        USTATeamMember m1 = getTeamMember(pair.getPlayer1());
-        USTATeamMember m2 = getTeamMember(pair.getPlayer2());
-
-        boolean win = lineScore.isWinnerTeam(this.getTeamName());
-        if (win) {
-            if (m1 != null) {
-                m1.setWinNo(m1.getWinNo() + 1);
-            }
-            if (m2 != null) {
-                m2.setWinNo(m2.getWinNo() + 1);
-            }
-        } else {
-            if (m1 != null) {
-                m1.setLostNo(m1.getLostNo() + 1);
-            }
-            if (m2 != null) {
-                m2.setLostNo(m2.getLostNo() + 1);
-            }
-        }
-
     }
 
     public USTATeamMember getTeamMember(PlayerEntity player) {

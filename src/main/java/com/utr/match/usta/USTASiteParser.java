@@ -232,6 +232,7 @@ public class USTASiteParser {
                     String gender = player.get(2).text();
                     String rating = player.get(3).text();
                     String noncalLink = "https://www.ustanorcal.com/" + link.attr("href");
+                    String matches = player.get(7).text();
                     int last = noncalLink.indexOf("=");
                     String noncalId = noncalLink.substring(last + 1);
                     PlayerEntity playerEntity = new PlayerEntity();
@@ -245,7 +246,7 @@ public class USTASiteParser {
                     playerEntity.setUstaNorcalId(noncalId);
 
                     USTATeamMember member = new USTATeamMember(playerEntity);
-
+                    member.setQualifiedPo(matches.indexOf("^")>0);
 
                     team.getPlayers().add(member);
 
