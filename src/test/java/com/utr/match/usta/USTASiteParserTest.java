@@ -2,6 +2,7 @@ package com.utr.match.usta;
 
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTATeamEntity;
+import com.utr.match.entity.USTATeamMember;
 import com.utr.parser.UTRParser;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,9 +42,9 @@ class USTASiteParserTest {
         try {
             team = util.parseUSTATeam("https://www.ustanorcal.com/Teaminfo.asp?id=97084");
 
-/*            for (PlayerEntity player: team.getPlayers()) {
-                System.out.println(player.getName() + "'s DR =  " + util.getDynamicRating(player.getTennisRecordLink()));
-            }*/
+            for (USTATeamMember player: team.getPlayers()) {
+                System.out.println(player.getName() + "'s Qualified =  " + (player.isQualifiedPo()));
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
