@@ -2,9 +2,11 @@ package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.utr.match.usta.USTATeamPair;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -125,7 +127,12 @@ public class USTATeamEntity {
     }
 
     public List<USTATeamMember> getPlayers() {
+        players.sort((USTATeamMember p1, USTATeamMember p2) -> Double.compare(p2.getDUTR(), p1.getDUTR()));
         return players;
+    }
+
+    public void addPlayer(USTATeamMember member) {
+        players.add(member);
     }
 
     public PlayerEntity getCaptain() {
@@ -171,6 +178,10 @@ public class USTATeamEntity {
 
         if (this.areaCode != null && !this.areaCode.equals("")) {
             return areaCode;
+        }
+
+        if (area == null || area.trim().equals("")) {
+            return area;
         }
 
         StringBuilder sb = new StringBuilder();

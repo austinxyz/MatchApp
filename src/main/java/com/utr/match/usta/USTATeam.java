@@ -89,6 +89,10 @@ public class USTATeam {
 
         int start = name.indexOf(leagueAbbr) + leagueAbbr.length();
 
+        if (start <= 2) {
+            return;
+        }
+
         int end = start+3;
 
         String levelStr = name.substring(start, end);
@@ -260,6 +264,9 @@ public class USTATeam {
 
     public USTATeamMember getBestUTRSingle() {
         if (!mixed) {
+            if (singleMembers==null || singleMembers.isEmpty()) {
+                return null;
+            }
             singleMembers.sort((USTATeamMember o1, USTATeamMember o2) -> Double.compare(o2.getSUTR(), o1.getSUTR()));
             return singleMembers.iterator().next();
         }
@@ -268,6 +275,9 @@ public class USTATeam {
 
     public USTATeamMember getBestDRSingle() {
         if (!mixed) {
+            if (singleMembers==null || singleMembers.isEmpty()) {
+                return null;
+            }
             singleMembers.sort((USTATeamMember o1, USTATeamMember o2) -> Double.compare(o2.getDynamicRating(), o1.getDynamicRating()));
             return singleMembers.iterator().next();
         }

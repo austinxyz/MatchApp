@@ -87,6 +87,11 @@ public class USTATeamMember {
     }
 
     public long getId() {
+        return this.id;
+    }
+
+    @JsonProperty("playerId")
+    public long getPlayerId() {
         return player.getId();
     }
 

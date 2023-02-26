@@ -3,6 +3,7 @@ package com.utr.match;
 import com.utr.match.model.Team;
 import com.utr.model.Division;
 import com.utr.model.Player;
+import com.utr.model.PlayerResult;
 import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,9 @@ class TeamLoaderTest {
     @Test
     void searchPlayer() {
 
-        List<Player> results = loader.queryPlayer("3412468", 5);
+        PlayerResult result = loader.searchPlayerResult("1316122", true);
 
-        System.out.println(results);
+        System.out.println(result);
     }
 
     @Test
