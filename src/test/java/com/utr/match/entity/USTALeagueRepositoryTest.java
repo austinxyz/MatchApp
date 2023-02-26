@@ -16,7 +16,7 @@ class USTALeagueRepositoryTest {
     @Test
     void createLeague() {
 
-        USTALeague league = new USTALeague("2022 Adult 40 & Over", "2022");
+        USTALeague league = new USTALeague("2023 Adult 18 & Over", "2023");
 
         leagueRepository.save(league);
 

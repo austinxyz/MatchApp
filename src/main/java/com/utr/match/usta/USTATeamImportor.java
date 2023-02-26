@@ -596,8 +596,9 @@ public class USTATeamImportor {
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
                     USTATeamMember member = new USTATeamMember(existedPlayer);
                     member.setRating(player.getRating());
-                    member = ustaTeamMemberRepository.save(member);
-                    existTeam.getPlayers().add(member);
+                    member.setTeam(existTeam);
+                    //member = ustaTeamMemberRepository.save(member);
+                    existTeam.addPlayer(member);
                     logger.debug(" add player " + player.getName() + " into team");
                 }
             }
@@ -707,6 +708,11 @@ public class USTATeamImportor {
                 existPlayer.getPlayer().setDrFetchedTime(new Timestamp(System.currentTimeMillis()));
                 existPlayer.getPlayer().setTennisRecordLink(player.getTennisRecordLink());
 
+                if (existPlayer.getPlayer().getUstaRating() == null || existPlayer.getPlayer().getUstaRating().trim().equals("")) {
+                    logger.debug("player " + player.getName() + " has rating " + player.getUstaRating());
+                    existPlayer.getPlayer().setUstaRating(player.getUstaRating());
+                }
+
                 PlayerEntity result = playerRepository.save(existPlayer.getPlayer());
 
                 existPlayer.setPlayer(result);
@@ -807,7 +813,7 @@ public class USTATeamImportor {
                 continue;
             }
 
-            if (utrPlayer.getLocation() == null || !utrPlayer.getLocation().contains("CA")) {
+            if (utrPlayer.getLocation() == null || !utrPlayer.getLocation().equals(player.getArea())) {
                 continue;
             }
 

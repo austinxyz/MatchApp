@@ -98,8 +98,8 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
 
-    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
-    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    //@Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    @Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
     public void refreshScores() {
         LOG.debug("Start to refresh team's match score........");
 

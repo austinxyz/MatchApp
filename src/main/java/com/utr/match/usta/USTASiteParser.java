@@ -27,6 +27,32 @@ public class USTASiteParser {
     public USTASiteParser() {
     }
 
+    public List<PlayerEntity> parseTeamMembers(String playerList)  {
+        List<PlayerEntity> result = new ArrayList<>();
+
+        String[] players = playerList.split("\\|");
+
+        for (String playerString: players) {
+            String[] playerInfo = playerString.split("\t");
+            String name = playerInfo[0].trim();
+            String rating = playerInfo[1].trim();
+            PlayerEntity player = new PlayerEntity();
+
+            player.setFirstName(getFirstName(name));
+            player.setLastName(getLastName(name));
+            player.setName(getLastName(name) + " " + getFirstName(name));
+
+            player.setUstaRating(rating);
+
+            result.add(player);
+            System.out.println(player);
+
+        }
+
+        return result;
+    }
+
+
     public JSONArray parseTeamMatches(USTATeamEntity team) throws IOException {
         JSONArray result = new JSONArray();
 
@@ -402,8 +428,11 @@ public class USTASiteParser {
                 } else {
                     player.setDynamicRating(0.0D);
                 }
+                player.setFirstName(getFirstName(name));
+                player.setLastName(getLastName(name));
                 player.setName(getLastName(name) + " " + getFirstName(name));
                 player.setArea(tr.children().get(1).text());
+                player.setUstaRating(tr.child(2).text());
                 player.setTennisRecordLink("https://www.tennisrecord.com/" + href);
 
 //                System.out.println(player.getName() + "|" + player.getArea() + "|" + player.getDynamicRating()

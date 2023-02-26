@@ -13,6 +13,8 @@ import java.util.List;
 
 class USTASiteParserTest {
 
+
+
     @Test
     void parseUSTAFlight() {
         USTASiteParser util = new USTASiteParser();
@@ -77,10 +79,12 @@ class USTASiteParserTest {
     void getTeamDynamicRating() {
         USTASiteParser util = new USTASiteParser();
         try {
-            util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=MITCHELL%20PK%2018MX7.0A&year=2023");
+            List<PlayerEntity> players = util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=Laughs%20%26%20Smiles&year=2022&s=2");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------");
-            for (PlayerEntity player: util.getTeamDynamicRating("https://www.tennisrecord.com/adult/teamprofile.aspx?teamname=SUNNYVALE%20TC/SUNNYVALE%20MTC%2040AM3.5B&year=2023")) {
-                System.out.println(player.getTennisRecordLink());
+            for (PlayerEntity player: players) {
+                System.out.println(player.getName());
+                System.out.println(player.getDynamicRating());
+                System.out.println(player.getUstaRating());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -118,6 +122,21 @@ class USTASiteParserTest {
         } catch (IOException | JSONException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    @Test
+    void parseTeamMembers() {
+        USTASiteParser util = new USTASiteParser();
+
+        String playerList = "Alexander Calpagiu\t4.5 | Matt Deems\t3.5 | Daniel Armellino\t4.5 |" +
+                "Bradley Sumoge\t4 | Zachary Meloche\t3.5 | Wataru Ueno\t4.5 |" +
+                "Joshua Goddard\t4 | Gregg Palmer\t4";
+
+
+        util.parseTeamMembers(playerList);
+
+
 
     }
 }
