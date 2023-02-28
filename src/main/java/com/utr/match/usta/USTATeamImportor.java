@@ -667,20 +667,19 @@ public class USTATeamImportor {
     public void updateTeamPlayersUTRID(USTATeam existTeam) {
         for (USTATeamMember member : existTeam.getPlayers()) {
 
-            updatePlayerUTRID(member);
+            updatePlayerUTRID(member.getPlayer());
 
         }
     }
 
-    public USTATeamMember updatePlayerUTRID(USTATeamMember member) {
+    public PlayerEntity updatePlayerUTRID(PlayerEntity member) {
 
         if (member.getUtrId() == null || member.getUtrId().trim().equals("")) {
             List<Player> utrplayers = parser.searchPlayers(member.getName(), 5);
             String candidateUTRId = findUTRID(utrplayers, member);
             if (candidateUTRId != null) {
-                member.getPlayer().setUtrId(candidateUTRId);
-                PlayerEntity result = playerRepository.save(member.getPlayer());
-                member.setPlayer(result);
+                member.setUtrId(candidateUTRId);
+                member = playerRepository.save(member);
                 logger.debug("Player:" + member.getName() + " utr: " + member.getUtrId() + " Saved ");
             } else {
                 logger.debug("Player:" + member.getName() + " has no UTRId");
@@ -731,14 +730,14 @@ public class USTATeamImportor {
 
         for (USTATeamMember player : existTeam.getPlayers()) {
 
-            updatePlayerUTRInfo(player, false);
+            updatePlayerUTRInfo(player.getPlayer(), false);
 
         }
 
 
     }
 
-    public USTATeamMember updatePlayerUTRInfo(USTATeamMember member, boolean forceUpdate) {
+    public PlayerEntity updatePlayerUTRInfo(PlayerEntity member, boolean forceUpdate) {
         if (member.isRefreshedUTR() && !forceUpdate) {
             logger.debug(member.getName() + " has latest UTR, skip");
             return member;
@@ -751,19 +750,18 @@ public class USTATeamImportor {
 
             if (member.getDUTR() > 0.0 || member.getSUTR() > 0.0) {
                 if (member.getDUTR() > 0.0) {
-                    member.getPlayer().setDUTR(0.0);
-                    member.getPlayer().setDUTRStatus("");
+                    member.setDUTR(0.0);
+                    member.setDUTRStatus("");
                 }
 
                 if (member.getSUTR() > 0.0) {
-                    member.getPlayer().setSUTR(0.0);
-                    member.getPlayer().setSUTRStatus("");
+                    member.setSUTR(0.0);
+                    member.setSUTRStatus("");
                 }
 
-                member.getPlayer().setWholeSuccessRate(0.0f);
-                member.getPlayer().setSuccessRate(0.0f);
-                PlayerEntity player = playerRepository.save(member.getPlayer());
-                member.setPlayer(player);
+                member.setWholeSuccessRate(0.0f);
+                member.setSuccessRate(0.0f);
+                member = playerRepository.save(member);
             }
 
             return member;
@@ -773,8 +771,8 @@ public class USTATeamImportor {
 
         float successRate = parser.getWinPercent(utrId, true);
         float wholeSuccessRate = parser.getWinPercent(utrId, false);
-        member.getPlayer().setSuccessRate(successRate);
-        member.getPlayer().setWholeSuccessRate(wholeSuccessRate);
+        member.setSuccessRate(successRate);
+        member.setWholeSuccessRate(wholeSuccessRate);
 
         Player utrplayer = parser.getPlayer(utrId);
 
@@ -783,22 +781,20 @@ public class USTATeamImportor {
             return member;
         }
 
-        member.getPlayer().setSUTR(utrplayer.getsUTR());
-        member.getPlayer().setDUTR(utrplayer.getdUTR());
-        member.getPlayer().setSUTRStatus(utrplayer.getsUTRStatus());
-        member.getPlayer().setDUTRStatus(utrplayer.getdUTRStatus());
-        member.getPlayer().setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+        member.setSUTR(utrplayer.getsUTR());
+        member.setDUTR(utrplayer.getdUTR());
+        member.setSUTRStatus(utrplayer.getsUTRStatus());
+        member.setDUTRStatus(utrplayer.getdUTRStatus());
+        member.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
 
-        PlayerEntity player = playerRepository.save(member.getPlayer());
-
-        member.setPlayer(player);
+        member = playerRepository.save(member);
 
         logger.debug(member.getName() + " utr is updated");
 
         return member;
     }
 
-    private String findUTRID(List<Player> players, USTATeamMember player) {
+    private String findUTRID(List<Player> players, PlayerEntity player) {
         if (players.size() == 1) {
             return players.get(0).getId();
         }
@@ -851,13 +847,16 @@ public class USTATeamImportor {
                 }
 
                 if (player.getNoncalLink() != null) {
+                    Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
                     if (player.getUstaId() == null) {
-                        Map<String, String> playerInfo = util.parseUSTANumber(player.getNoncalLink());
                         player.getPlayer().setUstaId(playerInfo.get("USTAID"));
                         player.getPlayer().setUstaRating(playerInfo.get("Rating"));
                         playerRepository.save(player.getPlayer());
                         logger.debug("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
                     } else {
+                        player.getPlayer().setUstaRating(playerInfo.get("Rating"));
+                        playerRepository.save(player.getPlayer());
+                        logger.debug("Player:" + player.getName() + " usta Rating: " + player.getUstaId() + " Saved ");
 //                        logger.debug("Player:" + player.getName() + " nothing to update ");
                     }
                 }

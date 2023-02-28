@@ -21,7 +21,7 @@ class USTATeamImportorTest {
     final String teamName = "PALO ALTO TC/RINCONADA PK 18MX8.0D";
 
     String divisionName = "2023 Mixed 18 & Over 8.0";
-    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-lp&l=17728:2625&r=L";
+    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-ds&l=17838:2605&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
     @Autowired
