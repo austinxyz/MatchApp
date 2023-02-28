@@ -261,10 +261,10 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/players/{id}/utrs")
-    public ResponseEntity<USTATeamMember> getPlayerUtr(@PathVariable("id") String id,
+    public ResponseEntity<PlayerEntity> getPlayerUtr(@PathVariable("id") String id,
                                                        @RequestParam(value = "action", defaultValue = "fetch") String action) {
 
-        USTATeamMember member = ustaService.getMember(id);
+        PlayerEntity member = ustaService.getPlayer(id);
 
         if (action.equals("fetch")) {
 

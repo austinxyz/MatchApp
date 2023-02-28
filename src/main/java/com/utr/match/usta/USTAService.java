@@ -38,6 +38,8 @@ public class USTAService {
 
     @Autowired
     private USTALeagueRepository leagueRepository;
+    @Autowired
+    private USTATeamMemberRepository uSTATeamMemberRepository;
 
     public USTATeam getTeam(String id) {
         return getTeam(id, false);
@@ -70,10 +72,19 @@ public class USTAService {
 
 
     public USTATeamMember getMember(String id) {
+        Optional<USTATeamMember> player = uSTATeamMemberRepository.findById(Long.valueOf(id));
+
+        if (player.isPresent()) {
+            return player.get();
+        }
+        return null;
+    }
+
+    public PlayerEntity getPlayer(String id) {
         Optional<PlayerEntity> player = playerRepository.findById(Long.valueOf(id));
 
         if (player.isPresent()) {
-            return new USTATeamMember(player.get());
+            return player.get();
         }
         return null;
     }
@@ -94,46 +105,43 @@ public class USTAService {
         return toUSTATeamList(new ArrayList<>(teams));
     }
 
-    public List<USTATeamMember> searchMembersByName(String name) {
-        List<USTATeamMember> members;
+    public List<PlayerEntity> searchPlayersByName(String name) {
+        List<PlayerEntity> players = new ArrayList<>();
 
         if (isUTRId(name)) {
-            members = new ArrayList<>();
-            USTATeamMember member = getMember(name);
-            if (member != null) {
-                members.add(member);
+            PlayerEntity player = getPlayerByUTRId(name);
+            if (player != null) {
+                players.add(player);
             }
         } else {
             String likeString = "%" + name + "%";
-            List<PlayerEntity> players = playerRepository.findByNameLike(likeString);
+            players.addAll(playerRepository.findByNameLike(likeString));
 
             String reverseString = "%" + reverseName(name) + "%";
 
             if (!likeString.equals(reverseString)) {
                 players.addAll(playerRepository.findByNameLike(reverseString));
             }
-
-            members = toUSTATeamMemberList(players);
         }
 
-        return members;
+        return players;
     }
 
-    public USTATeamMember createPlayer(PlayerEntity player) {
+    public PlayerEntity createPlayer(PlayerEntity player) {
 
         if (player.getUtrId() != null) {
             PlayerEntity existedPlayer = playerRepository.findByUtrId(player.getUtrId());
             if (existedPlayer != null) {
-                return new USTATeamMember(existedPlayer);
+                return existedPlayer;
             }
         }
 
         PlayerEntity entity = playerRepository.save(player);
 
-        return new USTATeamMember(entity);
+        return entity;
     }
 
-    public List<USTATeamMember> searchByUTR(String ustaRating,
+    public List<PlayerEntity> searchByUTR(String ustaRating,
                                             String utrLimitValue,
                                             String utrValue,
                                             String type,
@@ -173,7 +181,7 @@ public class USTAService {
         }
 
         Page<PlayerEntity> players = playerRepository.findAll(spec, firstPage);
-        return toUSTATeamMemberList(players.stream().toList());
+        return players.stream().toList();
 
     }
 
@@ -273,45 +281,43 @@ public class USTAService {
         return null;
     }
 
-    public USTATeamMember updatePlayerUTRId(String utrId) {
+    public PlayerEntity getPlayerByUTRId(String utrId) {
+        return playerRepository.findByUtrId(utrId);
+    }
 
-        USTATeamMember member = getMemberByUTRId(utrId);
+    public PlayerEntity updatePlayerUTRId(String utrId) {
+
+        PlayerEntity member = getPlayerByUTRId(utrId);
         member = importor.updatePlayerUTRID(member);
 
         return member;
     }
 
-    public USTATeamMember updatePlayerUTRValue(String utrId) {
+    public PlayerEntity updatePlayerUTRValue(String utrId) {
 
-        USTATeamMember member = getMemberByUTRId(utrId);
+        PlayerEntity member = getPlayerByUTRId(utrId);
         member = importor.updatePlayerUTRInfo(member, true);
 
         return member;
     }
 
-    public USTATeamMember updatePlayer(String id, PlayerEntity player) {
-        USTATeamMember member = getMember(id);
+    public PlayerEntity updatePlayer(String id, PlayerEntity player) {
+        PlayerEntity member = getPlayer(id);
 
         if (member != null) {
-            PlayerEntity _player = member.getPlayer();
-            _player.setUstaId(player.getUstaId());
-            _player.setUtrId(player.getUtrId());
-            _player.setUstaNorcalId(player.getUstaNorcalId());
-            _player.setSummary(player.getSummary());
-            _player.setMemo(player.getMemo());
-            _player.setLefty(player.isLefty());
-            _player = playerRepository.save(_player);
-            member.setPlayer(_player);
+            member.setUstaId(player.getUstaId());
+            member.setUtrId(player.getUtrId());
+            member.setUstaNorcalId(player.getUstaNorcalId());
+            member.setSummary(player.getSummary());
+            member.setMemo(player.getMemo());
+            member.setLefty(player.isLefty());
+            member = playerRepository.save(member);
         }
         return member;
     }
 
-    public USTATeamMember getPlayerByNorcalId(String norcalId) {
-        PlayerEntity playerData = playerRepository.findByUstaNorcalId(norcalId);
-        if (playerData != null) {
-            return new USTATeamMember(playerData);
-        }
-        return null;
+    public PlayerEntity getPlayerByNorcalId(String norcalId) {
+        return playerRepository.findByUstaNorcalId(norcalId);
     }
 
     public List<USTATeam> getTeamsByDivision(String divId) {
@@ -382,7 +388,7 @@ public class USTAService {
         return result;
     }
 
-    private List<USTATeamMember> toUSTATeamMemberList(List<PlayerEntity> players) {
+/*    private List<USTATeamMember> toUSTATeamMemberList(List<PlayerEntity> players) {
         List<USTATeamMember> result = new ArrayList<>();
         if (players == null) {
             return result;
@@ -392,5 +398,5 @@ public class USTAService {
             result.add(new USTATeamMember(entity));
         }
         return result;
-    }
+    }*/
 }

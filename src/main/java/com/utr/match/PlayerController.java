@@ -30,16 +30,16 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{id}")
-    public ResponseEntity<USTATeamMember> player(@PathVariable("id") String id,
+    public ResponseEntity<PlayerEntity> player(@PathVariable("id") String id,
                                                  @RequestParam("action") String action
     ) {
-        USTATeamMember member = service.getMember(id);
+        PlayerEntity player = service.getPlayer(id);
 
-        if (member != null) {
+        if (player != null) {
             if (action.equals("updateUTRId")) {
-                importor.updatePlayerUTRID(member);
+                importor.updatePlayerUTRID(player);
             }
-            return ResponseEntity.ok(member);
+            return ResponseEntity.ok(player);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -60,9 +60,9 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search")
-    public ResponseEntity<List<USTATeamMember>> searchByName(@RequestParam("name") String name
+    public ResponseEntity<List<PlayerEntity>> searchByName(@RequestParam("name") String name
     ) {
-        List<USTATeamMember> members = service.searchMembersByName(name);
+        List<PlayerEntity> members = service.searchPlayersByName(name);
 
         if (members.size() > 0) {
             return ResponseEntity.ok(members);
@@ -73,7 +73,7 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/searchUTR")
-    public ResponseEntity<List<USTATeamMember>> searchByUTR(@RequestParam("USTARating") String ustaRating,
+    public ResponseEntity<List<PlayerEntity>> searchByUTR(@RequestParam("USTARating") String ustaRating,
                                                             @RequestParam(value = "utrLimit", defaultValue = "16.0") String utrLimitValue,
                                                             @RequestParam(value = "utr", defaultValue = "0.0") String utrValue,
                                                             @RequestParam(value = "type", defaultValue = "double") String type,
@@ -83,7 +83,7 @@ public class PlayerController {
                                                             @RequestParam(value = "start", defaultValue = "0") int start,
                                                             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        List<USTATeamMember> members = service.searchByUTR(ustaRating, utrLimitValue,
+        List<PlayerEntity> members = service.searchByUTR(ustaRating, utrLimitValue,
                 utrValue, type, gender, ageRange, ratedOnlyStr, start, size);
 
         if (!members.isEmpty()) {
@@ -115,22 +115,22 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @PostMapping("/")
-    public USTATeamMember createPlayer(@RequestBody PlayerEntity player) {
+    public PlayerEntity createPlayer(@RequestBody PlayerEntity player) {
 
-        USTATeamMember member = service.createPlayer(player);
+        PlayerEntity member = service.createPlayer(player);
 
         return member;
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/utr/{id}")
-    public ResponseEntity<USTATeamMember> updatePlayerUTR(@PathVariable("id") String utrId,
+    public ResponseEntity<PlayerEntity> playerByUTR(@PathVariable("id") String utrId,
                                                           @RequestParam(value = "action", defaultValue = "search") String action
     ) {
 
         if (action.equals("search")) {
 
-            USTATeamMember member = service.getMember(utrId);
+            PlayerEntity member = service.getPlayerByUTRId(utrId);
 
             if (member != null) {
                 return ResponseEntity.ok(member);
@@ -141,7 +141,7 @@ public class PlayerController {
 
         if (action.equals("refreshUTRValue")) {
 
-            USTATeamMember member = service.updatePlayerUTRValue(utrId);
+            PlayerEntity member = service.updatePlayerUTRValue(utrId);
 
             if (member != null) {
                 return ResponseEntity.ok(member);
@@ -155,9 +155,9 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @PutMapping("/{id}")
-    public ResponseEntity<USTATeamMember> updatePlayer(@PathVariable("id") String id, @RequestBody PlayerEntity player) {
+    public ResponseEntity<PlayerEntity> updatePlayer(@PathVariable("id") String id, @RequestBody PlayerEntity player) {
 
-        USTATeamMember member = service.updatePlayer(id, player);
+        PlayerEntity member = service.updatePlayer(id, player);
 
         if (member != null) {
             return new ResponseEntity<>(member, HttpStatus.OK);
@@ -168,12 +168,12 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/usta/{norcalId}")
-    public ResponseEntity<USTATeamMember> getPlayerByNorcalId(@PathVariable("norcalId") String norcalId,
+    public ResponseEntity<PlayerEntity> getPlayerByNorcalId(@PathVariable("norcalId") String norcalId,
                                                               @RequestParam(value = "action", defaultValue = "search") String action
     ) {
 
         if (action.equals("search")) {
-            USTATeamMember member = service.getPlayerByNorcalId(norcalId);
+            PlayerEntity member = service.getPlayerByNorcalId(norcalId);
 
             if (member != null) {
                 return ResponseEntity.ok(member);
