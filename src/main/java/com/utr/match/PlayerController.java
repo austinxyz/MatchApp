@@ -7,6 +7,7 @@ import com.utr.match.usta.USTAService;
 import com.utr.match.usta.USTATeam;
 import com.utr.match.usta.USTATeamImportor;
 import com.utr.match.entity.USTATeamMember;
+import com.utr.match.usta.USTATeamMemberPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,12 +48,12 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{id}/teams")
-    public ResponseEntity<List<USTATeam>> playerTeams(@PathVariable("id") String id
+    public ResponseEntity<List<USTATeamMemberPO>> playerTeams(@PathVariable("id") String id
     ) {
-        List<USTATeam> teams = service.getTeamsByPlayer(id);
+        List<USTATeamMemberPO> members = service.getTeamMembersByPlayer(id);
 
-        if (teams.size() > 0) {
-            return ResponseEntity.ok(teams);
+        if (members.size() > 0) {
+            return ResponseEntity.ok(members);
         } else {
             return ResponseEntity.notFound().build();
         }

@@ -332,12 +332,8 @@ public class PlayerEntity {
     }
 
     @JsonIgnore
-    public Set<USTATeamEntity> getTeams() {
-        Set<USTATeamEntity> teams = new HashSet<>();
-        for (USTATeamMember member: this.members) {
-            teams.add(member.getTeam());
-        }
-        return teams;
+    public Set<USTATeamMember> getTeamMembers() {
+        return this.members;
     }
 
     public void setUtrs(Set<EventUTR> utrs) {

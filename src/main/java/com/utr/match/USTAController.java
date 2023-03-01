@@ -312,15 +312,14 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/players/{id}/scores")
-    public ResponseEntity<List<USTATeamLineScore>> getPlayerScores(@PathVariable("id") String id) {
+    public ResponseEntity<List<USTATeamMemberScorePO>> getPlayerScores(@PathVariable("id") String id) {
 
-        List<USTATeamLineScore> scores = ustaService.getPlayerScores(id);
+        List<USTATeamMemberScorePO> scores = ustaService.getPlayerScores(id);
 
         if (scores.size() > 0) {
 
             return new ResponseEntity<>(scores, HttpStatus.OK);
         } else {
-
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

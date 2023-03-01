@@ -594,7 +594,8 @@ public class USTATeamImportor {
                 }
 
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
-                    USTATeamMember member = new USTATeamMember(existedPlayer);
+                    USTATeamMember member = new USTATeamMember();
+                    member.setPlayer(existedPlayer);
                     member.setRating(player.getRating());
                     member.setTeam(existTeam);
                     //member = ustaTeamMemberRepository.save(member);

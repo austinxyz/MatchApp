@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
+import com.utr.match.usta.USTATeamMemberPO;
 import com.utr.model.Player;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -109,8 +110,8 @@ class PlayerRepositoryTest {
         PlayerEntity player = playerRepo.findByUtrId("1316122");
         System.out.println(player.getFirstName() + " " + player.getLastName());
 
-        for (USTATeamEntity team: player.getTeams()) {
-            System.out.println(team.getName());
+        for (USTATeamMember member: player.getTeamMembers()) {
+            System.out.println(member.getTeam().getName());
         }
 
     }

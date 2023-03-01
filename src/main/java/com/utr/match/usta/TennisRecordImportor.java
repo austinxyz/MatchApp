@@ -112,7 +112,8 @@ public class TennisRecordImportor {
             }
 
             if (existTeam.getPlayer(existedPlayer.getName()) == null) {
-                USTATeamMember member = new USTATeamMember(existedPlayer);
+                USTATeamMember member = new USTATeamMember();
+                member.setPlayer(existedPlayer);
                 member.setTeam(existTeam);
                 //member = ustaTeamMemberRepository.save(member);
                 existTeam.addPlayer(member);
