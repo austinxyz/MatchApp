@@ -94,15 +94,15 @@ public class USTAService {
         return toUSTATeamList(teams);
     }
 
-    public List<USTATeam> getTeamsByPlayer(String id) {
-        USTATeamMember member = getMember(id);
+    public List<USTATeamMemberPO> getTeamMembersByPlayer(String id) {
+        PlayerEntity member = getPlayer(id);
 
         if (member == null) {
             return new ArrayList<>();
         }
 
-        Set<USTATeamEntity> teams = member.getPlayer().getTeams();
-        return toUSTATeamList(new ArrayList<>(teams));
+        Set<USTATeamMember> teams = member.getTeamMembers();
+        return toUSTATeamMemberPOList(new ArrayList<>(teams));
     }
 
     public List<PlayerEntity> searchPlayersByName(String name) {
@@ -240,14 +240,14 @@ public class USTAService {
         if (!players.isEmpty()) {
 
             result.put("totalNumber", String.valueOf(players.getTotalElements()));
-            USTATeamMember topPlayer = new USTATeamMember(players.get().collect(Collectors.toList()).get(0));
+            PlayerEntity topPlayer = players.get().collect(Collectors.toList()).get(0);
             result.put("topPlayer", topPlayer);
 
             Pageable midPage = PageRequest.of(players.getTotalPages() / 2, 1);
 
             players = playerRepository.findAll(spec, midPage);
 
-            USTATeamMember midPlayer = new USTATeamMember(players.get().collect(Collectors.toList()).get(0));
+            PlayerEntity midPlayer = players.get().collect(Collectors.toList()).get(0);
             result.put("midPlayer", midPlayer);
         }
 
@@ -271,14 +271,6 @@ public class USTAService {
         char c = name.charAt(0);
 
         return c >= '0' && c <= '9';
-    }
-
-    public USTATeamMember getMemberByUTRId(String utrId) {
-        PlayerEntity playerData = playerRepository.findByUtrId(utrId);
-        if (playerData != null) {
-            return new USTATeamMember(playerData);
-        }
-        return null;
     }
 
     public PlayerEntity getPlayerByUTRId(String utrId) {
@@ -346,7 +338,7 @@ public class USTAService {
         return leagueRepository.findByYear(year);
     }
 
-    public List<USTATeamLineScore> getPlayerScores(String id) {
+    public List<USTATeamMemberScorePO> getPlayerScores(String id) {
 
         Optional<PlayerEntity> player = playerRepository.findById(Long.valueOf(id));
 
@@ -354,13 +346,15 @@ public class USTAService {
 
             PlayerEntity thisPlayer = player.get();
 
-            return lineScoreRepository.findByGuestLine_Player1OrHomeLine_Player2OrHomeLine_Player1OrGuestLine_Player2(
-                    thisPlayer, thisPlayer, thisPlayer, thisPlayer);
+            return toUSTATeamMemberScorePoList(lineScoreRepository.findByGuestLine_Player1OrHomeLine_Player2OrHomeLine_Player1OrGuestLine_Player2(
+                    thisPlayer, thisPlayer, thisPlayer, thisPlayer));
 
         }
         return new ArrayList<>();
 
     }
+
+
 
     public USTATeamLineScore updateLineScoreInfo(long id, USTATeamLineScore score) {
         Optional<USTATeamLineScore> scoreData = lineScoreRepository.findById(id);
@@ -388,15 +382,30 @@ public class USTAService {
         return result;
     }
 
-/*    private List<USTATeamMember> toUSTATeamMemberList(List<PlayerEntity> players) {
-        List<USTATeamMember> result = new ArrayList<>();
-        if (players == null) {
+   private List<USTATeamMemberPO> toUSTATeamMemberPOList(List<USTATeamMember> members) {
+        List<USTATeamMemberPO> result = new ArrayList<>();
+        if (members == null) {
             return result;
         }
 
-        for (PlayerEntity entity : players) {
-            result.add(new USTATeamMember(entity));
+        for (USTATeamMember entity : members) {
+            result.add(new USTATeamMemberPO(entity));
         }
+        result.sort((USTATeamMemberPO o1, USTATeamMemberPO o2) -> o2.getDivisionName().compareTo(o1.getDivisionName()));
         return result;
-    }*/
+    }
+
+    private List<USTATeamMemberScorePO> toUSTATeamMemberScorePoList(List<USTATeamLineScore> scores) {
+        List<USTATeamMemberScorePO> result = new ArrayList<>();
+        if (scores == null) {
+            return result;
+        }
+
+        for (USTATeamLineScore entity : scores) {
+            result.add(new USTATeamMemberScorePO(entity));
+        }
+        result.sort((USTATeamMemberScorePO o1, USTATeamMemberScorePO o2) -> o2.getMatchDate().compareTo(o1.getMatchDate()));
+        return result;
+
+    }
 }

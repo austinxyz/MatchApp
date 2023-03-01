@@ -66,9 +66,9 @@ public class USTATeamMember {
 
     }
 
-    public USTATeamMember(PlayerEntity player) {
+/*    public USTATeamMember(PlayerEntity player) {
         this.player = player;
-    }
+    }*/
 
     public PlayerEntity getPlayer() {
         return player;

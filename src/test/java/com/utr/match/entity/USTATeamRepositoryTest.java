@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
+import com.utr.match.usta.USTATeamMemberPO;
 import com.utr.model.Player;
 import com.utr.parser.UTRParser;
 import com.utr.match.usta.USTASiteParser;
@@ -88,7 +89,9 @@ class USTATeamRepositoryTest {
 
         if (player != null) {
             //Hibernate.initialize(team.getPlayers());
-            team.getPlayers().add(new USTATeamMember(player));
+            USTATeamMember member = new USTATeamMember();
+            member.setPlayer(player);
+            team.getPlayers().add(member);
             ustaTeamRepository.save(team);
             System.out.println(player);
         }
@@ -114,8 +117,8 @@ class USTATeamRepositoryTest {
         PlayerEntity player = playerRepository.findByNameLike("%Lucy%").get(0);
         long start = System.currentTimeMillis();
         System.out.println(player.getName());
-        for (USTATeamEntity team :player.getTeams()) {
-            System.out.println(team.getName());
+        for (USTATeamMember member :player.getTeamMembers()) {
+            System.out.println(member.getTeam().getName());
         }
         System.out.println(System.currentTimeMillis() - start);
 
@@ -187,7 +190,9 @@ class USTATeamRepositoryTest {
                 }
 
                 if (existTeam.getPlayer(existedPlayer.getName()) == null) {
-                    existTeam.getPlayers().add(new USTATeamMember(existedPlayer));
+                    USTATeamMember member = new USTATeamMember();
+                    member.setPlayer(existedPlayer);
+                    existTeam.getPlayers().add(member);
                     System.out.println(" add player " + player.getName() + " into team");
                 }
             }

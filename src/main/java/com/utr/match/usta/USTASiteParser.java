@@ -271,7 +271,8 @@ public class USTASiteParser {
                     playerEntity.setNoncalLink(noncalLink);
                     playerEntity.setUstaNorcalId(noncalId);
 
-                    USTATeamMember member = new USTATeamMember(playerEntity);
+                    USTATeamMember member = new USTATeamMember();
+                    member.setPlayer(playerEntity);
                     member.setQualifiedPo(matches.indexOf("^")>0);
 
                     team.getPlayers().add(member);
