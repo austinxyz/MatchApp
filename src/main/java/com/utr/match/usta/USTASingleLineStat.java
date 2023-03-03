@@ -22,6 +22,11 @@ public class USTASingleLineStat {
     int winMatchNo = 0;
     int lostMatchNo = 0;
 
+    int surprisedWin = 0;
+
+    int surprisedLost = 0;
+    int normalNo = 0;
+
     public USTASingleLineStat(String lineName, String teamName) {
         singlers = new HashMap<>();
         this.lineName = lineName;
@@ -38,6 +43,17 @@ public class USTASingleLineStat {
             winMatchNo++;
         } else {
             lostMatchNo++;
+        }
+
+        switch(score.isSurprisedResult()) {
+            case -1: // surprised lost
+                this.surprisedLost++;
+                break;
+            case 1: // surprised win
+                this.surprisedWin++;
+                break;
+            default:
+                this.normalNo++;
         }
 
         USTATeamPair pair = score.getPair(teamName);
@@ -105,5 +121,17 @@ public class USTASingleLineStat {
 
         return sum/singlers.size();
 
+    }
+
+    public int getSurprisedWin() {
+        return surprisedWin;
+    }
+
+    public int getNormalNo() {
+        return normalNo;
+    }
+
+    public int getSurprisedLost() {
+        return surprisedLost;
     }
 }

@@ -99,6 +99,22 @@ public class USTATeamMatchLine {
                 || (player2.getId() == this.player1.getId()
                 && player1.getId() == this.player2.getId()));
     }
+
+    @JsonIgnore
+    public double getTotalUTR() {
+        if (this.player1 == null ) {
+            return 0;
+        } else if (type.equals("S")) {
+            return this.player1.getSUTR();
+        } else {
+            if (this.player2 !=null) {
+                return this.player1.getDUTR() + this.player2.getDUTR();
+            } else {
+                return this.player1.getDUTR();
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "USTATeamMatchLine{" +
