@@ -19,4 +19,19 @@ class USTAServiceTest {
 
     }
 
+    @Test
+    void getLeaguesFromUSTASite() {
+        for (USTALeaguePO league:service.getLeaguesFromUSTASite()) {
+            System.out.println(league);
+        }
+    }
+
+    @Test
+    void getTeamsFromUSTASite() {
+        String divLink = "https://www.ustanorcal.com/listteams.asp?leagueid=2605";
+        String divName = "2023 Adult 40 & Over Mens 3.5";
+        for (USTATeamPO team: service.getTeamsFromUSTASite("2605")) {
+            System.out.println(team);
+        }
+    }
 }

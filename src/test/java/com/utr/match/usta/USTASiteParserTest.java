@@ -139,4 +139,34 @@ class USTASiteParserTest {
 
 
     }
+
+    @Test
+    void parseLeagues() {
+        USTASiteParser util = new USTASiteParser();
+        String url = "https://www.ustanorcal.com/listdivisions.asp";
+
+        try {
+            util.parseLeagues(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            //throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void parseDivision() {
+        USTASiteParser util = new USTASiteParser();
+        String url = "https://www.ustanorcal.com/listteams.asp?leagueid=2605";
+
+        try {
+            List<USTATeamEntity> teams = util.parseDivision(url);
+
+            for (USTATeamEntity team: teams) {
+                System.out.println(team);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            //throw new RuntimeException(e);
+        }
+    }
 }

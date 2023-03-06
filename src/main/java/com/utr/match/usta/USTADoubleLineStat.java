@@ -44,7 +44,7 @@ public class USTADoubleLineStat {
             lostMatchNo++;
         }
 
-        switch(score.isSurprisedResult()) {
+        switch(score.isSurprisedResult(teamName)) {
             case -1: // surprised lost
                 this.surprisedLost++;
                 break;

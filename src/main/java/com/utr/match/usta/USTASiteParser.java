@@ -1,8 +1,6 @@
 package com.utr.match.usta;
 
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.USTATeamEntity;
-import com.utr.match.entity.USTATeamMember;
+import com.utr.match.entity.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -14,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class USTASiteParser {
@@ -25,6 +20,58 @@ public class USTASiteParser {
     private static final Logger logger = LoggerFactory.getLogger(USTASiteParser.class);
 
     public USTASiteParser() {
+    }
+
+    public List<USTATeamEntity> parseDivision(String divURL) throws IOException{
+        List<USTATeamEntity> result = new ArrayList<>();
+
+        Document doc = Jsoup.connect(divURL).get();
+        Elements links = doc.select("a[href]");
+
+        for (Element link: links) {
+            String href = link.attr("href");
+            if (href.startsWith("teaminfo")) {
+                USTATeamEntity team = new USTATeamEntity();
+                team.setName(link.text());
+                team.setLink("https://www.ustanorcal.com/" + href );
+                result.add(team);
+                Element tr = link.parent().parent();
+                team.setCaptainName(tr.child(1).text());
+                team.setArea(tr.child(3).text());
+            }
+        }
+
+        result.sort((USTATeamEntity o1, USTATeamEntity o2) -> o1.getArea().compareTo(o2.getArea()));
+        return result;
+    }
+
+    public Map<String, Map> parseLeagues(String leagueURL) throws IOException{
+        Map<String, Map> result = new HashMap<>();
+
+        Document doc = Jsoup.connect(leagueURL).get();
+        Elements tables = doc.getElementsByClass("table-striped");
+
+        for (Element table: tables) {
+            String leagueName = table.child(0).child(0).text();
+            //System.out.println(leagueName);
+            Map<String, USTADivision> divs = new HashMap<>();
+
+            for (Element division: table.child(1).children()) {
+                Element e = division.child(0).child(0);
+                String href = e.attr("href");
+                USTADivision div = new USTADivision();
+                div.setName(e.text());
+                div.setLink("https://www.ustanorcal.com/" + href);
+                int idStart = href.indexOf("leagueid=") + 9;
+                String id = href.substring(idStart, href.length());
+                divs.put(id, div);
+                //System.out.println(div);
+            }
+
+            result.put(leagueName, divs);
+        }
+
+        return result;
     }
 
     public List<PlayerEntity> parseTeamMembers(String playerList)  {
