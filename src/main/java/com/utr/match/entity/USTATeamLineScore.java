@@ -180,11 +180,14 @@ public class USTATeamLineScore {
     }
 
     @JsonIgnore
-    public int isSurprisedResult() { // 1 surprised win, -1 surprised lost, 0: no surprise
+    public int isSurprisedResult(String teamName) { // 1 surprised win, -1 surprised lost, 0: no surprise
+
+        boolean isHomeTeam = this.getScoreCard().getHomeTeamName().equals(teamName);
+
         if (this.homeTeamWin) {
             if (this.getHomeLine().getTotalUTR() <= this.getGuestLine().getTotalUTR()) {
                 // home team win while home team utr <= guest team utr, it is a surprised win
-                return 1;
+                return isHomeTeam? 1: -1;
             } else {
                 // home team win and home team utr > guest team utr, no surprise
                 return 0;
@@ -192,7 +195,7 @@ public class USTATeamLineScore {
         } else {
             if( this.getHomeLine().getTotalUTR() >= this.getGuestLine().getTotalUTR()) {
                 // home team lost while home team utr >= guest team utr, it is a surprised lost
-                return -1;
+                return isHomeTeam? -1: 1;
             } else {
                 // home team lost while home team utr < guest team utr, no surprise
                 return 0;

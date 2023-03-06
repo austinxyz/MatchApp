@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,13 @@ public class USTAService {
     private USTALeagueRepository leagueRepository;
     @Autowired
     private USTATeamMemberRepository uSTATeamMemberRepository;
+
+    @Autowired
+    private USTASiteParser siteParser;
+
+    private Map<String, USTADivision> divisions;
+
+    private List<USTALeaguePO> leagues;
 
     public USTATeam getTeam(String id) {
         return getTeam(id, false);
@@ -317,6 +325,64 @@ public class USTAService {
         return toUSTATeamList(teams);
     }
 
+    public List<USTATeamPO> getTeamsFromUSTASite(String id) {
+
+        if (this.divisions == null || this.divisions.isEmpty()) {
+            this.getLeaguesFromUSTASite();
+        }
+
+        USTADivision div = divisions.get(id);
+
+        if (div == null) {
+            return new ArrayList<>();
+        }
+
+        USTADivision division = divisionRepository.findByName(div.getName());
+
+        List<USTATeamPO> result = new ArrayList<>();
+        List<USTATeamEntity> teamFromDB = new ArrayList<>();
+        if (division != null) {
+            teamFromDB = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(division.getId()));
+        }
+
+        try {
+            List<USTATeamEntity> teamFromSite = siteParser.parseDivision(div.getLink());
+
+            Set<String> addedTeams = new HashSet<>();
+
+            for (USTATeamEntity team: teamFromDB) {
+
+                USTATeamPO teamPO = new USTATeamPO(team.getName());
+                teamPO.setArea(team.getAreaCode());
+                teamPO.setAlias(team.getAlias());
+                teamPO.setCaptainName(team.getCaptainName());
+                teamPO.setLink(team.getLink());
+                teamPO.setInDB(true);
+
+                addedTeams.add(team.getName());
+                result.add(teamPO);
+            }
+
+            for (USTATeamEntity team: teamFromSite) {
+                if (!addedTeams.contains(team.getName())) {
+                    USTATeamPO teamPO = new USTATeamPO(team.getName());
+                    teamPO.setArea(team.getArea());
+                    teamPO.setAlias(team.getAlias());
+                    teamPO.setCaptainName(team.getCaptainName());
+                    teamPO.setLink(team.getLink());
+                    teamPO.setInDB(false);
+                    result.add(teamPO);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+
+    }
+
     public List<USTAFlight> getFlightsByDivision(String divId) {
         return flightRepository.findByDivision_Id(Long.valueOf(divId));
     }
@@ -336,6 +402,52 @@ public class USTAService {
 
     public List<USTALeague> getLeagues(String year) {
         return leagueRepository.findByYear(year);
+    }
+
+    public List<USTALeaguePO> getLeaguesFromUSTASite() {
+        if (leagues != null && leagues.size() > 0) {
+            return leagues;
+        }
+
+        List<USTALeague> leaguesInDB = getLeagues("2023");
+        String url = "https://www.ustanorcal.com/listdivisions.asp";
+        try {
+            Map<String, Map> leaguesFromSite = siteParser.parseLeagues(url);
+
+            leagues = new ArrayList<>();
+            divisions = new HashMap<>();
+
+            Set<String> addedLeague = new HashSet<>();
+
+            for (USTALeague league: leaguesInDB) {
+                USTALeaguePO leaguePO = new USTALeaguePO(league.getName(), league.getYear());
+                leaguePO.setInDB(true);
+
+                Map<String, USTADivision> leaugeDivisions = leaguesFromSite.getOrDefault(league.getName(), new HashMap<String, USTADivision>());
+
+                leaguePO.getDivisions().addAll(leaugeDivisions.values());
+                divisions.putAll(leaugeDivisions);
+
+                addedLeague.add(league.getName());
+                leagues.add(leaguePO);
+            }
+
+            for (String leagueName: leaguesFromSite.keySet()) {
+                if (!addedLeague.contains(leagueName)) {
+                    Map<String, USTADivision> leaugeDivisions = leaguesFromSite.get(leagueName);
+                    USTALeaguePO leaguePO = new USTALeaguePO(leagueName, "2023");
+                    leaguePO.setInDB(false);
+                    leaguePO.getDivisions().addAll(leaugeDivisions.values());
+                    divisions.putAll(leaugeDivisions);
+                    leagues.add(leaguePO);
+                }
+            }
+
+            return leagues;
+
+        } catch (IOException e) {
+            return new ArrayList<>();
+        }
     }
 
     public List<USTATeamMemberScorePO> getPlayerScores(String id) {

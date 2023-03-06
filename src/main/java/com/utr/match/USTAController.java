@@ -64,6 +64,20 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/site/divisions/{id}/teams")
+    public ResponseEntity<List<USTATeamPO>> getTeamsFromUSTASite(@PathVariable("id") String id
+    ) {
+
+        List<USTATeamPO> teams = ustaService.getTeamsFromUSTASite(id);
+
+        if (teams.size() > 0) {
+            return ResponseEntity.ok(teams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/divisions/{divId}/flights")
     public ResponseEntity<List<USTAFlight>> getFlightsByDivision(@PathVariable("divId") String divId
     ) {
@@ -119,6 +133,19 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/current/leagues/")
+    public ResponseEntity<List<USTALeaguePO>> getLeaguesFromUSTA() {
+
+        List<USTALeaguePO> leagues = ustaService.getLeaguesFromUSTASite();
+
+        if (leagues.size() > 0) {
+            return ResponseEntity.ok(leagues);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/{year}/leagues/")
     public ResponseEntity<List<USTALeague>> getLeagues(@PathVariable("year") String year
     ) {
@@ -131,7 +158,6 @@ public class USTAController {
             return ResponseEntity.notFound().build();
         }
     }
-
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/utrs")
     public ResponseEntity<USTATeam> updatePlayersUTRId(@PathVariable("id") String id,

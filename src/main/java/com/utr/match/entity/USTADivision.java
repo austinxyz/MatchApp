@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
@@ -80,5 +81,24 @@ public class USTADivision {
 
     public void setAgeRange(String ageRange) {
         this.ageRange = ageRange;
+    }
+
+    @Override
+    public String toString() {
+        return "USTADivision{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", link='" + link + '\'' +
+                '}';
+    }
+
+    @JsonProperty
+    public String getUSTALeagueId() {
+        if (this.link == null || this.link.length() == 0) {
+            return "";
+        }
+        int idStart = link.indexOf("leagueid=") + 9;
+        return link.substring(idStart, link.length());
+
     }
 }
