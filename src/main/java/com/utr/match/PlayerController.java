@@ -4,10 +4,8 @@ package com.utr.match;
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.PlayerRepository;
 import com.utr.match.usta.USTAService;
-import com.utr.match.usta.USTATeam;
 import com.utr.match.usta.USTATeamImportor;
-import com.utr.match.entity.USTATeamMember;
-import com.utr.match.usta.USTATeamMemberPO;
+import com.utr.match.usta.po.USTATeamMemberPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -116,11 +114,11 @@ public class PlayerController {
 
     @CrossOrigin(origins = "*")
     @PostMapping("/")
-    public PlayerEntity createPlayer(@RequestBody PlayerEntity player) {
+    public ResponseEntity<PlayerEntity> createPlayer(@RequestBody PlayerEntity player) {
 
         PlayerEntity member = service.createPlayer(player);
 
-        return member;
+        return ResponseEntity.ok(member);
     }
 
     @CrossOrigin(origins = "*")

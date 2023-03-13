@@ -1,4 +1,4 @@
-package com.utr.match.usta;
+package com.utr.match.usta.po;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

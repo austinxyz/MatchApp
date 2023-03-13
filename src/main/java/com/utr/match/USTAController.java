@@ -3,6 +3,10 @@ package com.utr.match;
 
 import com.utr.match.entity.*;
 import com.utr.match.usta.*;
+import com.utr.match.usta.po.USTADivisionPO;
+import com.utr.match.usta.po.USTALeaguePO;
+import com.utr.match.usta.po.USTATeamMemberScorePO;
+import com.utr.match.usta.po.USTATeamPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -158,6 +162,7 @@ public class USTAController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/utrs")
     public ResponseEntity<USTATeam> updatePlayersUTRId(@PathVariable("id") String id,
@@ -188,6 +193,17 @@ public class USTAController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @CrossOrigin(origins = "*")
+    @PostMapping("/teams")
+    public ResponseEntity<USTATeam> createTeam(@RequestBody USTATeamPO team) {
+
+        USTATeamEntity entity = importor.importUSTATeam(team.getLink());
+
+        USTATeam newTeam = new USTATeam(entity);
+
+        return new ResponseEntity<>(newTeam, HttpStatus.OK);
+
+    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/players")
@@ -231,6 +247,21 @@ public class USTAController {
                 return new ResponseEntity<>(team, HttpStatus.OK);
             }
 
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/site/divisions/")
+    public ResponseEntity<USTADivisionPO> importDivision(@RequestBody USTADivisionPO division
+    ) {
+
+        USTADivisionPO div = ustaService.importDivisionFromUSTASite(division.getUSTALeagueId(), division.getLeagueName());
+
+        System.out.println(div);
+        if (div != null) {
+            return new ResponseEntity<>(div, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -288,7 +319,7 @@ public class USTAController {
     @CrossOrigin(origins = "*")
     @GetMapping("/players/{id}/utrs")
     public ResponseEntity<PlayerEntity> getPlayerUtr(@PathVariable("id") String id,
-                                                       @RequestParam(value = "action", defaultValue = "fetch") String action) {
+                                                     @RequestParam(value = "action", defaultValue = "fetch") String action) {
 
         PlayerEntity member = ustaService.getPlayer(id);
 

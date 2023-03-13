@@ -1,7 +1,6 @@
 package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
-import com.utr.match.usta.USTATeamMemberPO;
 import com.utr.model.Player;
 import com.utr.parser.UTRParser;
 import com.utr.match.usta.USTASiteParser;

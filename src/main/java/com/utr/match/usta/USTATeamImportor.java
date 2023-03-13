@@ -539,6 +539,12 @@ public class USTATeamImportor {
 
             if (existTeam != null) {
                 logger.debug("team " + team.getName() + " is existed");
+                if (existTeam.getUstaFlight().getLink() == null || existTeam.getUstaFlight().getLink().trim().equals("") ) {
+                    logger.debug("flight link is null");
+                    existTeam.getUstaFlight().setLink(team.getUstaFlight().getLink());
+                    ustaFlightRepository.save(existTeam.getUstaFlight());
+                    logger.debug("flight" + existTeam.getFlight() + " 's link is updated");
+                }
             } else {
                 USTATeamEntity newTeam = new USTATeamEntity();
                 newTeam.setName(team.getName());
@@ -555,6 +561,7 @@ public class USTATeamImportor {
                     if (flight == null) {
                         flight = new USTAFlight(flightNo, division);
                         flight.setArea(newTeam.getArea());
+                        flight.setLink(team.getUstaFlight().getLink());
                         flight = ustaFlightRepository.save(flight);
                     }
 

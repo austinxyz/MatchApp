@@ -1,6 +1,7 @@
 package com.utr.match.usta;
 
 import com.utr.match.entity.*;
+import com.utr.match.usta.po.USTADivisionPO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -54,13 +55,12 @@ public class USTASiteParser {
         for (Element table: tables) {
             String leagueName = table.child(0).child(0).text();
             //System.out.println(leagueName);
-            Map<String, USTADivision> divs = new HashMap<>();
+            Map<String, USTADivisionPO> divs = new HashMap<>();
 
             for (Element division: table.child(1).children()) {
                 Element e = division.child(0).child(0);
                 String href = e.attr("href");
-                USTADivision div = new USTADivision();
-                div.setName(e.text());
+                USTADivisionPO div = new USTADivisionPO(e.text());
                 div.setLink("https://www.ustanorcal.com/" + href);
                 int idStart = href.indexOf("leagueid=") + 9;
                 String id = href.substring(idStart, href.length());
@@ -340,6 +340,11 @@ public class USTASiteParser {
                         parseAreaInfo(tr, team);
                     }
                 }
+            }
+            if (href.startsWith("standing")) {
+                USTAFlight flight = new USTAFlight();
+                flight.setLink("https://www.ustanorcal.com/" + href);
+                team.setUstaFlight(flight);
             }
         }
 //        logger.debug(team.toString());
