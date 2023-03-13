@@ -1,4 +1,4 @@
-package com.utr.match.usta;
+package com.utr.match.usta.po;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,10 +36,16 @@ public class USTATeamPO {
 
     private boolean inDB;
 
+    private long id=0l;
+
+    private String flightLink;
+
     public USTATeamPO(String name) {
         this.name = name;
     }
 
+    public USTATeamPO() {
+    }
 
     public String getName() {
         return name;
@@ -95,6 +101,22 @@ public class USTATeamPO {
 
     public void setInDB(boolean inDB) {
         this.inDB = inDB;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getFlightLink() {
+        return flightLink;
+    }
+
+    public void setFlightLink(String flightLink) {
+        this.flightLink = flightLink;
     }
 
     public String getAreaCode() {

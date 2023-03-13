@@ -1,4 +1,4 @@
-package com.utr.match.usta;
+package com.utr.match.usta.po;
 
 import com.utr.match.entity.USTADivision;
 
@@ -12,7 +12,7 @@ public class USTALeaguePO {
 
     private String year;
 
-    private List<USTADivision> divisions;
+    private List<USTADivisionPO> divisions;
 
     boolean inDB = false;
 
@@ -41,7 +41,7 @@ public class USTALeaguePO {
         this.year = year;
     }
 
-    public List<USTADivision> getDivisions() {
+    public List<USTADivisionPO> getDivisions() {
         return divisions;
     }
 

@@ -85,6 +85,9 @@ public class USTATeam {
 
     private void updateTeamLevel(boolean mixed, String name) {
 
+        String[] w = name.split(" ");
+        name = w[w.length-1];
+
         String leagueAbbr = mixed? "MX":"AM";
 
         int start = name.indexOf(leagueAbbr) + leagueAbbr.length();

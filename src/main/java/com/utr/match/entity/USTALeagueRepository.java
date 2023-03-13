@@ -10,5 +10,6 @@ public interface USTALeagueRepository extends CrudRepository<USTALeague, Long> {
 
     List<USTALeague> findByYear(String year);
 
+    USTALeague findByName(String name);
 
 }

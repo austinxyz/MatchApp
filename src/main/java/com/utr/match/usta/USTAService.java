@@ -1,6 +1,7 @@
 package com.utr.match.usta;
 
 import com.utr.match.entity.*;
+import com.utr.match.usta.po.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
@@ -45,7 +46,7 @@ public class USTAService {
     @Autowired
     private USTASiteParser siteParser;
 
-    private Map<String, USTADivision> divisions;
+    private Map<String, USTADivisionPO> divisions;
 
     private List<USTALeaguePO> leagues;
 
@@ -325,13 +326,80 @@ public class USTAService {
         return toUSTATeamList(teams);
     }
 
+    public USTADivisionPO importDivisionFromUSTASite(String id, String leagueName) {
+        if (this.divisions == null || this.divisions.isEmpty()) {
+            this.getLeaguesFromUSTASite();
+        }
+
+        USTADivisionPO div = divisions.get(id);
+
+        USTADivision division = divisionRepository.findByName(div.getName());
+        if (division != null) {
+            division.setLink(div.getLink());
+            divisionRepository.save(division);
+
+            div.setInDB(true);
+            return div;
+        }
+
+        division = initDivision(div.getName(), leagueName);
+        if (division == null) {
+            return div;
+        }
+
+        division.setLink(div.getLink());
+
+        divisionRepository.save(division);
+        div.setInDB(true);
+
+        return div;
+    }
+
+    private USTADivision initDivision(String name, String leagueName) {
+        USTALeague league = leagueRepository.findByName(leagueName);
+
+        if (league == null) {
+            return null;
+        }
+
+        String level = getLevel(name);
+
+        USTADivision div = new USTADivision(name, level, league);
+
+        div.setAgeRange(getAgeRange(name));
+
+        return div;
+
+    }
+
+    private String getAgeRange(String name) {
+        String[] ages = {"18","40","55","65"};
+
+        for (String age: ages) {
+            if (name.indexOf(age) > 0) {
+                return age + "+";
+            }
+        }
+
+        return "18+";
+    }
+
+    private static String getLevel(String name) {
+        String[] w = name.split(" ");
+        String level = w[w.length-1];
+        if (level.length() > 3) {
+            level = level.substring(0,3);
+        }
+        return level;
+    }
+
     public List<USTATeamPO> getTeamsFromUSTASite(String id) {
 
         if (this.divisions == null || this.divisions.isEmpty()) {
             this.getLeaguesFromUSTASite();
         }
 
-        USTADivision div = divisions.get(id);
+        USTADivisionPO div = divisions.get(id);
 
         if (div == null) {
             return new ArrayList<>();
@@ -358,6 +426,8 @@ public class USTAService {
                 teamPO.setCaptainName(team.getCaptainName());
                 teamPO.setLink(team.getLink());
                 teamPO.setInDB(true);
+                teamPO.setId(team.getId());
+                teamPO.setFlightLink(team.getUstaFlight().getLink());
 
                 addedTeams.add(team.getName());
                 result.add(teamPO);
@@ -423,9 +493,17 @@ public class USTAService {
                 USTALeaguePO leaguePO = new USTALeaguePO(league.getName(), league.getYear());
                 leaguePO.setInDB(true);
 
-                Map<String, USTADivision> leaugeDivisions = leaguesFromSite.getOrDefault(league.getName(), new HashMap<String, USTADivision>());
+                Map<String, USTADivisionPO> leaugeDivisions = leaguesFromSite.getOrDefault(league.getName(), new HashMap<String, USTADivisionPO>());
 
-                leaguePO.getDivisions().addAll(leaugeDivisions.values());
+                List<USTADivision> divisions1 = divisionRepository.findByLeague_Id(league.getId());
+
+                for (USTADivisionPO divisionPO: leaugeDivisions.values()) {
+                    if (isInDB(divisions1, divisionPO)) {
+                        divisionPO.setInDB(true);
+                    }
+                    leaguePO.getDivisions().add(divisionPO);
+                }
+
                 divisions.putAll(leaugeDivisions);
 
                 addedLeague.add(league.getName());
@@ -434,7 +512,7 @@ public class USTAService {
 
             for (String leagueName: leaguesFromSite.keySet()) {
                 if (!addedLeague.contains(leagueName)) {
-                    Map<String, USTADivision> leaugeDivisions = leaguesFromSite.get(leagueName);
+                    Map<String, USTADivisionPO> leaugeDivisions = leaguesFromSite.get(leagueName);
                     USTALeaguePO leaguePO = new USTALeaguePO(leagueName, "2023");
                     leaguePO.setInDB(false);
                     leaguePO.getDivisions().addAll(leaugeDivisions.values());
@@ -448,6 +526,15 @@ public class USTAService {
         } catch (IOException e) {
             return new ArrayList<>();
         }
+    }
+
+    private boolean isInDB(List<USTADivision> divisions1, USTADivisionPO divisionPO) {
+        for (USTADivision division: divisions1) {
+            if (division.getName().equals(divisionPO.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<USTATeamMemberScorePO> getPlayerScores(String id) {

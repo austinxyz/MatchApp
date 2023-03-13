@@ -17,7 +17,7 @@ class USTATeamImportorTest {
     USTATeamRepository teamRepository;
 
 
-    final String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=92360";
+    final String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96444";
     final String teamName = "PALO ALTO TC/RINCONADA PK 18MX8.0D";
 
     String divisionName = "2023 Mixed 18 & Over 8.0";
