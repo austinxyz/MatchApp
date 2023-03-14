@@ -210,9 +210,9 @@ public class USTATeamImportor {
 
         createMatchLines(obj, scoreCard, homeMatch, guestMatch);
 
-        homeMatch = createOrFetchMatch(homeMatch);
+        homeMatch = createOrFetchMatch(homeMatch, true);
 
-        guestMatch = createOrFetchMatch(guestMatch);
+        guestMatch = createOrFetchMatch(guestMatch, false);
 
 
         if (homeMatch.getScoreCard() == null) {
@@ -320,9 +320,9 @@ public class USTATeamImportor {
 
     }
 
-    private USTATeamMatch createOrFetchMatch(USTATeamMatch match) {
-        USTATeamMatch existMatch = teamMatchRepository.findByMatchDateAndTeam_IdAndOpponentTeam_Id(match.getMatchDate(),
-                match.getTeam().getId(), match.getOpponentTeam().getId());
+    private USTATeamMatch createOrFetchMatch(USTATeamMatch match, boolean isHome) {
+        USTATeamMatch existMatch = teamMatchRepository.findByMatchDateAndTeam_IdAndOpponentTeam_IdAndHome(match.getMatchDate(),
+                match.getTeam().getId(), match.getOpponentTeam().getId(), isHome);
         if (existMatch != null) {
             match = updateMatchInfo(existMatch, match);
         } else {
