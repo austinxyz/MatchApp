@@ -46,7 +46,7 @@ public class USTATeamEntity {
     private final List<USTATeamMember> players;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "flight_id")
     private USTAFlight ustaFlight;
 
