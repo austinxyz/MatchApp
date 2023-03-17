@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 public class USTADivisionPO {
 
+    private long id=0l;
     private String name;
 
     private String link;
@@ -46,6 +47,14 @@ public class USTADivisionPO {
 
     public void setInDB(boolean inDB) {
         this.inDB = inDB;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override

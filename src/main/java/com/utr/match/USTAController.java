@@ -3,10 +3,7 @@ package com.utr.match;
 
 import com.utr.match.entity.*;
 import com.utr.match.usta.*;
-import com.utr.match.usta.po.USTADivisionPO;
-import com.utr.match.usta.po.USTALeaguePO;
-import com.utr.match.usta.po.USTATeamMemberScorePO;
-import com.utr.match.usta.po.USTATeamPO;
+import com.utr.match.usta.po.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -259,9 +256,22 @@ public class USTAController {
 
         USTADivisionPO div = ustaService.importDivisionFromUSTASite(division.getUSTALeagueId(), division.getLeagueName());
 
-        System.out.println(div);
         if (div != null) {
             return new ResponseEntity<>(div, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/site/flight/teams")
+    public ResponseEntity<List<USTATeamPO>> importFlightTeams(@RequestBody USTAFlightPO flight
+    ) {
+
+        List<USTATeamPO> result = ustaService.importTeamsFromUSTASite(flight.getId(), flight.getLink());
+
+        if (!result.isEmpty()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
