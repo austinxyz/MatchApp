@@ -355,6 +355,22 @@ public class USTAService {
         return div;
     }
 
+    public List<USTATeamPO> importTeamsFromUSTASite(String id, String flightURL) {
+        ArrayList<USTATeamPO> result = new ArrayList<>();
+        if (flightURL == null || flightURL.trim().length() == 0) {
+            return result;
+        }
+
+        List<USTATeamEntity> teams = importor.importUSTAFlight(flightURL);
+
+        for (USTATeamEntity team: teams) {
+            USTATeamPO teamPO = getUstaTeamPO(team);
+            result.add(teamPO);
+        }
+
+        return result;
+    }
+
     private USTADivision initDivision(String name, String leagueName) {
         USTALeague league = leagueRepository.findByName(leagueName);
 
@@ -420,14 +436,7 @@ public class USTAService {
 
             for (USTATeamEntity team: teamFromDB) {
 
-                USTATeamPO teamPO = new USTATeamPO(team.getName());
-                teamPO.setArea(team.getAreaCode());
-                teamPO.setAlias(team.getAlias());
-                teamPO.setCaptainName(team.getCaptainName());
-                teamPO.setLink(team.getLink());
-                teamPO.setInDB(true);
-                teamPO.setId(team.getId());
-                teamPO.setFlightLink(team.getUstaFlight().getLink());
+                USTATeamPO teamPO = getUstaTeamPO(team);
 
                 addedTeams.add(team.getName());
                 result.add(teamPO);
@@ -451,6 +460,18 @@ public class USTAService {
 
         return result;
 
+    }
+
+    private static USTATeamPO getUstaTeamPO(USTATeamEntity team) {
+        USTATeamPO teamPO = new USTATeamPO(team.getName());
+        teamPO.setArea(team.getAreaCode());
+        teamPO.setAlias(team.getAlias());
+        teamPO.setCaptainName(team.getCaptainName());
+        teamPO.setLink(team.getLink());
+        teamPO.setInDB(true);
+        teamPO.setId(team.getId());
+        teamPO.setFlightLink(team.getUstaFlight().getLink());
+        return teamPO;
     }
 
     public List<USTAFlight> getFlightsByDivision(String divId) {
@@ -498,9 +519,7 @@ public class USTAService {
                 List<USTADivision> divisions1 = divisionRepository.findByLeague_Id(league.getId());
 
                 for (USTADivisionPO divisionPO: leaugeDivisions.values()) {
-                    if (isInDB(divisions1, divisionPO)) {
-                        divisionPO.setInDB(true);
-                    }
+                    divisionPO = initFromDB(divisions1, divisionPO);
                     leaguePO.getDivisions().add(divisionPO);
                 }
 
@@ -528,13 +547,15 @@ public class USTAService {
         }
     }
 
-    private boolean isInDB(List<USTADivision> divisions1, USTADivisionPO divisionPO) {
+    private USTADivisionPO initFromDB(List<USTADivision> divisions1, USTADivisionPO divisionPO) {
         for (USTADivision division: divisions1) {
             if (division.getName().equals(divisionPO.getName())) {
-                return true;
+                divisionPO.setId(division.getId());
+                divisionPO.setInDB(true);
+                return divisionPO;
             }
         }
-        return false;
+        return divisionPO;
     }
 
     public List<USTATeamMemberScorePO> getPlayerScores(String id) {
