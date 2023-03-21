@@ -581,7 +581,11 @@ public class USTATeamImportor {
                     List<PlayerEntity> players = playerRepository.findByName(player.getName());
 
                     if (players != null && players.size() >0) {
-                        existedPlayer = players.get(0);
+                        for (PlayerEntity candidate: players) {
+                            if (candidate.getUstaRating()!=null && candidate.getUstaRating().equals(player.getUSTARating())) {
+                                existedPlayer = candidate;
+                            }
+                        }
                     }
                 }
 
@@ -683,7 +687,7 @@ public class USTATeamImportor {
     public PlayerEntity updatePlayerUTRID(PlayerEntity member) {
 
         if (member.getUtrId() == null || member.getUtrId().trim().equals("")) {
-            List<Player> utrplayers = parser.searchPlayers(member.getName(), 5);
+            List<Player> utrplayers = parser.searchPlayers(member.getName(), 10);
             String candidateUTRId = findUTRID(utrplayers, member);
             if (candidateUTRId != null) {
                 member.setUtrId(candidateUTRId);
@@ -817,7 +821,7 @@ public class USTATeamImportor {
                 continue;
             }
 
-            if (utrPlayer.getLocation() == null || !utrPlayer.getLocation().equals(player.getArea())) {
+            if (utrPlayer.getLocation() == null || !utrPlayer.getLocation().startsWith(player.getArea())) {
                 continue;
             }
 

@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -350,7 +354,15 @@ public class PlayerEntity {
 
     @JsonProperty
     public boolean isRefreshedUTR() {
-        return this.utrFetchedTime != null &&
-                (System.currentTimeMillis() - this.getUtrFetchedTime().getTime()) < (long)24*60*60*1000 ;
+
+        if (this.utrFetchedTime == null) {
+            return false;
+        }
+
+        Timestamp now=new Timestamp(System.currentTimeMillis());
+        LocalDate nowDate = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate fetchedDate = this.getUtrFetchedTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return ChronoUnit.DAYS.between(fetchedDate, nowDate) == 0;
+
     }
 }

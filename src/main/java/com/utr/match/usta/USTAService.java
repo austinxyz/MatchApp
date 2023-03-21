@@ -349,8 +349,9 @@ public class USTAService {
 
         division.setLink(div.getLink());
 
-        divisionRepository.save(division);
+        division = divisionRepository.save(division);
         div.setInDB(true);
+        div.setId(division.getId());
 
         return div;
     }
