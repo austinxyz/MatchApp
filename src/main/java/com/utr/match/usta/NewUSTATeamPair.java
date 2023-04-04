@@ -7,18 +7,18 @@ import com.utr.match.entity.USTATeamLineScore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class USTATeamPair {
+public class NewUSTATeamPair {
     PlayerEntity player1;
     PlayerEntity player2;
 
-    List<USTATeamLineScore> winScores;
-    List<USTATeamLineScore> lostScores;
+    List<USTAMatchLine> winScores;
+    List<USTAMatchLine> lostScores;
 
     int winMatchNo = 0;
 
     int lostMatchNo = 0;
 
-    public USTATeamPair(PlayerEntity player1, PlayerEntity player2) {
+    public NewUSTATeamPair(PlayerEntity player1, PlayerEntity player2) {
         this.winScores = new ArrayList<>();
         this.lostScores =new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class USTATeamPair {
         return player2;
     }
 
-    public void addScore(USTATeamLineScore score) {
+    public void addScore(USTAMatchLine score) {
         if (player1 == null || player2 == null) {
             return;
         }
@@ -89,15 +89,15 @@ public class USTATeamPair {
         return player1.getName() + ":" + (player2 == null? "":player2.getName());
     }
 
-    public List<USTATeamLineScore> getWinScores() {
+    public List<USTAMatchLine> getWinScores() {
         return winScores;
     }
 
-    public List<USTATeamLineScore> getLostScores() {
+    public List<USTAMatchLine> getLostScores() {
         return lostScores;
     }
 
-    public static int compareByWinNoAndUTR(USTATeamPair pair1, USTATeamPair pair2) {
+    public static int compareByWinNoAndUTR(NewUSTATeamPair pair1, NewUSTATeamPair pair2) {
         if (pair1.getWinMatchNo() == pair2.getWinMatchNo()) {
             return Double.compare(pair2.getTotalUTR(), pair1.getTotalUTR());
         } else {

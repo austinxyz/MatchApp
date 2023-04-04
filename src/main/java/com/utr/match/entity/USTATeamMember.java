@@ -54,10 +54,10 @@ public class USTATeamMember {
     private String rating;
 
     @Column(name = "win_no")
-    int winNo=0;
+    Integer winNo;
 
     @Column(name = "lost_no")
-    int lostNo=0;
+    Integer lostNo;
 
     @Column(name = "qualified_po")
     Boolean qualifiedPo;
@@ -138,7 +138,7 @@ public class USTATeamMember {
     }
 
     public int getWinNo() {
-        return winNo;
+        return winNo==null? 0:winNo.intValue();
     }
 
     public void setWinNo(int winNo) {
@@ -146,7 +146,7 @@ public class USTATeamMember {
     }
 
     public int getLostNo() {
-        return lostNo;
+        return lostNo==null?0:lostNo.intValue();
     }
 
     public void setLostNo(int lostNo) {
