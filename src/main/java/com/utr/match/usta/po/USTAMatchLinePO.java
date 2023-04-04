@@ -2,7 +2,6 @@ package com.utr.match.usta.po;
 
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTAMatchLine;
-import com.utr.match.entity.USTATeamLineScore;
 
 import java.sql.Date;
 

@@ -2,7 +2,6 @@ package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.utr.match.usta.NewUSTATeamPair;
-import com.utr.match.usta.USTATeamPair;
 
 import javax.persistence.*;
 
@@ -260,20 +259,20 @@ public class USTAMatchLine {
     }
 
     @JsonIgnore
-    public USTATeamPair getWinnerPair() {
+    public NewUSTATeamPair getWinnerPair() {
         if (this.homeTeamWin) {
-            return new USTATeamPair(this.homePlayer1, this.homePlayer2);
+            return new NewUSTATeamPair(this.homePlayer1, this.homePlayer2);
         } else {
-            return new USTATeamPair(this.guestPlayer1, this.guestPlayer2);
+            return new NewUSTATeamPair(this.guestPlayer1, this.guestPlayer2);
         }
     }
 
     @JsonIgnore
-    public USTATeamPair getLoserPair() {
+    public NewUSTATeamPair getLoserPair() {
         if (!this.homeTeamWin) {
-            return new USTATeamPair(this.homePlayer1, this.homePlayer2);
+            return new NewUSTATeamPair(this.homePlayer1, this.homePlayer2);
         } else {
-            return new USTATeamPair(this.guestPlayer1, this.guestPlayer2);
+            return new NewUSTATeamPair(this.guestPlayer1, this.guestPlayer2);
         }
     }
 

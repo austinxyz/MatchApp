@@ -27,7 +27,7 @@ public class NewUSTAService {
     private PlayerRepository playerRepository;
 
     @Autowired
-    private USTATeamImportor importor;
+    private NewUSTATeamImportor importor;
 
     @Autowired
     private USTAMatchRepository matchRepository;

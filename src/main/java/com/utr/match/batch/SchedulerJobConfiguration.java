@@ -1,9 +1,7 @@
 package com.utr.match.batch;
 
 import com.utr.match.entity.*;
-import com.utr.match.usta.USTAService;
-import com.utr.match.usta.USTATeam;
-import com.utr.match.usta.USTATeamImportor;
+import com.utr.match.usta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,10 +24,13 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulerJobConfiguration.class);
 
     @Autowired
-    USTATeamImportor importor;
+    NewUSTATeamImportor importor;
 
     @Autowired
-    USTAService service;
+    USTAMatchImportor matchImportor;
+
+    @Autowired
+    NewUSTAService service;
 
     private final int POOL_SIZE = 5;
     @Override
@@ -47,7 +47,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
     // @Scheduled(cron = "*/5 * * * * *")
     //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
-    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    //@Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
     public void refreshUTR() {
         LOG.debug("Start to refresh Player's UTR........");
 
@@ -78,9 +78,9 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     private void updateTeamsDRInfoByDivision(long divId) {
-        List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
+        List<NewUSTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
         Collections.shuffle(teams);
-        for (USTATeam team : teams) {
+        for (NewUSTATeam team : teams) {
             LOG.debug("Start to update DR for team:" + team.getName());
             importor.updateTeamPlayersDR(team);
             LOG.debug("Team:" + team.getName() + " DR update is completed");
@@ -88,9 +88,9 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     private void updateTeamsUTRInfoByDivision(long divId) {
-        List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
+        List<NewUSTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
         Collections.shuffle(teams);
-        for (USTATeam team : teams) {
+        for (NewUSTATeam team : teams) {
             LOG.debug("Start to update UTR for team:" + team.getName());
             importor.updateTeamUTRInfo(team);
             LOG.debug("Team:" + team.getName() + " UTR update is completed");
@@ -114,15 +114,15 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     private void updateTeamScores(USTADivision division) {
-        List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(division.getId()));
+        List<NewUSTATeam> teams = service.getTeamsByDivision(String.valueOf(division.getId()));
         Collections.shuffle(teams);
-        for (USTATeam team : teams) {
+        for (NewUSTATeam team : teams) {
             team = service.loadMatch(team);
             if (team.requiredUpdateScore()) {
                 LOG.debug("Refresh team: " + team.getName() + " players' info");
                 importor.importUSTATeam(team.getLink());
                 LOG.debug("Start to update team:" + team.getName() + "'s match score");
-                importor.refreshTeamMatchesScores(team, division);
+                matchImportor.refreshMatchesScores(team, division);
                 LOG.debug("Team:" + team.getName() + "'s match score is updated");
             } else {
                 LOG.debug("Team:" + team.getName() + " has no new match, no need to update");

@@ -3,7 +3,6 @@ package com.utr.match.usta;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.utr.match.entity.USTAMatchLine;
-import com.utr.match.entity.USTATeamLineScore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +15,6 @@ public class USTADoubleLineStat {
     @JsonIgnore
     String teamName;
 
-    @JsonIgnore
-    Map<String, USTATeamPair> pairs;
 
     @JsonIgnore
     Map<String, NewUSTATeamPair> newPairs;
@@ -31,49 +28,9 @@ public class USTADoubleLineStat {
     int normalNo = 0;
 
     public USTADoubleLineStat(String lineName, String teamName) {
-        pairs = new HashMap<>();
         newPairs = new HashMap<>();
         this.lineName = lineName;
         this.teamName = teamName;
-    }
-
-    public void addLineScore(USTATeamLineScore score) {
-
-        if (!score.getHomeLine().getName().equals(lineName)) {
-            return;
-        }
-
-        if (score.isWinnerTeam(teamName)) {
-            winMatchNo++;
-        } else {
-            lostMatchNo++;
-        }
-
-        switch(score.isSurprisedResult(teamName)) {
-            case -1: // surprised lost
-                this.surprisedLost++;
-                break;
-            case 1: // surprised win
-                this.surprisedWin++;
-                break;
-            default:
-                this.normalNo++;
-        }
-
-        USTATeamPair pair = score.getPair(teamName);
-
-
-        if (pair.getPlayer1() == null) {
-            return;
-        }
-
-        String pairName = pair.getPlayerNames();
-
-        pair = pairs.getOrDefault(pairName, pair);
-
-        pair.addScore(score);
-
-        pairs.put(pairName, pair);
     }
 
     public void addMatchLine(USTAMatchLine score) {

@@ -48,9 +48,6 @@ public class NewUSTATeamImportor {
     @Autowired
     private USTAMatchRepository matchRepository;
 
-    @Autowired
-    private USTATeamMatchLineRepository matchLineRepository;
-
 
     public NewUSTATeamImportor() {
     }
