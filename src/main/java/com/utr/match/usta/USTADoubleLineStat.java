@@ -2,6 +2,7 @@ package com.utr.match.usta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.utr.match.entity.USTAMatchLine;
 import com.utr.match.entity.USTATeamLineScore;
 
 import java.util.ArrayList;
@@ -18,6 +19,9 @@ public class USTADoubleLineStat {
     @JsonIgnore
     Map<String, USTATeamPair> pairs;
 
+    @JsonIgnore
+    Map<String, NewUSTATeamPair> newPairs;
+
     int winMatchNo = 0;
     int lostMatchNo = 0;
 
@@ -28,6 +32,7 @@ public class USTADoubleLineStat {
 
     public USTADoubleLineStat(String lineName, String teamName) {
         pairs = new HashMap<>();
+        newPairs = new HashMap<>();
         this.lineName = lineName;
         this.teamName = teamName;
     }
@@ -57,6 +62,7 @@ public class USTADoubleLineStat {
 
         USTATeamPair pair = score.getPair(teamName);
 
+
         if (pair.getPlayer1() == null) {
             return;
         }
@@ -70,20 +76,72 @@ public class USTADoubleLineStat {
         pairs.put(pairName, pair);
     }
 
-    @JsonProperty
-    public List<USTATeamPair> getPairs() {
-        List<USTATeamPair> result = new ArrayList<>(pairs.values());
-        result.sort(USTATeamPair::compareByWinNoAndUTR);
-        return result;
+    public void addMatchLine(USTAMatchLine score) {
+
+        if (!score.getName().equals(lineName)) {
+            return;
+        }
+
+        if (score.isWinnerTeam(teamName)) {
+            winMatchNo++;
+        } else {
+            lostMatchNo++;
+        }
+
+        switch(score.isSurprisedResult(teamName)) {
+            case -1: // surprised lost
+                this.surprisedLost++;
+                break;
+            case 1: // surprised win
+                this.surprisedWin++;
+                break;
+            default:
+                this.normalNo++;
+        }
+
+        NewUSTATeamPair pair = score.getPair(teamName);
+
+        if (pair.getPlayer1() == null) {
+            return;
+        }
+
+        String pairName = pair.getPlayerNames();
+
+        pair = newPairs.getOrDefault(pairName, pair);
+
+        pair.addScore(score);
+
+        newPairs.put(pairName, pair);
     }
 
+//    @JsonProperty
+//    public List<USTATeamPair> getPairs() {
+//        List<USTATeamPair> result = new ArrayList<>(pairs.values());
+//        result.sort(USTATeamPair::compareByWinNoAndUTR);
+//        return result;
+//    }
+
     @JsonProperty
-    public USTATeamPair bestPair() {
-        if (pairs.size() > 0) {
+    public List<NewUSTATeamPair> getPairs() {
+        List<NewUSTATeamPair> result = new ArrayList<>(newPairs.values());
+        result.sort(NewUSTATeamPair::compareByWinNoAndUTR);
+        return result;
+    }
+    @JsonProperty
+    public NewUSTATeamPair bestPair() {
+        if (newPairs.size() > 0) {
             return getPairs().get(0);
         }
         return null;
     }
+
+//    @JsonProperty
+//    public USTATeamPair bestPair() {
+//        if (pairs.size() > 0) {
+//            return getPairs().get(0);
+//        }
+//        return null;
+//    }
 
     public int getWinMatchNo() {
         return winMatchNo;
@@ -105,22 +163,37 @@ public class USTADoubleLineStat {
         return (float)this.winMatchNo/(float)(this.lostMatchNo+this.winMatchNo);
     }
 
+//    @JsonProperty
+//    public double averageUTRs() {
+//        if (pairs.size() == 0) {
+//            return 0.0d;
+//        }
+//
+//        double sum = 0.0d;
+//
+//        for (USTATeamPair pair: pairs.values()) {
+//            sum += pair.getTotalUTR();
+//        }
+//
+//        return sum/pairs.size();
+//
+//    }
+
     @JsonProperty
     public double averageUTRs() {
-        if (pairs.size() == 0) {
+        if (newPairs.size() == 0) {
             return 0.0d;
         }
 
         double sum = 0.0d;
 
-        for (USTATeamPair pair: pairs.values()) {
+        for (NewUSTATeamPair pair: newPairs.values()) {
             sum += pair.getTotalUTR();
         }
 
-        return sum/pairs.size();
+        return sum/newPairs.size();
 
     }
-
     public int getSurprisedLost() {
         return surprisedLost;
     }

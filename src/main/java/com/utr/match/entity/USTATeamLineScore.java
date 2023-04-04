@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.utr.match.usta.NewUSTATeamPair;
 import com.utr.match.usta.USTATeamPair;
 
 import javax.persistence.*;

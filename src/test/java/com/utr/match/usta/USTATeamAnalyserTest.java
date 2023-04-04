@@ -10,12 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class USTATeamAnalyserTest {
 
     @Autowired
-    USTATeamAnalyser analyser;
+    NewUSTATeamAnalyser analyser;
 
 
     @Test
     void compareTeam() {
 
-        analyser.compareTeam("1", "41");
+        NewUSTATeamAnalysisResult result = analyser.compareTeam("1", "41");
+        result.getTeam2();
     }
 }
