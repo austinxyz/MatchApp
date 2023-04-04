@@ -57,6 +57,19 @@ public class USTATeamImportor {
     public USTATeamImportor() {
     }
 
+    public int getMatchNumber(USTATeam team) {
+        USTASiteParser util = new USTASiteParser();
+        try {
+            JSONArray matches = util.parseTeamMatches(team.getTeamEntity());
+
+            return matches.length();
+
+        } catch (IOException e) {
+            logger.debug("Failed to get match number" + team.getName());
+        }
+
+        return -1;
+    }
     public void refreshTeamMatchesScores(USTATeam team, USTADivision division) {
         USTASiteParser util = new USTASiteParser();
         try {
@@ -742,14 +755,25 @@ public class USTATeamImportor {
 
         for (USTATeamMember player : existTeam.getPlayers()) {
 
-            updatePlayerUTRInfo(player.getPlayer(), false);
+            updatePlayerUTRInfo(player.getPlayer(), false, true);
 
         }
 
 
     }
 
-    public PlayerEntity updatePlayerUTRInfo(PlayerEntity member, boolean forceUpdate) {
+    public void updateTeamUTRInfo(USTATeam existTeam, boolean forceUpdate, boolean includeWinPercent) {
+
+        for (USTATeamMember player : existTeam.getPlayers()) {
+
+            updatePlayerUTRInfo(player.getPlayer(), forceUpdate, includeWinPercent);
+
+        }
+
+
+    }
+
+    public PlayerEntity updatePlayerUTRInfo(PlayerEntity member, boolean forceUpdate, boolean inlcudeWinPercent) {
         if (member.isRefreshedUTR() && !forceUpdate) {
             logger.debug(member.getName() + " has latest UTR, skip");
             return member;
@@ -781,10 +805,12 @@ public class USTATeamImportor {
 
         logger.debug(member.getName() + " start to query utr and win ratio");
 
-        float successRate = parser.getWinPercent(utrId, true);
-        float wholeSuccessRate = parser.getWinPercent(utrId, false);
-        member.setSuccessRate(successRate);
-        member.setWholeSuccessRate(wholeSuccessRate);
+        if (inlcudeWinPercent) {
+            float successRate = parser.getWinPercent(utrId, true);
+            float wholeSuccessRate = parser.getWinPercent(utrId, false);
+            member.setSuccessRate(successRate);
+            member.setWholeSuccessRate(wholeSuccessRate);
+        }
 
         Player utrplayer = parser.getPlayer(utrId);
 

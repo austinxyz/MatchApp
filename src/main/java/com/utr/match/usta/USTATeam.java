@@ -340,7 +340,10 @@ public class USTATeam {
         return teamEntity.getAreaCode();
     }
 
-    public boolean requiredUpdateScore() {
+    public boolean requiredUpdateScore(int ustaMatchNumber) {
+        if (this.matches.size() != ustaMatchNumber) {
+            return true;
+        }
         for (USTATeamMatch match: this.matches) {
             if (match.getMatchDate().before(new Date())) {
                 if (match.getScoreCard() == null) {

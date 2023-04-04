@@ -354,7 +354,7 @@ public class USTAController {
 
             if (member != null) {
 
-                member = importor.updatePlayerUTRInfo(member, true);
+                member = importor.updatePlayerUTRInfo(member, true, true);
 
                 return new ResponseEntity<>(member, HttpStatus.OK);
             }
