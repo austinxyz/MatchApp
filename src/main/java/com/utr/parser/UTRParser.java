@@ -33,7 +33,7 @@ public class UTRParser {
     public static final String CLUB_EVENTS = "https://app.universaltennis.com/api/v1/club/%s/events";
     public static final String CLUB_URL = "https://app.universaltennis.com/api/v1/club/%s";
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjIwODkxNCIsImVtYWlsIjoiemhvdXpob25neWkuc2hAZ21haWwuY29tIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMTQwODU4MjIiLCJuYmYiOjE2NzgyMzc5MjEsImV4cCI6MTY4MDgyOTkyMSwiaWF0IjoxNjc4MjM3OTIxfQ.jJcDXHA2Oc09pkk2ujCAn3a7WEnBeJIo6kHRAl3lmVA";
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNDQwOTY1MCIsIm5iZiI6MTY4MDI5MTk4NCwiZXhwIjoxNjgyODgzOTg0LCJpYXQiOjE2ODAyOTE5ODR9.gRNeETUa7DMZ-vEEig9MrggI7DU0yHYWGMexspZE-Y0";
     Map<String, PlayerResult> playerResults;
     Map<String, Player> players;
     Map<String, Event> events;

@@ -47,22 +47,25 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
     // @Scheduled(cron = "*/5 * * * * *")
     //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
-    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    //@Scheduled(fixedDelayString = "PT36H", initialDelayString = "PT36H")
     public void refreshUTR() {
         LOG.debug("Start to refresh Player's UTR........");
+
+        boolean forceUpdate = false;
+        boolean includeWinPercent = false;
 
         List<USTADivision> divisions = service.getDivisionsByYear("2023");
         Collections.shuffle(divisions);
         for (USTADivision division: divisions) {
             LOG.debug("Start to update UTR for division:" + division.getName());
-            updateTeamsUTRInfoByDivision(division.getId());
+            updateTeamsUTRInfoByDivision(division.getId(), forceUpdate, includeWinPercent);
             LOG.debug("Complete updating UTR for division:" + division.getName());
         }
 
         LOG.debug("Complete to update all Player's UTR........");
     }
 
-    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
+    //@Scheduled(fixedDelayString = "PT36H", initialDelayString = "PT36H")
     public void refreshDR() {
         LOG.debug("Start to refresh Player's DR........");
 
@@ -87,19 +90,19 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         }
     }
 
-    private void updateTeamsUTRInfoByDivision(long divId) {
+    private void updateTeamsUTRInfoByDivision(long divId, boolean forceUpdate, boolean includeWinPercent) {
         List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
         Collections.shuffle(teams);
         for (USTATeam team : teams) {
             LOG.debug("Start to update UTR for team:" + team.getName());
-            importor.updateTeamUTRInfo(team);
+            importor.updateTeamUTRInfo(team, forceUpdate, includeWinPercent);
             LOG.debug("Team:" + team.getName() + " UTR update is completed");
         }
     }
 
 
-    @Scheduled(fixedDelayString = "PT12H", initialDelayString = "PT12H")
-    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    //@Scheduled(fixedDelayString = "PT36H", initialDelayString = "PT36H")
+    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 6000)
     public void refreshScores() {
         LOG.debug("Start to refresh team's match score........");
 
@@ -118,7 +121,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         Collections.shuffle(teams);
         for (USTATeam team : teams) {
             team = service.loadMatch(team);
-            if (team.requiredUpdateScore()) {
+            if (team.requiredUpdateScore(importor.getMatchNumber(team))) {
                 LOG.debug("Refresh team: " + team.getName() + " players' info");
                 importor.importUSTATeam(team.getLink());
                 LOG.debug("Start to update team:" + team.getName() + "'s match score");

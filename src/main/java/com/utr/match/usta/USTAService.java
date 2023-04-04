@@ -297,7 +297,7 @@ public class USTAService {
     public PlayerEntity updatePlayerUTRValue(String utrId) {
 
         PlayerEntity member = getPlayerByUTRId(utrId);
-        member = importor.updatePlayerUTRInfo(member, true);
+        member = importor.updatePlayerUTRInfo(member, true, true);
 
         return member;
     }
