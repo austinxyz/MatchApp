@@ -29,7 +29,7 @@ public class USTAMatchImportor {
     SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
 
     @Autowired
-    private USTATeamImportor teamImporter;
+    private NewUSTATeamImportor teamImporter;
 
     @Autowired
     private USTATeamRepository ustaTeamRepository;

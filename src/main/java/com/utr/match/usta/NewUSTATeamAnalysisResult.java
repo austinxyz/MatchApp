@@ -1,7 +1,6 @@
 package com.utr.match.usta;
 
 import com.utr.match.entity.USTAMatch;
-import com.utr.match.entity.USTATeamScoreCard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
