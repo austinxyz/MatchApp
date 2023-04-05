@@ -103,4 +103,20 @@ public class NewUSTATeamPair {
             return Integer.compare(pair2.getWinMatchNo(), pair1.getWinMatchNo());
         }
     }
+
+    public String getPairInfo(){
+        return this.getPairInfo(false);
+    }
+
+    public String getPairInfo(boolean isSingle) {
+        if (player1 == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(player1.getPlayerInfo(isSingle)).append(" ");
+        if (player2 !=null) {
+            sb.append(" + ").append(player2.getPlayerInfo(isSingle));
+        }
+        return sb.toString();
+    }
 }

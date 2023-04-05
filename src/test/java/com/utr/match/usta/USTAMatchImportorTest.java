@@ -22,9 +22,9 @@ class USTAMatchImportorTest {
     @Autowired
     USTATeamRepository teamRepository;
 
-    final String teamName = "VALLEY CHURCH 40AM3.5A";
+    final String teamName = "MARIN CC 18MX6.0A";
 
-    String divisionName = "2023 Adult 40 & Over Mens 3.5";
+    String divisionName = "2023 Mixed 18 & Over 6.0";
 
     @Test
     void importTeamMatchs() {

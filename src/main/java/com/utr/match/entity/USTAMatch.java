@@ -5,12 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "usta_match")
 public class USTAMatch {
+    public static final String LOCAL = "Local";
+    public static final String PLAYOFF = "PlayOff";
+    public static final String Sectional = "Sectional";
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +35,9 @@ public class USTAMatch {
 
     @Column(name = "comment")
     private String comment;
+
+    @Column(name = "type")
+    private String type; // Local, PlayOff, Sectional
 
     @JsonIgnore
     @ManyToOne
@@ -66,10 +74,15 @@ public class USTAMatch {
         this.matchDate = matchDate;
     }
 
+    public List<USTAMatchLine> getSortLines() {
+        List<USTAMatchLine> result = new ArrayList<>(this.lines);
+        result.sort((USTAMatchLine o1, USTAMatchLine o2) -> o1.getName().compareTo(o2.getName()));
+        return result;
+    }
+
     public Set<USTAMatchLine> getLines() {
         return lines;
     }
-
 
     @JsonProperty
     public String getHomeTeamName() {
@@ -183,6 +196,14 @@ public class USTAMatch {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

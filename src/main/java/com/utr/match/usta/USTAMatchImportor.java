@@ -221,7 +221,9 @@ public class USTAMatchImportor {
         if (existMatch.getLines() == null || existMatch.getLines().size() == 0) { //exist match has no result
             existMatch.setHomePoint(match.getHomePoint());
             existMatch.setGuestPoint(match.getGuestPoint());
+            existMatch.setType(match.getType());
             existMatch.getLines().addAll(match.getLines());
+            existMatch.setHomeWin(match.getHomePoint()> match.getGuestPoint());
 
             for (USTAMatchLine line : match.getLines()) {
                 line.setMatch(existMatch);
@@ -231,8 +233,14 @@ public class USTAMatchImportor {
         } else {
             existMatch.setHomePoint(match.getHomePoint());
             existMatch.setGuestPoint(match.getGuestPoint());
+            existMatch.setType(match.getType());
+            existMatch.setHomeWin(match.getHomePoint()> match.getGuestPoint());
+
             for (USTAMatchLine line : existMatch.getLines()) {
                 USTAMatchLine newLine = match.getLine(line.getName());
+                if (newLine == null) {
+                    continue;
+                }
                 line.setHomePlayer1(newLine.getHomePlayer1());
                 line.setHomePlayer2(newLine.getHomePlayer2());
                 line.setGuestPlayer1(newLine.getGuestPlayer1());
@@ -337,6 +345,10 @@ public class USTAMatchImportor {
         Date matchDate = new Date(date.getTime());
 
         match.setMatchDate(matchDate);
+
+        String type = (String)obj.get("type");
+
+        match.setType(type);
 
         if (obj.has("homePoint")) {
             match.setHomePoint(Integer.parseInt(obj.get("homePoint").toString()));
