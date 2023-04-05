@@ -289,6 +289,19 @@ public class USTAMatchLine {
     }
 
     @JsonIgnore
+    public NewUSTATeamPair getHomePair() {
+
+        return new NewUSTATeamPair(this.homePlayer1, this.homePlayer2);
+
+    }
+
+    @JsonIgnore
+    public NewUSTATeamPair getGuestPair() {
+
+        return new NewUSTATeamPair(this.guestPlayer1, this.guestPlayer2);
+
+    }
+    @JsonIgnore
     public int isSurprisedResult(String teamName) { // 1 surprised win, -1 surprised lost, 0: no surprise
 
         boolean isHomeTeam = this.match.getHomeTeam().getName().equals(teamName);

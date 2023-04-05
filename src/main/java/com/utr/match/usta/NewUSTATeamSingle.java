@@ -71,4 +71,13 @@ public class NewUSTATeamSingle {
     public List<USTAMatchLine> getLostScores() {
         return lostScores;
     }
+
+    public String getInfo() {
+        if (player == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(player.getPlayerInfo(true));
+        return sb.toString();
+    }
 }

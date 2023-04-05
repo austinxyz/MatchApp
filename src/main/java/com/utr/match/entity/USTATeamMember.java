@@ -114,11 +114,11 @@ public class USTATeamMember {
     }
 
     public String getDUTRStatus() {
-        return player.getDUTRStatus();
+        return player.getDUTRStatus() == null? "":player.getDUTRStatus();
     }
 
     public String getSUTRStatus() {
-        return player.getSUTRStatus();
+        return player.getSUTRStatus() == null? "": player.getSUTRStatus();
     }
 
     public boolean isRefreshedUTR() {

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -406,5 +407,32 @@ public class USTAController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/exportExcel/team/team1/{teamId1}/team2/{teamId2}")
+    public ModelAndView exportAnalysisToExcel(@PathVariable("teamId1") String teamId1,
+                                      @PathVariable("teamId2") String teamId2) {
+        ModelAndView mav = new ModelAndView();
+        mav.setView(new USTATeamAnalyserExcelExport());
+
+        NewUSTATeamAnalysisResult result = teamAnalyser.compareTeam(teamId1, teamId2);
+
+        //send to excelImpl class
+        mav.addObject("analysisresult", result);
+        return mav;
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/exportExcel/team/{teamId}")
+    public ModelAndView exportTeamToExcel(@PathVariable("teamId") String teamId) {
+        ModelAndView mav = new ModelAndView();
+        mav.setView(new USTATeamExcelExport());
+
+        NewUSTATeam team = ustaService.getTeam(teamId, true);
+
+        //send to excelImpl class
+        mav.addObject("team", team);
+        return mav;
     }
 }

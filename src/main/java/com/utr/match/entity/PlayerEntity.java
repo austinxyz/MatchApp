@@ -311,6 +311,14 @@ public class PlayerEntity {
                 '}';
     }
 
+    public String getPlayerInfo(boolean isSingle) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.getName()).append("(").append(this.getGender()).append(") ")
+                .append(this.getUstaRating()).append(" - ").append(isSingle? this.getSUTR() + "(S)": this.getDUTR() + "(D)")
+                .append(" / ").append(this.getDynamicRating()).append("(DR)");
+        return sb.toString();
+    }
+
     public Timestamp getUtrFetchedTime() {
         return utrFetchedTime;
     }
