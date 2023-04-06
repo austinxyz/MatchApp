@@ -196,4 +196,11 @@ public class USTATeamMember {
     public String getArea() {
         return player.getArea();
     }
+
+    public float getWinPercent() {
+        if (this.winNo + this.lostNo == 0) {
+            return 0.0f;
+        }
+        return (float) (this.winNo) / (float) (this.winNo + this.getLostNo());
+    }
 }
