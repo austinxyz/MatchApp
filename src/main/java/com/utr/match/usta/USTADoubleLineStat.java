@@ -2,7 +2,7 @@ package com.utr.match.usta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.utr.match.entity.USTATeamLineScore;
+import com.utr.match.entity.USTAMatchLine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +15,9 @@ public class USTADoubleLineStat {
     @JsonIgnore
     String teamName;
 
+
     @JsonIgnore
-    Map<String, USTATeamPair> pairs;
+    Map<String, NewUSTATeamPair> newPairs;
 
     int winMatchNo = 0;
     int lostMatchNo = 0;
@@ -27,14 +28,14 @@ public class USTADoubleLineStat {
     int normalNo = 0;
 
     public USTADoubleLineStat(String lineName, String teamName) {
-        pairs = new HashMap<>();
+        newPairs = new HashMap<>();
         this.lineName = lineName;
         this.teamName = teamName;
     }
 
-    public void addLineScore(USTATeamLineScore score) {
+    public void addMatchLine(USTAMatchLine score) {
 
-        if (!score.getHomeLine().getName().equals(lineName)) {
+        if (!score.getName().equals(lineName)) {
             return;
         }
 
@@ -55,7 +56,7 @@ public class USTADoubleLineStat {
                 this.normalNo++;
         }
 
-        USTATeamPair pair = score.getPair(teamName);
+        NewUSTATeamPair pair = score.getPair(teamName);
 
         if (pair.getPlayer1() == null) {
             return;
@@ -63,27 +64,34 @@ public class USTADoubleLineStat {
 
         String pairName = pair.getPlayerNames();
 
-        pair = pairs.getOrDefault(pairName, pair);
+        pair = newPairs.getOrDefault(pairName, pair);
 
         pair.addScore(score);
 
-        pairs.put(pairName, pair);
+        newPairs.put(pairName, pair);
     }
 
+//    @JsonProperty
+//    public List<USTATeamPair> getPairs() {
+//        List<USTATeamPair> result = new ArrayList<>(pairs.values());
+//        result.sort(USTATeamPair::compareByWinNoAndUTR);
+//        return result;
+//    }
+
     @JsonProperty
-    public List<USTATeamPair> getPairs() {
-        List<USTATeamPair> result = new ArrayList<>(pairs.values());
-        result.sort(USTATeamPair::compareByWinNoAndUTR);
+    public List<NewUSTATeamPair> getPairs() {
+        List<NewUSTATeamPair> result = new ArrayList<>(newPairs.values());
+        result.sort(NewUSTATeamPair::compareByWinNoAndUTR);
         return result;
     }
-
     @JsonProperty
-    public USTATeamPair bestPair() {
-        if (pairs.size() > 0) {
+    public NewUSTATeamPair bestPair() {
+        if (newPairs.size() > 0) {
             return getPairs().get(0);
         }
         return null;
     }
+
 
     public int getWinMatchNo() {
         return winMatchNo;
@@ -107,20 +115,19 @@ public class USTADoubleLineStat {
 
     @JsonProperty
     public double averageUTRs() {
-        if (pairs.size() == 0) {
+        if (newPairs.size() == 0) {
             return 0.0d;
         }
 
         double sum = 0.0d;
 
-        for (USTATeamPair pair: pairs.values()) {
+        for (NewUSTATeamPair pair: newPairs.values()) {
             sum += pair.getTotalUTR();
         }
 
-        return sum/pairs.size();
+        return sum/newPairs.size();
 
     }
-
     public int getSurprisedLost() {
         return surprisedLost;
     }

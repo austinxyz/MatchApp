@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Scope("singleton")
-public class USTAService {
+public class NewUSTAService {
 
     @Autowired
     USTATeamRepository teamRepository;
@@ -27,16 +27,16 @@ public class USTAService {
     private PlayerRepository playerRepository;
 
     @Autowired
-    private USTATeamImportor importor;
+    private NewUSTATeamImportor importor;
 
     @Autowired
-    private USTATeamMatchRepository matchRepository;
+    private USTAMatchRepository matchRepository;
 
     @Autowired
     private USTAFlightRepository flightRepository;
 
     @Autowired
-    private USTATeamLineScoreRepository lineScoreRepository;
+    private USTAMatchLineRepository lineScoreRepository;
 
     @Autowired
     private USTALeagueRepository leagueRepository;
@@ -50,15 +50,15 @@ public class USTAService {
 
     private List<USTALeaguePO> leagues;
 
-    public USTATeam getTeam(String id) {
+    public NewUSTATeam getTeam(String id) {
         return getTeam(id, false);
     }
 
-    public USTATeam getTeam(String id, boolean loadMatch) {
+    public NewUSTATeam getTeam(String id, boolean loadMatch) {
         Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
         if (team.isPresent()) {
-            USTATeam ustaTeam = new USTATeam(team.get());
+            NewUSTATeam ustaTeam = new NewUSTATeam(team.get());
 
             if (loadMatch) {
                 ustaTeam = loadMatch(ustaTeam);
@@ -69,10 +69,12 @@ public class USTAService {
         return null;
     }
 
-    public USTATeam loadMatch(USTATeam ustaTeam) {
-        List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(ustaTeam.getTeamEntity());
+    public NewUSTATeam loadMatch(NewUSTATeam ustaTeam) {
+        List<USTAMatch> matches = matchRepository.findByHomeTeam_IdOrGuestTeam_IdOrderByMatchDateAsc(
+                ustaTeam.getId(), ustaTeam.getId()
+        );
 
-        for (USTATeamMatch match : matches) {
+        for (USTAMatch match : matches) {
             ustaTeam.addMatch(match);
         }
 
@@ -98,7 +100,7 @@ public class USTAService {
         return null;
     }
 
-    public List<USTATeam> searchTeam(String name) {
+    public List<NewUSTATeam> searchTeam(String name) {
         List<USTATeamEntity> teams = teamRepository.findByNameLike("%" + name + "%");
         return toUSTATeamList(teams);
     }
@@ -321,7 +323,7 @@ public class USTAService {
         return playerRepository.findByUstaNorcalId(norcalId);
     }
 
-    public List<USTATeam> getTeamsByDivision(String divId) {
+    public List<NewUSTATeam> getTeamsByDivision(String divId) {
         List<USTATeamEntity> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(divId));
         return toUSTATeamList(teams);
     }
@@ -479,7 +481,7 @@ public class USTAService {
         return flightRepository.findByDivision_Id(Long.valueOf(divId));
     }
 
-    public List<USTATeam> getTeamsByFlight(String flightId) {
+    public List<NewUSTATeam> getTeamsByFlight(String flightId) {
         List<USTATeamEntity> teams = teamRepository.findByUstaFlight_Id(Long.valueOf(flightId));
         return toUSTATeamList(teams);
     }
@@ -559,7 +561,7 @@ public class USTAService {
         return divisionPO;
     }
 
-    public List<USTATeamMemberScorePO> getPlayerScores(String id) {
+    public List<USTAMatchLinePO> getPlayerScores(String id) {
 
         Optional<PlayerEntity> player = playerRepository.findById(Long.valueOf(id));
 
@@ -567,7 +569,8 @@ public class USTAService {
 
             PlayerEntity thisPlayer = player.get();
 
-            return toUSTATeamMemberScorePoList(lineScoreRepository.findByGuestLine_Player1OrHomeLine_Player2OrHomeLine_Player1OrGuestLine_Player2(
+            return toUSTAMatchLinePoList(lineScoreRepository.
+                    findByHomePlayer1OrHomePlayer2OrGuestPlayer1OrGuestPlayer2(
                     thisPlayer, thisPlayer, thisPlayer, thisPlayer));
 
         }
@@ -577,11 +580,11 @@ public class USTAService {
 
 
 
-    public USTATeamLineScore updateLineScoreInfo(long id, USTATeamLineScore score) {
-        Optional<USTATeamLineScore> scoreData = lineScoreRepository.findById(id);
+    public USTAMatchLine updateLineScoreInfo(long id, USTAMatchLine score) {
+        Optional<USTAMatchLine> scoreData = lineScoreRepository.findById(id);
 
         if (scoreData.isPresent()) {
-            USTATeamLineScore _score = scoreData.get();
+            USTAMatchLine _score = scoreData.get();
             _score.setVideoLink(score.getVideoLink());
             _score.setComment(score.getComment());
 
@@ -591,14 +594,14 @@ public class USTAService {
         return null;
     }
 
-    private List<USTATeam> toUSTATeamList(List<USTATeamEntity> teams) {
-        List<USTATeam> result = new ArrayList<>();
+    private List<NewUSTATeam> toUSTATeamList(List<USTATeamEntity> teams) {
+        List<NewUSTATeam> result = new ArrayList<>();
         if (teams == null) {
             return result;
         }
 
         for (USTATeamEntity entity : teams) {
-            result.add(new USTATeam(entity));
+            result.add(new NewUSTATeam(entity));
         }
         return result;
     }
@@ -616,16 +619,16 @@ public class USTAService {
         return result;
     }
 
-    private List<USTATeamMemberScorePO> toUSTATeamMemberScorePoList(List<USTATeamLineScore> scores) {
-        List<USTATeamMemberScorePO> result = new ArrayList<>();
+    private List<USTAMatchLinePO> toUSTAMatchLinePoList(List<USTAMatchLine> scores) {
+        List<USTAMatchLinePO> result = new ArrayList<>();
         if (scores == null) {
             return result;
         }
 
-        for (USTATeamLineScore entity : scores) {
-            result.add(new USTATeamMemberScorePO(entity));
+        for (USTAMatchLine entity : scores) {
+            result.add(new USTAMatchLinePO(entity));
         }
-        result.sort((USTATeamMemberScorePO o1, USTATeamMemberScorePO o2) -> o2.getMatchDate().compareTo(o1.getMatchDate()));
+        result.sort((USTAMatchLinePO o1, USTAMatchLinePO o2) -> o2.getMatchDate().compareTo(o1.getMatchDate()));
         return result;
 
     }

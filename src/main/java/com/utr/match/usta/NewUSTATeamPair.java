@@ -1,23 +1,23 @@
 package com.utr.match.usta;
 
 import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.USTATeamLineScore;
+import com.utr.match.entity.USTAMatchLine;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class USTATeamPair {
+public class NewUSTATeamPair {
     PlayerEntity player1;
     PlayerEntity player2;
 
-    List<USTATeamLineScore> winScores;
-    List<USTATeamLineScore> lostScores;
+    List<USTAMatchLine> winScores;
+    List<USTAMatchLine> lostScores;
 
     int winMatchNo = 0;
 
     int lostMatchNo = 0;
 
-    public USTATeamPair(PlayerEntity player1, PlayerEntity player2) {
+    public NewUSTATeamPair(PlayerEntity player1, PlayerEntity player2) {
         this.winScores = new ArrayList<>();
         this.lostScores =new ArrayList<>();
 
@@ -48,7 +48,7 @@ public class USTATeamPair {
         return player2;
     }
 
-    public void addScore(USTATeamLineScore score) {
+    public void addScore(USTAMatchLine score) {
         if (player1 == null || player2 == null) {
             return;
         }
@@ -88,19 +88,35 @@ public class USTATeamPair {
         return player1.getName() + ":" + (player2 == null? "":player2.getName());
     }
 
-    public List<USTATeamLineScore> getWinScores() {
+    public List<USTAMatchLine> getWinScores() {
         return winScores;
     }
 
-    public List<USTATeamLineScore> getLostScores() {
+    public List<USTAMatchLine> getLostScores() {
         return lostScores;
     }
 
-    public static int compareByWinNoAndUTR(USTATeamPair pair1, USTATeamPair pair2) {
+    public static int compareByWinNoAndUTR(NewUSTATeamPair pair1, NewUSTATeamPair pair2) {
         if (pair1.getWinMatchNo() == pair2.getWinMatchNo()) {
             return Double.compare(pair2.getTotalUTR(), pair1.getTotalUTR());
         } else {
             return Integer.compare(pair2.getWinMatchNo(), pair1.getWinMatchNo());
         }
+    }
+
+    public String getPairInfo(){
+        return this.getPairInfo(false);
+    }
+
+    public String getPairInfo(boolean isSingle) {
+        if (player1 == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(player1.getPlayerInfo(isSingle)).append(" ");
+        if (player2 !=null) {
+            sb.append(" + ").append(player2.getPlayerInfo(isSingle));
+        }
+        return sb.toString();
     }
 }

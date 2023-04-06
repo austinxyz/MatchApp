@@ -122,10 +122,20 @@ public class USTASiteParser {
                     continue;
                 }
 
+                String type = tr.child(1).text();
+                if (type == null) {
+                    continue;
+                }
+
+                if (!type.equals("PlayOff") && !type.equals("Sectional")) {
+                    type = "Local";
+                }
+
                 JSONObject scoreCard;
                 if (status.startsWith("Confirmed")) {
                     String href = tr.child(2).child(0).attr("href");
                     scoreCard = parseScoreCard("https://www.ustanorcal.com/" + href);
+                    scoreCard.put("type", type);
                 } else {
                     scoreCard = new JSONObject();
                     String matchDate = tr.child(2).text();
@@ -134,6 +144,7 @@ public class USTASiteParser {
                         continue;
                     }
                     scoreCard.put("matchDate", matchDate);
+                    scoreCard.put("type", type);
 
                     String home = tr.child(6).text();
                     boolean isHome = home.equals("Home");
