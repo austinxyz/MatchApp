@@ -43,6 +43,19 @@ public class USTAMatchImportor {
     public USTAMatchImportor() {
     }
 
+    public int getMatchNumber(NewUSTATeam team) {
+        USTASiteParser util = new USTASiteParser();
+        try {
+            JSONArray matches = util.parseTeamMatches(team.getTeamEntity());
+
+            return matches.length();
+
+        } catch (IOException e) {
+            logger.debug("Failed to get match number" + team.getName());
+        }
+
+        return -1;
+    }
     public void refreshMatchesScores(NewUSTATeam team, USTADivision division) {
         USTASiteParser util = new USTASiteParser();
         try {

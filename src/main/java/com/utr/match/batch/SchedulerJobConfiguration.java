@@ -121,7 +121,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         Collections.shuffle(teams);
         for (NewUSTATeam team : teams) {
             team = service.loadMatch(team);
-            if (team.requiredUpdateScore(mathImportor.getMatchNumber(team))) {
+            if (team.requiredUpdateScore(matchImportor.getMatchNumber(team))) {
                 LOG.debug("Refresh team: " + team.getName() + " players' info");
                 importor.importUSTATeam(team.getLink());
                 LOG.debug("Start to update team:" + team.getName() + "'s match score");

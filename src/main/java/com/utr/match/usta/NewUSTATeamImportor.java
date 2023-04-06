@@ -292,14 +292,24 @@ public class NewUSTATeamImportor {
 
         for (USTATeamMember player : existTeam.getPlayers()) {
 
-            updatePlayerUTRInfo(player.getPlayer(), false);
+            updatePlayerUTRInfo(player.getPlayer(), false, true);
+
+        }
+
+    }
+
+    public void updateTeamUTRInfo(NewUSTATeam existTeam, boolean forceUpdate, boolean includeWinPercent) {
+
+        for (USTATeamMember player : existTeam.getPlayers()) {
+
+            updatePlayerUTRInfo(player.getPlayer(), forceUpdate, includeWinPercent);
 
         }
 
 
     }
 
-    public PlayerEntity updatePlayerUTRInfo(PlayerEntity member, boolean forceUpdate) {
+    public PlayerEntity updatePlayerUTRInfo(PlayerEntity member, boolean forceUpdate, boolean inlcudeWinPercent) {
         if (member.isRefreshedUTR() && !forceUpdate) {
             logger.debug(member.getName() + " has latest UTR, skip");
             return member;
@@ -331,10 +341,12 @@ public class NewUSTATeamImportor {
 
         logger.debug(member.getName() + " start to query utr and win ratio");
 
-        float successRate = parser.getWinPercent(utrId, true);
-        float wholeSuccessRate = parser.getWinPercent(utrId, false);
-        member.setSuccessRate(successRate);
-        member.setWholeSuccessRate(wholeSuccessRate);
+        if (inlcudeWinPercent) {
+            float successRate = parser.getWinPercent(utrId, true);
+            float wholeSuccessRate = parser.getWinPercent(utrId, false);
+            member.setSuccessRate(successRate);
+            member.setWholeSuccessRate(wholeSuccessRate);
+        }
 
         Player utrplayer = parser.getPlayer(utrId);
 
