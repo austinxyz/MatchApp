@@ -1,6 +1,7 @@
 package com.utr.match.entity;
 
 import com.utr.match.TeamLoader;
+import com.utr.match.usta.USTAMatchImportor;
 import com.utr.model.Player;
 import com.utr.parser.UTRParser;
 import com.utr.match.usta.USTASiteParser;
@@ -35,10 +36,7 @@ class USTATeamRepositoryTest {
     private TeamLoader loader;
 
     @Autowired
-    private USTATeamMatchRepository matchRepository;
-
-    @Autowired
-    private USTATeamMatchLineRepository matchLineRepository ;
+    private USTAMatchRepository matchRepository;
 
     @Test
     void createTeam() {
@@ -129,13 +127,12 @@ class USTATeamRepositoryTest {
 
         long start = System.currentTimeMillis();
 
-        List<USTATeamMatch> matches = matchRepository.findByTeamOrderByMatchDateAsc(team);
-        for (USTATeamMatch match :matches) {
-            USTATeamScoreCard scoreCard = match.getScoreCard();
+        List<USTAMatch> matches = matchRepository.findByHomeTeam_IdOrGuestTeam_IdOrderByMatchDateAsc(team.getId(), team.getId());
+        for (USTAMatch match :matches) {
 
-            if (scoreCard!=null) {
-                System.out.println(scoreCard.getGuestTeamPoint());
-                System.out.println(scoreCard.getHomeTeamPoint());
+            if (!match.getLines().isEmpty()) {
+                System.out.println(match.getGuestPoint());
+                System.out.println(match.getHomePoint());
             }
         }
         System.out.println(System.currentTimeMillis() - start);
@@ -367,13 +364,12 @@ class USTATeamRepositoryTest {
     void queryMatchScore() {
 
         USTATeamEntity team = ustaTeamRepository.findById(77L).get();
-        for (USTATeamMatch match: matchRepository.findByTeamOrderByMatchDateAsc(team)) {
-            if (match.getScoreCard()!=null) {
-                USTATeamScoreCard card = match.getScoreCard();
-                for (USTATeamLineScore score: card.getLineScores()) {
-                    if (score.getGuestLine().getName().equals("D3")) {
-                        score.getGuestLine().setPlayer2(playerRepository.findById(163L).get());
-                        matchLineRepository.save(score.getGuestLine());
+        for (USTAMatch match: matchRepository.findByHomeTeam_IdOrGuestTeam_IdOrderByMatchDateAsc(team.getId(), team.getId())) {
+            if (!match.getLines().isEmpty()) {
+
+                for (USTAMatchLine score: match.getLines()) {
+                    if (score.getName().equals("D3")) {
+                        System.out.println(score.getScore());
                     }
                 }
 

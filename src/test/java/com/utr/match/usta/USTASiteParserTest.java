@@ -111,7 +111,7 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
 
         try {
-            USTATeamEntity team = util.parseUSTATeam("https://www.ustanorcal.com/TeamInfo.asp?id=92360");
+            USTATeamEntity team = util.parseUSTATeam("https://www.ustanorcal.com/teaminfo.asp?id=96592");
             System.out.println(team.getDivisionName());
             JSONArray matches = util.parseTeamMatches(team);
 

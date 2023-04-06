@@ -1,48 +1,48 @@
 package com.utr.match.usta.po;
 
 import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.USTATeamLineScore;
+import com.utr.match.entity.USTAMatchLine;
 
 import java.sql.Date;
 
 
-public class USTATeamMemberScorePO {
+public class USTAMatchLinePO {
 
-    USTATeamLineScore lineScore;
+    USTAMatchLine lineScore;
 
-    public USTATeamMemberScorePO(USTATeamLineScore lineScore) {
+    public USTAMatchLinePO(USTAMatchLine lineScore) {
         this.lineScore = lineScore;
     }
 
     public String getLineName() {
-        return lineScore.getHomeLine().getName();
+        return lineScore.getName();
     }
     public Date getMatchDate() {
-        return lineScore.getHomeLine().getMatch().getMatchDate();
+        return lineScore.getMatch().getMatchDate();
     }
 
     public String getHomeTeamName() {
-        return lineScore.getHomeLine().getMatch().getTeamName();
+        return lineScore.getMatch().getHomeTeamName();
     }
 
     public String getGuestTeamName() {
-        return lineScore.getGuestLine().getMatch().getTeamName();
+        return lineScore.getMatch().getGuestTeamName();
     }
 
     public PlayerEntity getHomePlayer1() {
-        return lineScore.getHomeLine().getPlayer1();
+        return lineScore.getHomePlayer1();
     }
 
     public PlayerEntity getHomePlayer2() {
-        return lineScore.getHomeLine().getPlayer2();
+        return lineScore.getHomePlayer2();
     }
 
     public PlayerEntity getGuestPlayer1() {
-        return lineScore.getGuestLine().getPlayer1();
+        return lineScore.getGuestPlayer1();
     }
 
     public PlayerEntity getGuestPlayer2() {
-        return lineScore.getGuestLine().getPlayer2();
+        return lineScore.getGuestPlayer2();
     }
 
     public boolean isHomeTeamWin() {
@@ -50,7 +50,7 @@ public class USTATeamMemberScorePO {
     }
 
     public String getMatchType() {
-        return lineScore.getHomeLine().getType();
+        return lineScore.getType();
     }
 
     public String getScore() {

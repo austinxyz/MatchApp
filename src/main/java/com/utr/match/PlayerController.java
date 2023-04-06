@@ -3,8 +3,8 @@ package com.utr.match;
 
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.PlayerRepository;
-import com.utr.match.usta.USTAService;
-import com.utr.match.usta.USTATeamImportor;
+import com.utr.match.usta.NewUSTAService;
+import com.utr.match.usta.NewUSTATeamImportor;
 import com.utr.match.usta.po.USTATeamMemberPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,10 +22,10 @@ public class PlayerController {
     PlayerRepository playerRepo;
 
     @Autowired
-    USTAService service;
+    NewUSTAService service;
 
     @Autowired
-    USTATeamImportor importor;
+    NewUSTATeamImportor importor;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/{id}")

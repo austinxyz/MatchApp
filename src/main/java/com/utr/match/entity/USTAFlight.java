@@ -28,20 +28,16 @@ public class USTAFlight {
     @JsonIgnore
     @OneToMany(mappedBy = "ustaFlight", fetch = FetchType.LAZY)
     private final Set<USTATeamEntity> teams;
-    @JsonIgnore
-    @OneToMany(mappedBy = "flight", fetch = FetchType.LAZY)
-    private final Set<USTATeamScoreCard> teamScoreCards;
+
 
     public USTAFlight(int flightNo, USTADivision division) {
         this.flightNo = flightNo;
         this.division = division;
         this.teams = new HashSet<>();
-        this.teamScoreCards = new HashSet<>();
     }
 
     public USTAFlight() {
         this.teams = new HashSet<>();
-        this.teamScoreCards = new HashSet<>();
     }
 
     public String getLink() {

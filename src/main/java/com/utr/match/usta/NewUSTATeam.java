@@ -6,14 +6,15 @@ import com.utr.match.entity.*;
 
 import java.util.*;
 
-public class USTATeam {
+public class NewUSTATeam {
     @JsonProperty("team")
     USTATeamEntity teamEntity;
 
-    List<USTATeamMatch> matches;
+    List<USTAMatch> matches;
 
     @JsonIgnore
-    Map<String, List<USTATeamScoreCard>> scores;
+    Map<String, List<USTAMatch>> scores;
+
     List<USTATeamMember> players;
 
     @JsonIgnore
@@ -63,7 +64,7 @@ public class USTATeam {
 
     float level = 7.0f;
 
-    public USTATeam(USTATeamEntity teamEntity) {
+    public NewUSTATeam(USTATeamEntity teamEntity) {
         this.teamEntity = teamEntity;
         this.players = new ArrayList<>();
 
@@ -103,37 +104,40 @@ public class USTATeam {
         this.level = Float.parseFloat(levelStr);
     }
 
-    public void addMatch(USTATeamMatch match) {
+    public void addMatch(USTAMatch match) {
         this.matches.add(match);
-        if (match.getScoreCard() != null) {
-            this.addScore(match.getScoreCard());
+        if (match.getLines() != null && !match.getLines().isEmpty()) {
+            this.addScore(match);
         }
     }
 
-    private void addScore(USTATeamScoreCard scoreCard) {
+    private void addScore(USTAMatch match) {
 
-        String oppTeamName = scoreCard.getOpponentTeam(this.teamEntity.getName());
-        List<USTATeamScoreCard> oppTeamScores = this.scores.getOrDefault(oppTeamName, new ArrayList<>());
-        oppTeamScores.add(scoreCard);
+        String oppTeamName = match.getOppTeamName(this.teamEntity.getName());
+        List<USTAMatch> oppTeamScores = this.scores.getOrDefault(oppTeamName, new ArrayList<>());
+
+        oppTeamScores.add(match);
         this.scores.put(oppTeamName, oppTeamScores);
 
         String teamName = teamEntity.getName();
-        this.currentScore += scoreCard.getScore(teamName);
-        if (scoreCard.isWinner(teamName)) {
+        this.currentScore += match.getScore(teamName);
+
+        if (match.isWinner(teamName)) {
             currentWinMatchNo++;
         }
-        for (USTATeamLineScore lineScore: scoreCard.getLineScores()) {
-            String lineName = lineScore.getHomeLine().getName();
+
+        for (USTAMatchLine lineScore: match.getLines()) {
+            String lineName = lineScore.getName();
             if (lineName.startsWith("D")) {
                 USTADoubleLineStat doubleLineStat = this.doubleLineStats.getOrDefault(lineName,
                         new USTADoubleLineStat(lineName, this.teamEntity.getName()));
-                doubleLineStat.addLineScore(lineScore);
+                doubleLineStat.addMatchLine(lineScore);
                 this.doubleLineStats.put(lineName, doubleLineStat);
             }
             if (lineName.startsWith("S")) {
                 USTASingleLineStat singleLineStat = this.singleLineStats.getOrDefault(lineName,
                         new USTASingleLineStat(lineName, this.teamEntity.getName()));
-                singleLineStat.addLineScore(lineScore);
+                singleLineStat.addMatchLine(lineScore);
                 this.singleLineStats.put(lineName, singleLineStat);
             }
         }
@@ -164,14 +168,14 @@ public class USTATeam {
         return null;
     }
 
-    public List<USTATeamScoreCard> getScores(String teamName) {
+    public List<USTAMatch> getScores(String teamName) {
         return this.scores.get(teamName);
     }
 
     @JsonIgnore
-    public List<USTATeamScoreCard> getAllScores() {
-        List<USTATeamScoreCard> result = new ArrayList<>();
-        for (List<USTATeamScoreCard> teamScores: this.scores.values()) {
+    public List<USTAMatch> getAllScores() {
+        List<USTAMatch> result = new ArrayList<>();
+        for (List<USTAMatch> teamScores: this.scores.values()) {
             result.addAll(teamScores);
         }
         return result;
@@ -187,16 +191,16 @@ public class USTATeam {
         return this.teamEntity.getId();
     }
 
-    public USTATeamPair getBestUTRDouble() {
+    public NewUSTATeamPair getBestUTRDouble() {
         if (!mixed) {
             players.sort((USTATeamMember o1, USTATeamMember o2) -> Double.compare(o2.getDUTR(), o1.getDUTR()));
             if (players.size() >= 2) {
-                return new USTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
+                return new NewUSTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
             }
         } else {
             USTATeamMember malePlayer = null;
             USTATeamMember femalePlayer = null;
-            List<USTATeamPair> pairs = new ArrayList<>();
+            List<NewUSTATeamPair> pairs = new ArrayList<>();
 
             List<USTATeamMember> males = new ArrayList<>();
             List<USTATeamMember> females = new ArrayList<>();
@@ -214,28 +218,28 @@ public class USTATeam {
             for (USTATeamMember male: males) {
                 for (USTATeamMember female: females) {
                    if ((male.getLevel() + female.getLevel())<= this.level + 0.1) {
-                       pairs.add(new USTATeamPair(male.getPlayer(), female.getPlayer()));
+                       pairs.add(new NewUSTATeamPair(male.getPlayer(), female.getPlayer()));
                    }
                 }
             }
 
-            pairs.sort((USTATeamPair p1, USTATeamPair p2) -> Double.compare(p2.getTotalUTR(), p1.getTotalUTR()));
+            pairs.sort((NewUSTATeamPair p1, NewUSTATeamPair p2) -> Double.compare(p2.getTotalUTR(), p1.getTotalUTR()));
 
             return pairs.iterator().next();
         }
         return null;
     }
 
-    public USTATeamPair getBestDRDouble() {
+    public NewUSTATeamPair getBestDRDouble() {
         if (!mixed) {
             players.sort((USTATeamMember o1, USTATeamMember o2) -> Double.compare(o2.getDynamicRating(), o1.getDynamicRating()));
             if (players.size() >= 2) {
-                return new USTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
+                return new NewUSTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
             }
         } else {
             USTATeamMember malePlayer = null;
             USTATeamMember femalePlayer = null;
-            List<USTATeamPair> pairs = new ArrayList<>();
+            List<NewUSTATeamPair> pairs = new ArrayList<>();
 
             List<USTATeamMember> males = new ArrayList<>();
             List<USTATeamMember> females = new ArrayList<>();
@@ -253,12 +257,12 @@ public class USTATeam {
             for (USTATeamMember male: males) {
                 for (USTATeamMember female: females) {
                     if ((male.getLevel() + female.getLevel())<= this.level + 0.1) {
-                        pairs.add(new USTATeamPair(male.getPlayer(), female.getPlayer()));
+                        pairs.add(new NewUSTATeamPair(male.getPlayer(), female.getPlayer()));
                     }
                 }
             }
 
-            pairs.sort((USTATeamPair p1, USTATeamPair p2) -> Double.compare(p2.getTotalDR(), p1.getTotalDR()));
+            pairs.sort((NewUSTATeamPair p1, NewUSTATeamPair p2) -> Double.compare(p2.getTotalDR(), p1.getTotalDR()));
 
             return pairs.iterator().next();
         }
@@ -332,7 +336,7 @@ public class USTATeam {
         return teamEntity.getCaptainName();
     }
 
-    public List<USTATeamMatch> getMatches() {
+    public List<USTAMatch> getMatches() {
         return matches;
     }
 
@@ -344,9 +348,9 @@ public class USTATeam {
         if (this.matches.size() != ustaMatchNumber) {
             return true;
         }
-        for (USTATeamMatch match: this.matches) {
+        for (USTAMatch match: this.matches) {
             if (match.getMatchDate().before(new Date())) {
-                if (match.getScoreCard() == null) {
+                if (match.getLines() == null || match.getLines().isEmpty()) {
                     return true;
                 }
             }

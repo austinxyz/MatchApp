@@ -3,8 +3,10 @@ package com.utr.match.usta;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.USTATeamLineScore;
+import com.utr.match.entity.USTAMatchLine;
+import org.json.JSONArray;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +14,13 @@ import java.util.Map;
 
 public class USTASingleLineStat {
 
+
     String lineName;
     @JsonIgnore
     String teamName;
 
     @JsonIgnore
-    Map<String, USTATeamSingle> singlers;
+    Map<String, NewUSTATeamSingle> newSinglers;
 
     int winMatchNo = 0;
     int lostMatchNo = 0;
@@ -28,14 +31,15 @@ public class USTASingleLineStat {
     int normalNo = 0;
 
     public USTASingleLineStat(String lineName, String teamName) {
-        singlers = new HashMap<>();
+        newSinglers = new HashMap<>();
         this.lineName = lineName;
         this.teamName = teamName;
     }
 
-    public void addLineScore(USTATeamLineScore score) {
 
-        if (!score.getHomeLine().getName().equals(lineName)) {
+    public void addMatchLine(USTAMatchLine score) {
+
+        if (!score.getName().equals(lineName)) {
             return;
         }
 
@@ -56,7 +60,7 @@ public class USTASingleLineStat {
                 this.normalNo++;
         }
 
-        USTATeamPair pair = score.getPair(teamName);
+        NewUSTATeamPair pair = score.getPair(teamName);
 
         PlayerEntity player = pair.getPlayer1();
 
@@ -64,24 +68,22 @@ public class USTASingleLineStat {
             return;
         }
 
-        USTATeamSingle single = singlers.getOrDefault(player.getName(), new USTATeamSingle(player));
+        NewUSTATeamSingle single = newSinglers.getOrDefault(player.getName(), new NewUSTATeamSingle(player));
 
         single.addScore(score);
 
-        singlers.put(player.getName(), single);
-
+        newSinglers.put(player.getName(), single);
     }
-
     @JsonProperty
-    public List<USTATeamSingle> getSinglers() {
-        List<USTATeamSingle> result = new ArrayList<>(singlers.values());
-        result.sort(USTATeamSingle::compareByWinNoAndUTR);
+    public List<NewUSTATeamSingle> getSinglers() {
+        List<NewUSTATeamSingle> result = new ArrayList<>(newSinglers.values());
+        result.sort(NewUSTATeamSingle::compareByWinNoAndUTR);
         return result;
     }
 
     @JsonProperty
-    public USTATeamSingle getBestSingle() {
-        if (singlers.size() > 0) {
+    public NewUSTATeamSingle getBestSingle() {
+        if (newSinglers.size() > 0) {
             return getSinglers().get(0);
         }
         return null;
@@ -109,17 +111,17 @@ public class USTASingleLineStat {
 
     @JsonProperty
     public double averageUTR() {
-        if (singlers.size() == 0) {
+        if (newSinglers.size() == 0) {
             return 0.0d;
         }
 
         double sum = 0.0d;
 
-        for (USTATeamSingle single: singlers.values()) {
+        for (NewUSTATeamSingle single: newSinglers.values()) {
             sum += single.getSingleUTR();
         }
 
-        return sum/singlers.size();
+        return sum/newSinglers.size();
 
     }
 

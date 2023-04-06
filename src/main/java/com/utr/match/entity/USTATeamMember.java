@@ -54,10 +54,10 @@ public class USTATeamMember {
     private String rating;
 
     @Column(name = "win_no")
-    int winNo=0;
+    Integer winNo;
 
     @Column(name = "lost_no")
-    int lostNo=0;
+    Integer lostNo;
 
     @Column(name = "qualified_po")
     Boolean qualifiedPo;
@@ -114,11 +114,11 @@ public class USTATeamMember {
     }
 
     public String getDUTRStatus() {
-        return player.getDUTRStatus();
+        return player.getDUTRStatus() == null? "":player.getDUTRStatus();
     }
 
     public String getSUTRStatus() {
-        return player.getSUTRStatus();
+        return player.getSUTRStatus() == null? "": player.getSUTRStatus();
     }
 
     public boolean isRefreshedUTR() {
@@ -138,7 +138,7 @@ public class USTATeamMember {
     }
 
     public int getWinNo() {
-        return winNo;
+        return winNo==null? 0:winNo.intValue();
     }
 
     public void setWinNo(int winNo) {
@@ -146,7 +146,7 @@ public class USTATeamMember {
     }
 
     public int getLostNo() {
-        return lostNo;
+        return lostNo==null?0:lostNo.intValue();
     }
 
     public void setLostNo(int lostNo) {
@@ -195,5 +195,12 @@ public class USTATeamMember {
 
     public String getArea() {
         return player.getArea();
+    }
+
+    public float getWinPercent() {
+        if (this.winNo + this.lostNo == 0) {
+            return 0.0f;
+        }
+        return (float) (this.winNo) / (float) (this.winNo + this.getLostNo());
     }
 }
