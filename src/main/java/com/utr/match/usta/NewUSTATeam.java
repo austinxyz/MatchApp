@@ -336,7 +336,7 @@ public class NewUSTATeam {
         return teamEntity.getCaptainName();
     }
 
-    public List<USTAMatch> getMatches() {
+    public List<USTATeamMatch> getMatches() {
         return matches;
     }
 
@@ -344,8 +344,11 @@ public class NewUSTATeam {
         return teamEntity.getAreaCode();
     }
 
-    public boolean requiredUpdateScore() {
-        for (USTAMatch match: this.matches) {
+    public boolean requiredUpdateScore(int ustaMatchNumber) {
+        if (this.matches.size() != ustaMatchNumber) {
+            return true;
+        }
+        for (USTATeamMatch match: this.matches) {
             if (match.getMatchDate().before(new Date())) {
                 if (match.getLines() == null || match.getLines().isEmpty()) {
                     return true;
