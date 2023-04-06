@@ -119,7 +119,7 @@ class USTATeamImportorTest {
     void updatePlayerUTRInfo() {
         PlayerEntity player = playerRepository.findByUtrId("257354");
 
-        importor.updatePlayerUTRInfo(player, true);
+        importor.updatePlayerUTRInfo(player, true, true);
     }
 
     @Test
