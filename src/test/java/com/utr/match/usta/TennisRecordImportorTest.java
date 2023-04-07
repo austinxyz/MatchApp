@@ -14,10 +14,10 @@ class TennisRecordImportorTest {
     TennisRecordImportor importor;
 
     @Autowired
-    NewUSTATeamImportor teamImportor;
+    USTATeamImportor teamImportor;
 
     @Autowired
-    NewUSTAService service;
+    USTAService service;
 
     @Test
     void importUSTATeam() {
@@ -38,11 +38,11 @@ class TennisRecordImportorTest {
 
     @Test
     void parseTeamUTRID() {
-        List<NewUSTATeam> teams =
+        List<USTATeam> teams =
                 service.searchTeam(TEAM_NAME);
 
         if (teams.size() > 0) {
-            NewUSTATeam team = teams.get(0);
+            USTATeam team = teams.get(0);
 
             teamImportor.updateTeamPlayersUTRID(team);
         }

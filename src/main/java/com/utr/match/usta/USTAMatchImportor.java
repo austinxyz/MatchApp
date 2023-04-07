@@ -1,8 +1,6 @@
 package com.utr.match.usta;
 
 import com.utr.match.entity.*;
-import com.utr.model.Player;
-import com.utr.parser.UTRParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -29,7 +26,7 @@ public class USTAMatchImportor {
     SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
 
     @Autowired
-    private NewUSTATeamImportor teamImporter;
+    private USTATeamImportor teamImporter;
 
     @Autowired
     private USTATeamRepository ustaTeamRepository;
@@ -43,7 +40,7 @@ public class USTAMatchImportor {
     public USTAMatchImportor() {
     }
 
-    public int getMatchNumber(NewUSTATeam team) {
+    public int getMatchNumber(USTATeam team) {
         USTASiteParser util = new USTASiteParser();
         try {
             JSONArray matches = util.parseTeamMatches(team.getTeamEntity());
@@ -56,7 +53,7 @@ public class USTAMatchImportor {
 
         return -1;
     }
-    public void refreshMatchesScores(NewUSTATeam team, USTADivision division) {
+    public void refreshMatchesScores(USTATeam team, USTADivision division) {
         USTASiteParser util = new USTASiteParser();
         try {
             JSONArray matches = util.parseTeamMatches(team.getTeamEntity());
@@ -78,7 +75,7 @@ public class USTAMatchImportor {
 
     }
 
-    public void updatePlayerWinInfo(NewUSTATeam team) {
+    public void updatePlayerWinInfo(USTATeam team) {
         List<USTAMatch> existedMatches = matchRepository.findByHomeTeam_IdOrGuestTeam_IdOrderByMatchDateAsc(
                 team.getId(), team.getId()
         );
@@ -92,7 +89,7 @@ public class USTAMatchImportor {
             }
             for (USTAMatchLine lineScore: match.getLines()) {
                 boolean win = lineScore.isWinnerTeam(team.getName());
-                NewUSTATeamPair pair = lineScore.getPair(team.getName());
+                USTATeamPair pair = lineScore.getPair(team.getName());
                 if (pair == null) {
                     continue;
                 }

@@ -38,20 +38,20 @@ public class TeamLoader {
 
     }
 
-    public Player getPlayer(String utrId) {
+    public Player getPlayer(String utrId, boolean withToken) {
 
-        return parser.getPlayer(utrId);
+        return parser.getPlayer(utrId, withToken);
 
     }
 
-    public List<Player> queryPlayer(String query, int top) {
+    public List<Player> queryPlayer(String query, int top, boolean withToken) {
         if (isPlayerId(query)) {
-            Player player = getPlayer(query);
+            Player player = getPlayer(query, withToken);
             List<Player> players = new ArrayList<>();
             players.add(player);
             return players;
         }
-        return parser.searchPlayers(query, top);
+        return parser.searchPlayers(query, top, withToken);
     }
 
     private boolean isPlayerId(String query) {
@@ -67,34 +67,34 @@ public class TeamLoader {
     }
 
     public List<Division> getDivisions() {
-        return getDivisions(DEFAULT_EVENT_ID);
+        return getDivisions(DEFAULT_EVENT_ID, true);
     }
 
-    public Club getClub(String clubId) {
-        return getOrFetchClub(clubId);
+    public Club getClub(String clubId, boolean withToken) {
+        return getOrFetchClub(clubId, withToken);
     }
 
     public Club getClub() {
-        return getOrFetchClub(DEFAULT_CLUB_ID);
+        return getOrFetchClub(DEFAULT_CLUB_ID, true);
     }
 
-    public List<Division> getDivisions(String eventId) {
-        Event event = getOrFetchEvent(eventId);
+    public List<Division> getDivisions(String eventId, boolean withToken) {
+        Event event = getOrFetchEvent(eventId, withToken);
 
         return event.getDivisions();
     }
 
-    public Event getEvent(String eventId) {
-        return getOrFetchEvent(eventId);
+    public Event getEvent(String eventId, boolean withToken) {
+        return getOrFetchEvent(eventId, withToken);
     }
 
-    private Event getOrFetchEvent(String eventId) {
+    private Event getOrFetchEvent(String eventId, boolean withToken) {
         Event event;
 
         if (events.containsKey(eventId)) {
             event = events.get(eventId);
         } else {
-            event = parser.parseEvent(eventId);
+            event = parser.parseEvent(eventId, withToken);
 
             if (eventId.equals(DEFAULT_EVENT_ID)) {
                 loader.updateEvent(event);
@@ -104,20 +104,20 @@ public class TeamLoader {
         return event;
     }
 
-    private Club getOrFetchClub(String clubId) {
+    private Club getOrFetchClub(String clubId, boolean withToken) {
         Club club;
 
         if (clubs.containsKey(clubId)) {
             club = clubs.get(clubId);
         } else {
-            club = parser.getClub(clubId);
+            club = parser.getClub(clubId, withToken);
             clubs.put(clubId, club);
         }
         return club;
     }
 
     public Team initTeam(String teamName) {
-        Event event = getOrFetchEvent(DEFAULT_EVENT_ID);
+        Event event = getOrFetchEvent(DEFAULT_EVENT_ID, true);
 
         Division div = event.getDivisionByName(teamName);
 
@@ -130,9 +130,9 @@ public class TeamLoader {
         return team;
     }
 
-    public Team initTeam(String teamId, String eventId) {
+    public Team initTeam(String teamId, String eventId, boolean withToken) {
 
-        Event event = getOrFetchEvent(eventId);
+        Event event = getOrFetchEvent(eventId, withToken);
 
         Division div = event.getDivision(teamId);
 
@@ -149,9 +149,9 @@ public class TeamLoader {
         return team;
     }
 
-    public PlayerResult searchPlayerResult(String playerId, boolean latest) {
+    public PlayerResult searchPlayerResult(String playerId, boolean latest, boolean withToken) {
 
-        PlayerResult result = parser.parsePlayerResult(playerId,latest);
+        PlayerResult result = parser.parsePlayerResult(playerId,latest, withToken);
 
         if (result == null) {
             return null;

@@ -3,8 +3,6 @@ package com.utr.match.usta;
 import com.utr.match.entity.*;
 import com.utr.model.Player;
 import com.utr.parser.UTRParser;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +10,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
 @Scope("singleton")
-public class NewUSTATeamImportor {
+public class USTATeamImportor {
 
-    private static final Logger logger = LoggerFactory.getLogger(NewUSTATeamImportor.class);
+    private static final Logger logger = LoggerFactory.getLogger(USTATeamImportor.class);
 
     @Autowired
     EventRepository eventRepo;
@@ -49,7 +45,7 @@ public class NewUSTATeamImportor {
     private USTAMatchRepository matchRepository;
 
 
-    public NewUSTATeamImportor() {
+    public USTATeamImportor() {
     }
 
 
@@ -221,12 +217,12 @@ public class NewUSTATeamImportor {
         }
 
 
-        updateTeamPlayersUTRID(new NewUSTATeam(existTeam));
+        updateTeamPlayersUTRID(new USTATeam(existTeam));
 
 
     }
 
-    public void updateTeamPlayersUTRID(NewUSTATeam existTeam) {
+    public void updateTeamPlayersUTRID(USTATeam existTeam) {
         for (USTATeamMember member : existTeam.getPlayers()) {
 
             updatePlayerUTRID(member.getPlayer());
@@ -237,7 +233,7 @@ public class NewUSTATeamImportor {
     public PlayerEntity updatePlayerUTRID(PlayerEntity member) {
 
         if (member.getUtrId() == null || member.getUtrId().trim().equals("")) {
-            List<Player> utrplayers = parser.searchPlayers(member.getName(), 10);
+            List<Player> utrplayers = parser.searchPlayers(member.getName(), 10, true);
             String candidateUTRId = findUTRID(utrplayers, member);
             if (candidateUTRId != null) {
                 member.setUtrId(candidateUTRId);
@@ -251,7 +247,7 @@ public class NewUSTATeamImportor {
         return member;
     }
 
-    public void updateTeamPlayersDR(NewUSTATeam team) {
+    public void updateTeamPlayersDR(USTATeam team) {
 
         USTASiteParser util = new USTASiteParser();
 
@@ -288,7 +284,7 @@ public class NewUSTATeamImportor {
 
     }
 
-    public void updateTeamUTRInfo(NewUSTATeam existTeam) {
+    public void updateTeamUTRInfo(USTATeam existTeam) {
 
         for (USTATeamMember player : existTeam.getPlayers()) {
 
@@ -298,7 +294,7 @@ public class NewUSTATeamImportor {
 
     }
 
-    public void updateTeamUTRInfo(NewUSTATeam existTeam, boolean forceUpdate, boolean includeWinPercent) {
+    public void updateTeamUTRInfo(USTATeam existTeam, boolean forceUpdate, boolean includeWinPercent) {
 
         for (USTATeamMember player : existTeam.getPlayers()) {
 
@@ -348,7 +344,7 @@ public class NewUSTATeamImportor {
             member.setWholeSuccessRate(wholeSuccessRate);
         }
 
-        Player utrplayer = parser.getPlayer(utrId);
+        Player utrplayer = parser.getPlayer(utrId, true);
 
         if (utrplayer == null) {
             logger.debug("failed to get player: " + member.getName() + "'s utr, skipped");

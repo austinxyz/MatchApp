@@ -11,7 +11,7 @@ import java.util.List;
 class USTATeamImportorTest {
 
     @Autowired
-    NewUSTATeamImportor importor;
+    USTATeamImportor importor;
 
     @Autowired
     USTAMatchImportor matchImportor;
@@ -45,7 +45,7 @@ class USTATeamImportorTest {
         for (USTATeamEntity teamEntity: teams) {
             //System.out.println(team.getName());
             //importor.updateTeamPlayersUTRID(team);
-            NewUSTATeam team = new NewUSTATeam(teamEntity);
+            USTATeam team = new USTATeam(teamEntity);
             importor.updateTeamUTRInfo(team);
         }
     }
@@ -60,14 +60,14 @@ class USTATeamImportorTest {
     @Test
     void updateTeamUTR() {
         USTATeamEntity teamEntity = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
-        NewUSTATeam team = new NewUSTATeam(teamEntity);
+        USTATeam team = new USTATeam(teamEntity);
         importor.updateTeamUTRInfo(team);
     }
 
     @Test
     void updateTeamUSTAInfo() {
         USTATeamEntity teamEntity = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
-        NewUSTATeam team = new NewUSTATeam(teamEntity);
+        USTATeam team = new USTATeam(teamEntity);
         importor.updatePlayerUSTANumber(teamEntity);
     }
 
@@ -80,7 +80,7 @@ class USTATeamImportorTest {
         List<USTATeamEntity> teams = teamRepository.findByUstaFlight_Id(28L);
 
         for (USTATeamEntity teamEntity: teams) {
-            NewUSTATeam team = new NewUSTATeam(teamEntity);
+            USTATeam team = new USTATeam(teamEntity);
             importor.updateTeamPlayersUTRID(team);
         }
     }
@@ -90,7 +90,7 @@ class USTATeamImportorTest {
         List<USTATeamEntity> teams = teamRepository.findByUstaFlight_Id(28L);
 
         for (USTATeamEntity teamEntity: teams) {
-            NewUSTATeam team = new NewUSTATeam(teamEntity);
+            USTATeam team = new USTATeam(teamEntity);
             importor.updateTeamUTRInfo(team);
         }
     }
@@ -105,13 +105,13 @@ class USTATeamImportorTest {
     void importTeamMatchs() {
         USTATeamEntity team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
         USTADivision division = divisionRepository.findByName(divisionName);
-        matchImportor.refreshMatchesScores(new NewUSTATeam(team), division);
+        matchImportor.refreshMatchesScores(new USTATeam(team), division);
     }
 
     @Test
     void updateTeamPlayersDR() {
         USTATeamEntity teamEntity = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
-        NewUSTATeam team = new NewUSTATeam(teamEntity);
+        USTATeam team = new USTATeam(teamEntity);
         importor.updateTeamPlayersDR(team);
     }
 
@@ -133,7 +133,7 @@ class USTATeamImportorTest {
     void updateAllTeamsDR() {
 
         for (USTATeamEntity teamEntity : teamRepository.findByDivision_IdOrderByUstaFlightAsc(5L)) {
-            NewUSTATeam team = new NewUSTATeam(teamEntity);
+            USTATeam team = new USTATeam(teamEntity);
             importor.updateTeamPlayersDR(team);
         }
     }

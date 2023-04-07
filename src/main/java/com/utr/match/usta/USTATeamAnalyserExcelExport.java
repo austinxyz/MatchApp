@@ -21,10 +21,10 @@ public class USTATeamAnalyserExcelExport extends AbstractXlsxView {
 
         // read data provided by controller
         @SuppressWarnings("unchecked")
-        NewUSTATeamAnalysisResult result = (NewUSTATeamAnalysisResult) model.get("analysisresult");
+        USTATeamAnalysisResult result = (USTATeamAnalysisResult) model.get("analysisresult");
 
-        NewUSTATeam team1 = result.getTeam1();
-        NewUSTATeam team2 = result.getTeam2();
+        USTATeam team1 = result.getTeam1();
+        USTATeam team2 = result.getTeam2();
 
         // create one sheet
         Sheet sheet = workbook.createSheet("Team");
@@ -32,7 +32,7 @@ public class USTATeamAnalyserExcelExport extends AbstractXlsxView {
         createTeamPlayerInfo(team1, sheet);
     }
 
-    private void createTeamPlayerInfo(NewUSTATeam team1, Sheet sheet) {
+    private void createTeamPlayerInfo(USTATeam team1, Sheet sheet) {
         // create row0 as a header
         Row row0 = sheet.createRow(0);
         row0.createCell(0).setCellValue("Name");

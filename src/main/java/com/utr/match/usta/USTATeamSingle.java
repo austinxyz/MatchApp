@@ -6,7 +6,7 @@ import com.utr.match.entity.USTAMatchLine;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewUSTATeamSingle {
+public class USTATeamSingle {
     PlayerEntity player;
 
     List<USTAMatchLine> winScores;
@@ -16,13 +16,13 @@ public class NewUSTATeamSingle {
 
     int lostMatchNo = 0;
 
-    public NewUSTATeamSingle(PlayerEntity player1) {
+    public USTATeamSingle(PlayerEntity player1) {
         this.player = player1;
         this.winScores = new ArrayList<>();
         this.lostScores = new ArrayList<>();
     }
 
-    public static int compareByWinNoAndUTR(NewUSTATeamSingle s1, NewUSTATeamSingle s2) {
+    public static int compareByWinNoAndUTR(USTATeamSingle s1, USTATeamSingle s2) {
         if (s1.getWinMatchNo() == s2.getWinMatchNo()) {
             return Double.compare(s2.getPlayer().getSUTR(), s1.getPlayer().getSUTR());
         } else {

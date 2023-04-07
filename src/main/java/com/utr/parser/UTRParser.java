@@ -48,53 +48,53 @@ public class UTRParser {
         fetchedTimes = new HashMap<>();
     }
 
-    public List<Event> getClubEvents(String clubId) {
+    public List<Event> getClubEvents(String clubId, boolean withToken) {
         EventParser eventParser = new EventParser();
-        return eventParser.buildEvents(getClubEventsJson(clubId));
+        return eventParser.buildEvents(getClubEventsJson(clubId, withToken));
     }
 
-    public Club getClub(String clubId) {
+    public Club getClub(String clubId, boolean withToken) {
         ClubParser clubParser = new ClubParser();
-        Club club = clubParser.buildClub(getClubJson(clubId));
-        club.getEvents().addAll(getClubEvents(clubId));
+        Club club = clubParser.buildClub(getClubJson(clubId, withToken));
+        club.getEvents().addAll(getClubEvents(clubId, withToken));
         return club;
     }
 
-    private String getClubJson(String clubId) {
+    private String getClubJson(String clubId, boolean withToken) {
         String getCallURL
                 = String.format(CLUB_URL, clubId);
 
-        return restGetCall(getCallURL);
+        return restGetCall(getCallURL, withToken);
     }
 
-    private String getClubEventsJson(String clubId) {
+    private String getClubEventsJson(String clubId, boolean withToken) {
         String getCallURL
                 = String.format(CLUB_EVENTS, clubId);
 
-        return restGetCall(getCallURL);
+        return restGetCall(getCallURL, withToken);
     }
 
 
-    public List<Player> searchPlayers(String query, int totalNumber) {
+    public List<Player> searchPlayers(String query, int totalNumber, boolean withToken) {
         SearchPlayerParser parser = new SearchPlayerParser();
-        return parser.buildPlayers(getSearchPlayersJson(query, totalNumber));
+        return parser.buildPlayers(getSearchPlayersJson(query, totalNumber, withToken));
     }
 
-    private String getSearchPlayersJson(String query, int totalNumber) {
+    private String getSearchPlayersJson(String query, int totalNumber, boolean withToken) {
         String getCallURL
                 = PLAYER_SEARCH + query + "&top=" + totalNumber;
 
-        return restGetCall(getCallURL);
+        return restGetCall(getCallURL, withToken);
     }
 
 
-    public Event parseEvent(String eventId) {
+    public Event parseEvent(String eventId, boolean withToken) {
         EventParser eventParser = new EventParser();
-        return eventParser.buildEvent(getEventJson(eventId), eventId);
+        return eventParser.buildEvent(getEventJson(eventId, withToken), eventId);
     }
 
-    public PlayerResult parsePlayerResult(String playerId) {
-        return parsePlayerResult(playerId, true);
+    public PlayerResult parsePlayerResult(String playerId, boolean withToken) {
+        return parsePlayerResult(playerId, true, withToken );
     }
 
     private Player refreshUTR(Player newPlayer) {
@@ -119,14 +119,14 @@ public class UTRParser {
 
     public float getWinPercent(String playerId, boolean latest) {
         PlayerResultParser resultParser = new PlayerResultParser(playerId);
-        PlayerResult result = resultParser.parseResult(getResultJson(playerId, latest), false);
+        PlayerResult result = resultParser.parseResult(getResultJson(playerId, latest, false), false);
         if (result.getLossesNumber() + result.getWinsNumber() == 0) {
             return 0.0f;
         }
         return (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber());
     }
 
-    private String getResultJson(String playerId, boolean latest) {
+    private String getResultJson(String playerId, boolean latest, boolean withToken) {
 
         String getCallURL
                 = PLAYER_RESULT + playerId + "/results";
@@ -135,32 +135,32 @@ public class UTRParser {
             getCallURL = getCallURL + "?year=last";
         }
 
-        return restGetCall(getCallURL);
+        return restGetCall(getCallURL, withToken);
 
     }
 
-    private Player parsePlayer(String playerId) {
+    private Player parsePlayer(String playerId, boolean withToken) {
         PlayerParser resultParser = new PlayerParser(playerId);
-        Player player = resultParser.parseResult(getPlayerJson(playerId));
+        Player player = resultParser.parseResult(getPlayerJson(playerId, withToken));
 
         return player;
     }
 
-    private String getPlayerJson(String playerId) {
+    private String getPlayerJson(String playerId, boolean withToken) {
 
         String getCallURL
                 = String.format(PLAYER_PROFILE, playerId);
 
-        return restGetCall(getCallURL);
+        return restGetCall(getCallURL, withToken);
 
     }
 
-    private String getEventJson(String eventId) {
+    private String getEventJson(String eventId, boolean withToken) {
 
         String getCallURL
                 = EVENTS_URL + eventId;
 
-        return restGetCall(getCallURL);
+        return restGetCall(getCallURL, withToken);
 
     }
 
@@ -168,16 +168,19 @@ public class UTRParser {
             maxAttempts = 3,
             backoff = @Backoff(delay = 5000)
     )
-    public String restGetCall(String getCallURL) {
+    public String restGetCall(String getCallURL, boolean withToken) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        String accessToken = TOKEN;
+        String accessToken = withToken? TOKEN: "";
         headers.set("Authorization", "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
         try {
             String requestJson = "{}";
             HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
             ResponseEntity<String> response = restTemplate.exchange(getCallURL, HttpMethod.GET, entity, String.class);
+            if (withToken) {
+                logger.debug("Call Rest API by Token: " + getCallURL);
+            }
             return response.getBody();
         } catch (RestClientException ex) {
             logger.debug(ex.toString());
@@ -186,7 +189,7 @@ public class UTRParser {
         return "";
     }
 
-    public Player getPlayer(String utrId) {
+    public Player getPlayer(String utrId, boolean withToken) {
         Player player = null;
 
         if (fetchedTimes.containsKey(utrId)) {
@@ -200,12 +203,14 @@ public class UTRParser {
         if (players.containsKey(utrId)) {
             player = players.get(utrId);
         } else {
-            player = parsePlayer(utrId);
+            player = parsePlayer(utrId, withToken);
             if (player == null) {
                 return player;
             }
-            players.put(player.getId(), player);
-            fetchedTimes.put(utrId, LocalDate.now());
+            if (withToken) {
+                players.put(player.getId(), player);
+                fetchedTimes.put(utrId, LocalDate.now());
+            }
         }
         return player;
     }
@@ -215,7 +220,7 @@ public class UTRParser {
         return Duration.between(date.atTime(0, 0), fetchDate.atTime(0, 0)).toDays() < 0;
     }
 
-    public PlayerResult parsePlayerResult(String utrId, boolean latest) {
+    public PlayerResult parsePlayerResult(String utrId, boolean latest, boolean withToken) {
 
         if (utrId == null || utrId.equals("")) {
             return null;
@@ -235,11 +240,16 @@ public class UTRParser {
         }
 
         PlayerResultParser resultParser = new PlayerResultParser(utrId);
-        PlayerResult result = resultParser.parseResult(getResultJson(utrId, latest), true);
-        playerResults.put(key, result);
+        PlayerResult result = resultParser.parseResult(getResultJson(utrId, latest, withToken), true);
+        if (withToken) {
+            playerResults.put(key, result);
+        }
 
         if (result.getPlayer() != null) {
-            Player player = refreshUTR(result.getPlayer());
+            Player player = result.getPlayer();
+            if (withToken) {
+                player = refreshUTR(result.getPlayer());
+            }
 
             if ((result.getWinsNumber() + result.getLossesNumber()) > 0) {
                 float successRate = (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber());

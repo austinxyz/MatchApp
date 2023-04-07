@@ -17,7 +17,7 @@ public class USTADoubleLineStat {
 
 
     @JsonIgnore
-    Map<String, NewUSTATeamPair> newPairs;
+    Map<String, USTATeamPair> newPairs;
 
     int winMatchNo = 0;
     int lostMatchNo = 0;
@@ -56,7 +56,7 @@ public class USTADoubleLineStat {
                 this.normalNo++;
         }
 
-        NewUSTATeamPair pair = score.getPair(teamName);
+        USTATeamPair pair = score.getPair(teamName);
 
         if (pair.getPlayer1() == null) {
             return;
@@ -79,13 +79,13 @@ public class USTADoubleLineStat {
 //    }
 
     @JsonProperty
-    public List<NewUSTATeamPair> getPairs() {
-        List<NewUSTATeamPair> result = new ArrayList<>(newPairs.values());
-        result.sort(NewUSTATeamPair::compareByWinNoAndUTR);
+    public List<USTATeamPair> getPairs() {
+        List<USTATeamPair> result = new ArrayList<>(newPairs.values());
+        result.sort(USTATeamPair::compareByWinNoAndUTR);
         return result;
     }
     @JsonProperty
-    public NewUSTATeamPair bestPair() {
+    public USTATeamPair bestPair() {
         if (newPairs.size() > 0) {
             return getPairs().get(0);
         }
@@ -121,7 +121,7 @@ public class USTADoubleLineStat {
 
         double sum = 0.0d;
 
-        for (NewUSTATeamPair pair: newPairs.values()) {
+        for (USTATeamPair pair: newPairs.values()) {
             sum += pair.getTotalUTR();
         }
 

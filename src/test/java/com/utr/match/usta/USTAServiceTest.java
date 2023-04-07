@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class USTAServiceTest {
 
     @Autowired
-    NewUSTAService service;
+    USTAService service;
 
     @Test
     void getPlayerScores() {

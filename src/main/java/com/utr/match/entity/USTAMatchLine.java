@@ -1,7 +1,7 @@
 package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.utr.match.usta.NewUSTATeamPair;
+import com.utr.match.usta.USTATeamPair;
 
 import javax.persistence.*;
 
@@ -259,46 +259,46 @@ public class USTAMatchLine {
     }
 
     @JsonIgnore
-    public NewUSTATeamPair getWinnerPair() {
+    public USTATeamPair getWinnerPair() {
         if (this.homeTeamWin) {
-            return new NewUSTATeamPair(this.homePlayer1, this.homePlayer2);
+            return new USTATeamPair(this.homePlayer1, this.homePlayer2);
         } else {
-            return new NewUSTATeamPair(this.guestPlayer1, this.guestPlayer2);
+            return new USTATeamPair(this.guestPlayer1, this.guestPlayer2);
         }
     }
 
     @JsonIgnore
-    public NewUSTATeamPair getLoserPair() {
+    public USTATeamPair getLoserPair() {
         if (!this.homeTeamWin) {
-            return new NewUSTATeamPair(this.homePlayer1, this.homePlayer2);
+            return new USTATeamPair(this.homePlayer1, this.homePlayer2);
         } else {
-            return new NewUSTATeamPair(this.guestPlayer1, this.guestPlayer2);
+            return new USTATeamPair(this.guestPlayer1, this.guestPlayer2);
         }
     }
 
-    public NewUSTATeamPair getPair(String teamName) {
+    public USTATeamPair getPair(String teamName) {
         if (this.match.getHomeTeam().getName().equals(teamName)) {
-            return new NewUSTATeamPair(this.homePlayer1, this.homePlayer2);
+            return new USTATeamPair(this.homePlayer1, this.homePlayer2);
         }
 
         if (this.match.getGuestTeam().getName().equals(teamName)) {
-            return new NewUSTATeamPair(this.guestPlayer1, this.guestPlayer2);
+            return new USTATeamPair(this.guestPlayer1, this.guestPlayer2);
         }
 
         return null;
     }
 
     @JsonIgnore
-    public NewUSTATeamPair getHomePair() {
+    public USTATeamPair getHomePair() {
 
-        return new NewUSTATeamPair(this.homePlayer1, this.homePlayer2);
+        return new USTATeamPair(this.homePlayer1, this.homePlayer2);
 
     }
 
     @JsonIgnore
-    public NewUSTATeamPair getGuestPair() {
+    public USTATeamPair getGuestPair() {
 
-        return new NewUSTATeamPair(this.guestPlayer1, this.guestPlayer2);
+        return new USTATeamPair(this.guestPlayer1, this.guestPlayer2);
 
     }
     @JsonIgnore

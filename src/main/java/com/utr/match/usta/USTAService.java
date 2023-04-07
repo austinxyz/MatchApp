@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Scope("singleton")
-public class NewUSTAService {
+public class USTAService {
 
     @Autowired
     USTATeamRepository teamRepository;
@@ -27,7 +27,7 @@ public class NewUSTAService {
     private PlayerRepository playerRepository;
 
     @Autowired
-    private NewUSTATeamImportor importor;
+    private USTATeamImportor importor;
 
     @Autowired
     private USTAMatchRepository matchRepository;
@@ -50,15 +50,15 @@ public class NewUSTAService {
 
     private List<USTALeaguePO> leagues;
 
-    public NewUSTATeam getTeam(String id) {
+    public USTATeam getTeam(String id) {
         return getTeam(id, false);
     }
 
-    public NewUSTATeam getTeam(String id, boolean loadMatch) {
+    public USTATeam getTeam(String id, boolean loadMatch) {
         Optional<USTATeamEntity> team = teamRepository.findById(Long.valueOf(id));
 
         if (team.isPresent()) {
-            NewUSTATeam ustaTeam = new NewUSTATeam(team.get());
+            USTATeam ustaTeam = new USTATeam(team.get());
 
             if (loadMatch) {
                 ustaTeam = loadMatch(ustaTeam);
@@ -69,7 +69,7 @@ public class NewUSTAService {
         return null;
     }
 
-    public NewUSTATeam loadMatch(NewUSTATeam ustaTeam) {
+    public USTATeam loadMatch(USTATeam ustaTeam) {
         List<USTAMatch> matches = matchRepository.findByHomeTeam_IdOrGuestTeam_IdOrderByMatchDateAsc(
                 ustaTeam.getId(), ustaTeam.getId()
         );
@@ -100,7 +100,7 @@ public class NewUSTAService {
         return null;
     }
 
-    public List<NewUSTATeam> searchTeam(String name) {
+    public List<USTATeam> searchTeam(String name) {
         List<USTATeamEntity> teams = teamRepository.findByNameLike("%" + name + "%");
         return toUSTATeamList(teams);
     }
@@ -323,7 +323,7 @@ public class NewUSTAService {
         return playerRepository.findByUstaNorcalId(norcalId);
     }
 
-    public List<NewUSTATeam> getTeamsByDivision(String divId) {
+    public List<USTATeam> getTeamsByDivision(String divId) {
         List<USTATeamEntity> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(divId));
         return toUSTATeamList(teams);
     }
@@ -481,7 +481,7 @@ public class NewUSTAService {
         return flightRepository.findByDivision_Id(Long.valueOf(divId));
     }
 
-    public List<NewUSTATeam> getTeamsByFlight(String flightId) {
+    public List<USTATeam> getTeamsByFlight(String flightId) {
         List<USTATeamEntity> teams = teamRepository.findByUstaFlight_Id(Long.valueOf(flightId));
         return toUSTATeamList(teams);
     }
@@ -594,14 +594,14 @@ public class NewUSTAService {
         return null;
     }
 
-    private List<NewUSTATeam> toUSTATeamList(List<USTATeamEntity> teams) {
-        List<NewUSTATeam> result = new ArrayList<>();
+    private List<USTATeam> toUSTATeamList(List<USTATeamEntity> teams) {
+        List<USTATeam> result = new ArrayList<>();
         if (teams == null) {
             return result;
         }
 
         for (USTATeamEntity entity : teams) {
-            result.add(new NewUSTATeam(entity));
+            result.add(new USTATeam(entity));
         }
         return result;
     }

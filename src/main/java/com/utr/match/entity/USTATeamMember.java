@@ -66,10 +66,6 @@ public class USTATeamMember {
 
     }
 
-/*    public USTATeamMember(PlayerEntity player) {
-        this.player = player;
-    }*/
-
     public PlayerEntity getPlayer() {
         return player;
     }
@@ -198,9 +194,9 @@ public class USTATeamMember {
     }
 
     public float getWinPercent() {
-        if (this.winNo + this.lostNo == 0) {
+        if (this.getWinNo() + this.getLostNo() == 0) {
             return 0.0f;
         }
-        return (float) (this.winNo) / (float) (this.winNo + this.getLostNo());
+        return (float) (this.getWinNo()) / (float) (this.getWinNo() + this.getLostNo());
     }
 }

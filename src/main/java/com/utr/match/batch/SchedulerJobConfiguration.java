@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -24,13 +23,13 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulerJobConfiguration.class);
 
     @Autowired
-    NewUSTATeamImportor importor;
+    USTATeamImportor importor;
 
     @Autowired
     USTAMatchImportor matchImportor;
 
     @Autowired
-    NewUSTAService service;
+    USTAService service;
 
     private final int POOL_SIZE = 5;
     @Override
@@ -81,9 +80,9 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     private void updateTeamsDRInfoByDivision(long divId) {
-        List<NewUSTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
+        List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
         Collections.shuffle(teams);
-        for (NewUSTATeam team : teams) {
+        for (USTATeam team : teams) {
             LOG.debug("Start to update DR for team:" + team.getName());
             importor.updateTeamPlayersDR(team);
             LOG.debug("Team:" + team.getName() + " DR update is completed");
@@ -91,9 +90,9 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     private void updateTeamsUTRInfoByDivision(long divId, boolean forceUpdate, boolean includeWinPercent) {
-        List<NewUSTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
+        List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(divId));
         Collections.shuffle(teams);
-        for (NewUSTATeam team : teams) {
+        for (USTATeam team : teams) {
             LOG.debug("Start to update UTR for team:" + team.getName());
             importor.updateTeamUTRInfo(team, forceUpdate, includeWinPercent);
             LOG.debug("Team:" + team.getName() + " UTR update is completed");
@@ -117,9 +116,9 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     private void updateTeamScores(USTADivision division) {
-        List<NewUSTATeam> teams = service.getTeamsByDivision(String.valueOf(division.getId()));
+        List<USTATeam> teams = service.getTeamsByDivision(String.valueOf(division.getId()));
         Collections.shuffle(teams);
-        for (NewUSTATeam team : teams) {
+        for (USTATeam team : teams) {
             team = service.loadMatch(team);
             if (team.requiredUpdateScore(matchImportor.getMatchNumber(team))) {
                 LOG.debug("Refresh team: " + team.getName() + " players' info");

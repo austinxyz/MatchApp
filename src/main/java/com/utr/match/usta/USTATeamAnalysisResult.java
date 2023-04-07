@@ -7,26 +7,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NewUSTATeamAnalysisResult {
+public class USTATeamAnalysisResult {
 
-    NewUSTATeam team1;
-    NewUSTATeam team2;
+    USTATeam team1;
+    USTATeam team2;
 
     List<USTAMatch> pastScores;
     Map<String, List<USTAMatch>> matchesWithSameTeam;
 
-    public NewUSTATeamAnalysisResult(NewUSTATeam team1, NewUSTATeam team2) {
+    public USTATeamAnalysisResult(USTATeam team1, USTATeam team2) {
         this.team1 = team1;
         this.team2 = team2;
         this.pastScores = new ArrayList<>();
         this.matchesWithSameTeam = new HashMap<String, List<USTAMatch>>();
     }
 
-    public NewUSTATeam getTeam1() {
+    public USTATeam getTeam1() {
         return team1;
     }
 
-    public NewUSTATeam getTeam2() {
+    public USTATeam getTeam2() {
         return team2;
     }
 

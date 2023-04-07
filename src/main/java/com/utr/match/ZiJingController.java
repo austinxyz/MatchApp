@@ -20,6 +20,8 @@ public class ZiJingController {
     @Autowired
     TeamLoader loader;
 
+    boolean withToken = false;
+
     private static void initFixedPairs(String pairNames, Map<String, Set<String>> fixedPairs, String lineName) {
         if (!pairNames.equals("")) {
             Set<String> pairs = new HashSet<>();
@@ -50,7 +52,7 @@ public class ZiJingController {
     @CrossOrigin(origins = "*")
     @GetMapping("/club/{clubId}")
     public ResponseEntity<Club> club(@PathVariable("clubId") String clubId) {
-        Club club = loader.getClub(clubId);
+        Club club = loader.getClub(clubId, withToken);
 
         if (club != null) {
             return ResponseEntity.ok(club);
@@ -64,7 +66,7 @@ public class ZiJingController {
     public ResponseEntity<List<Player>> searchPlayer(@RequestParam(value = "query") String query,
                                                      @RequestParam(value = "top", defaultValue = "5") int top) {
 
-        List<Player> players = loader.queryPlayer(query, top);
+        List<Player> players = loader.queryPlayer(query, top, withToken);
 
         return ResponseEntity.ok(players);
 
@@ -73,7 +75,7 @@ public class ZiJingController {
     @CrossOrigin(origins = "*")
     @GetMapping("/event/{eventId}")
     public ResponseEntity<Event> event(@PathVariable("eventId") String eventId) {
-        Event event = loader.getEvent(eventId);
+        Event event = loader.getEvent(eventId, withToken);
 
         if (event != null) {
             return ResponseEntity.ok(event);
@@ -85,7 +87,7 @@ public class ZiJingController {
     @CrossOrigin(origins = "*")
     @GetMapping("/event/{eventId}/team/{teamId}")
     public ResponseEntity<Team> eventTeam(@PathVariable("eventId") String eventId, @PathVariable("teamId") String teamId) {
-        Team team = loader.initTeam(teamId, eventId);
+        Team team = loader.initTeam(teamId, eventId, withToken);
 
         if (team != null && team.getPlayers().size() > 0) {
             return ResponseEntity.ok(team);
@@ -126,7 +128,7 @@ public class ZiJingController {
             return ResponseEntity.notFound().build();
         }
 
-        PlayerResult player = loader.searchPlayerResult(id, year.equals("latest"));
+        PlayerResult player = loader.searchPlayerResult(id, year.equals("latest"), withToken);
 
         if (player != null) {
             return ResponseEntity.ok(player);

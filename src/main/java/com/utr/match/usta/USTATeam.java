@@ -6,7 +6,7 @@ import com.utr.match.entity.*;
 
 import java.util.*;
 
-public class NewUSTATeam {
+public class USTATeam {
     @JsonProperty("team")
     USTATeamEntity teamEntity;
 
@@ -64,7 +64,7 @@ public class NewUSTATeam {
 
     float level = 7.0f;
 
-    public NewUSTATeam(USTATeamEntity teamEntity) {
+    public USTATeam(USTATeamEntity teamEntity) {
         this.teamEntity = teamEntity;
         this.players = new ArrayList<>();
 
@@ -191,16 +191,16 @@ public class NewUSTATeam {
         return this.teamEntity.getId();
     }
 
-    public NewUSTATeamPair getBestUTRDouble() {
+    public USTATeamPair getBestUTRDouble() {
         if (!mixed) {
             players.sort((USTATeamMember o1, USTATeamMember o2) -> Double.compare(o2.getDUTR(), o1.getDUTR()));
             if (players.size() >= 2) {
-                return new NewUSTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
+                return new USTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
             }
         } else {
             USTATeamMember malePlayer = null;
             USTATeamMember femalePlayer = null;
-            List<NewUSTATeamPair> pairs = new ArrayList<>();
+            List<USTATeamPair> pairs = new ArrayList<>();
 
             List<USTATeamMember> males = new ArrayList<>();
             List<USTATeamMember> females = new ArrayList<>();
@@ -218,28 +218,28 @@ public class NewUSTATeam {
             for (USTATeamMember male: males) {
                 for (USTATeamMember female: females) {
                    if ((male.getLevel() + female.getLevel())<= this.level + 0.1) {
-                       pairs.add(new NewUSTATeamPair(male.getPlayer(), female.getPlayer()));
+                       pairs.add(new USTATeamPair(male.getPlayer(), female.getPlayer()));
                    }
                 }
             }
 
-            pairs.sort((NewUSTATeamPair p1, NewUSTATeamPair p2) -> Double.compare(p2.getTotalUTR(), p1.getTotalUTR()));
+            pairs.sort((USTATeamPair p1, USTATeamPair p2) -> Double.compare(p2.getTotalUTR(), p1.getTotalUTR()));
 
             return pairs.iterator().next();
         }
         return null;
     }
 
-    public NewUSTATeamPair getBestDRDouble() {
+    public USTATeamPair getBestDRDouble() {
         if (!mixed) {
             players.sort((USTATeamMember o1, USTATeamMember o2) -> Double.compare(o2.getDynamicRating(), o1.getDynamicRating()));
             if (players.size() >= 2) {
-                return new NewUSTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
+                return new USTATeamPair(players.get(0).getPlayer(), players.get(1).getPlayer());
             }
         } else {
             USTATeamMember malePlayer = null;
             USTATeamMember femalePlayer = null;
-            List<NewUSTATeamPair> pairs = new ArrayList<>();
+            List<USTATeamPair> pairs = new ArrayList<>();
 
             List<USTATeamMember> males = new ArrayList<>();
             List<USTATeamMember> females = new ArrayList<>();
@@ -257,12 +257,12 @@ public class NewUSTATeam {
             for (USTATeamMember male: males) {
                 for (USTATeamMember female: females) {
                     if ((male.getLevel() + female.getLevel())<= this.level + 0.1) {
-                        pairs.add(new NewUSTATeamPair(male.getPlayer(), female.getPlayer()));
+                        pairs.add(new USTATeamPair(male.getPlayer(), female.getPlayer()));
                     }
                 }
             }
 
-            pairs.sort((NewUSTATeamPair p1, NewUSTATeamPair p2) -> Double.compare(p2.getTotalDR(), p1.getTotalDR()));
+            pairs.sort((USTATeamPair p1, USTATeamPair p2) -> Double.compare(p2.getTotalDR(), p1.getTotalDR()));
 
             return pairs.iterator().next();
         }
