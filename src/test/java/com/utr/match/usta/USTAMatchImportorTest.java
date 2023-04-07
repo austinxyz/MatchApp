@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class USTAMatchImportorTest {
 
@@ -30,7 +28,7 @@ class USTAMatchImportorTest {
     void importTeamMatchs() {
         USTATeamEntity team = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
         USTADivision division = divisionRepository.findByName(divisionName);
-        importor.refreshMatchesScores(new NewUSTATeam(team), division);
+        importor.refreshMatchesScores(new USTATeam(team), division);
     }
 
 }

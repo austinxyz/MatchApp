@@ -5,7 +5,6 @@ import com.utr.match.entity.USTAMatchLine;
 import com.utr.match.entity.USTATeamMember;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
 
         // read data provided by controller
         @SuppressWarnings("unchecked")
-        NewUSTATeam team = (NewUSTATeam) model.get("team");
+        USTATeam team = (USTATeam) model.get("team");
 
         CreationHelper helper = workbook.getCreationHelper();
 
@@ -49,7 +48,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
 
     }
 
-    private int createLineStatInfo(NewUSTATeam team, Sheet sheet, int startRow) {
+    private int createLineStatInfo(USTATeam team, Sheet sheet, int startRow) {
         int rowNum = startRow;
 
         for (USTADoubleLineStat doubleStat: team.getDoubleLineStats().values()) {
@@ -65,7 +64,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
             teamRow.createCell(2).setCellValue("W/L");
 
             int index=1;
-            for (NewUSTATeamPair pair:doubleStat.getPairs()) {
+            for (USTATeamPair pair:doubleStat.getPairs()) {
                 teamRow = sheet.createRow(rowNum++);
                 teamRow.createCell(0).setCellValue(index++);
                 if (pair.getPlayer1()!=null) {
@@ -91,7 +90,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
                 teamRow.createCell(0).setCellValue("Pair");
                 teamRow.createCell(1).setCellValue("W/L");
 
-                for (NewUSTATeamSingle single : singleStat.getSinglers()) {
+                for (USTATeamSingle single : singleStat.getSinglers()) {
                     teamRow = sheet.createRow(rowNum++);
                     if (single.getPlayer() != null) {
                         teamRow.createCell(0).setCellValue(single.getPlayer().getPlayerInfo(true));
@@ -103,7 +102,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
         return rowNum;
     }
 
-    private int createTeamSummary(NewUSTATeam team, Sheet sheet, int startRow) {
+    private int createTeamSummary(USTATeam team, Sheet sheet, int startRow) {
         int rowNum = startRow;
         Row teamRow = sheet.createRow(rowNum++);
         teamRow.createCell(0).setCellValue("W/L");
@@ -113,12 +112,12 @@ public class USTATeamExcelExport extends AbstractXlsxView {
 
         teamRow = sheet.createRow(rowNum++);
         teamRow.createCell(0).setCellValue("Best Double by UTR");
-        NewUSTATeamPair bestUTRDouble = team.getBestUTRDouble();
+        USTATeamPair bestUTRDouble = team.getBestUTRDouble();
         if (bestUTRDouble.getPlayer1()!=null) {
             teamRow.createCell(1).setCellValue(bestUTRDouble.getPlayer1().getPlayerInfo(false));
         }
         teamRow.createCell(2).setCellValue("Best Double by DR");
-        NewUSTATeamPair bestDRDouble = team.getBestDRDouble();
+        USTATeamPair bestDRDouble = team.getBestDRDouble();
         if (bestDRDouble.getPlayer1() !=null) {
             teamRow.createCell(3).setCellValue(bestDRDouble.getPlayer1().getPlayerInfo(false));
         }
@@ -148,7 +147,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
         for (USTADoubleLineStat doubleStat: team.getDoubleLineStats().values()) {
             teamRow = sheet.createRow(rowNum++);
             teamRow.createCell(0).setCellValue(doubleStat.getLineName());
-            NewUSTATeamPair bestPair = doubleStat.bestPair();
+            USTATeamPair bestPair = doubleStat.bestPair();
             if (bestPair.getPlayer1()!=null) {
                 teamRow.createCell(1).setCellValue(bestPair.getPlayer1().getPlayerInfo(false));
             }
@@ -173,8 +172,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
         return rowNum;
     }
 
-    private int createPlayOffMatchInfo(NewUSTATeam team, Sheet sheet, int startRow) {
-        // create row1 onwards from List<T>
+    private int createPlayOffMatchInfo(USTATeam team, Sheet sheet, int startRow) {
         int rowNum = startRow;
         int index = 0;
         for(USTAMatch match: team.getMatches()) {
@@ -197,11 +195,11 @@ public class USTATeamExcelExport extends AbstractXlsxView {
                     boolean isSingle = line.getType().equals("S");
                     Row row = sheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(line.getName());
-                    NewUSTATeamPair homePair = line.getHomePair();
+                    USTATeamPair homePair = line.getHomePair();
                     if (homePair.getPlayer1()!=null) {
                         row.createCell(1).setCellValue(homePair.getPlayer1().getPlayerInfo(isSingle));
                     }
-                    NewUSTATeamPair guestPair = line.getGuestPair();
+                    USTATeamPair guestPair = line.getGuestPair();
                     if (guestPair.getPlayer1()!=null) {
                         row.createCell(2).setCellValue(guestPair.getPlayer1().getPlayerInfo(isSingle));
                     }
@@ -224,7 +222,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
         return rowNum;
     }
 
-    private int createTeamPlayerInfo(NewUSTATeam team, Sheet sheet, CreationHelper helper, CellStyle hylinkSytle) {
+    private int createTeamPlayerInfo(USTATeam team, Sheet sheet, CreationHelper helper, CellStyle hylinkSytle) {
 
         int rowNum = 0;
 

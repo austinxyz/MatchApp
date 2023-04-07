@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTAMatchLine;
-import org.json.JSONArray;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +18,7 @@ public class USTASingleLineStat {
     String teamName;
 
     @JsonIgnore
-    Map<String, NewUSTATeamSingle> newSinglers;
+    Map<String, USTATeamSingle> newSinglers;
 
     int winMatchNo = 0;
     int lostMatchNo = 0;
@@ -60,7 +58,7 @@ public class USTASingleLineStat {
                 this.normalNo++;
         }
 
-        NewUSTATeamPair pair = score.getPair(teamName);
+        USTATeamPair pair = score.getPair(teamName);
 
         PlayerEntity player = pair.getPlayer1();
 
@@ -68,21 +66,21 @@ public class USTASingleLineStat {
             return;
         }
 
-        NewUSTATeamSingle single = newSinglers.getOrDefault(player.getName(), new NewUSTATeamSingle(player));
+        USTATeamSingle single = newSinglers.getOrDefault(player.getName(), new USTATeamSingle(player));
 
         single.addScore(score);
 
         newSinglers.put(player.getName(), single);
     }
     @JsonProperty
-    public List<NewUSTATeamSingle> getSinglers() {
-        List<NewUSTATeamSingle> result = new ArrayList<>(newSinglers.values());
-        result.sort(NewUSTATeamSingle::compareByWinNoAndUTR);
+    public List<USTATeamSingle> getSinglers() {
+        List<USTATeamSingle> result = new ArrayList<>(newSinglers.values());
+        result.sort(USTATeamSingle::compareByWinNoAndUTR);
         return result;
     }
 
     @JsonProperty
-    public NewUSTATeamSingle getBestSingle() {
+    public USTATeamSingle getBestSingle() {
         if (newSinglers.size() > 0) {
             return getSinglers().get(0);
         }
@@ -117,7 +115,7 @@ public class USTASingleLineStat {
 
         double sum = 0.0d;
 
-        for (NewUSTATeamSingle single: newSinglers.values()) {
+        for (USTATeamSingle single: newSinglers.values()) {
             sum += single.getSingleUTR();
         }
 

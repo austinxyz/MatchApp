@@ -52,11 +52,11 @@ class PlayerRepositoryTest {
 
             System.out.println(player.getName() + " start to query utr and win ratio" );
 
-            loader.searchPlayerResult(utrId, false);
+            loader.searchPlayerResult(utrId, false, true);
 
-            loader.searchPlayerResult(utrId, true);
+            loader.searchPlayerResult(utrId, true, true);
 
-            Player utrplayer = loader.getPlayer(utrId);
+            Player utrplayer = loader.getPlayer(utrId, true);
 
             if (utrplayer == null) {
                 continue;

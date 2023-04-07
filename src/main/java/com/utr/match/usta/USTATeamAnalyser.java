@@ -11,19 +11,19 @@ import java.util.*;
 
 @Service
 @Scope("singleton")
-public class NewUSTATeamAnalyser {
+public class USTATeamAnalyser {
 
-    private static final Logger logger = LoggerFactory.getLogger(NewUSTATeamAnalyser.class);
+    private static final Logger logger = LoggerFactory.getLogger(USTATeamAnalyser.class);
 
     @Autowired
-    NewUSTAService service;
+    USTAService service;
 
-    public NewUSTATeamAnalysisResult compareTeam(String teamId1, String teamId2) {
+    public USTATeamAnalysisResult compareTeam(String teamId1, String teamId2) {
 
-        NewUSTATeam team1 = service.getTeam(teamId1, true);
-        NewUSTATeam team2 = service.getTeam(teamId2, true);
+        USTATeam team1 = service.getTeam(teamId1, true);
+        USTATeam team2 = service.getTeam(teamId2, true);
 
-        NewUSTATeamAnalysisResult result = new NewUSTATeamAnalysisResult(team1, team2);
+        USTATeamAnalysisResult result = new USTATeamAnalysisResult(team1, team2);
 
         Map<String, List<USTAMatch>> candidateCards = new HashMap<>();
 

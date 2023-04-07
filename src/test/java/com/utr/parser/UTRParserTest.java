@@ -15,7 +15,7 @@ class UTRParserTest {
     void parseEvent() {
 
         UTRParser parser = new UTRParser();
-        Event event = parser.parseEvent("123233");
+        Event event = parser.parseEvent("123233", false);
 
         System.out.println(event.getName());
 
@@ -29,7 +29,7 @@ class UTRParserTest {
     void parsePlayerResult() {
 
         UTRParser parser = new UTRParser();
-        PlayerResult result = parser.parsePlayerResult("1316122");
+        PlayerResult result = parser.parsePlayerResult("1316122", false);
 
         System.out.println(result.getWinsNumber());
         System.out.println(result.getLossesNumber());
@@ -40,7 +40,7 @@ class UTRParserTest {
     void searchPlayer() {
 
         UTRParser parser = new UTRParser();
-        List<Player> results = parser.searchPlayers("Wang Shan", 5);
+        List<Player> results = parser.searchPlayers("Wang Shan", 5, false);
 
         System.out.println(results);
     }
@@ -49,7 +49,7 @@ class UTRParserTest {
     void searchClubEvents() {
 
         UTRParser parser = new UTRParser();
-        List<Event> results = parser.getClubEvents("3156");
+        List<Event> results = parser.getClubEvents("3156", false);
 
         System.out.println(results);
     }
@@ -58,7 +58,7 @@ class UTRParserTest {
     void getClub() {
 
         UTRParser parser = new UTRParser();
-        Club club = parser.getClub("3156");
+        Club club = parser.getClub("3156", false);
 
         System.out.println(club);
     }
@@ -66,7 +66,7 @@ class UTRParserTest {
     @Test
     void parsePlayer() {
         UTRParser parser = new UTRParser();
-        Player player = parser.getPlayer("2547696");
+        Player player = parser.getPlayer("2547696", true);
 
         System.out.println(player);
     }

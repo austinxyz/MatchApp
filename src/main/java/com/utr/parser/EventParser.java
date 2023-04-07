@@ -72,7 +72,12 @@ public class EventParser extends UTRJSONHandler {
         if (v==null) {
             return 0.0d;
         }
-        return Double.parseDouble((String)v);
+        String value = (String)v;
+
+        if (value.indexOf("x") > 0 ) {
+            value = value.replace("x", "0");
+        }
+        return Double.parseDouble(value);
     }
 
     private List<Division> parsePlayerDivisions(List playerDivs, Event event) {

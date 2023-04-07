@@ -17,7 +17,7 @@ public class AppInitBean implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         UTRParser parser = new UTRParser();
-        Player player = parser.getPlayer("2547696");
+        Player player = parser.getPlayer("2547696", false);
         logger.debug("UTR fetch success");
     }
 

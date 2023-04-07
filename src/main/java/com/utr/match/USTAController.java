@@ -17,24 +17,24 @@ import java.util.List;
 public class USTAController {
 
     @Autowired
-    private NewUSTAService ustaService;
+    private USTAService ustaService;
 
 
     @Autowired
-    private NewUSTATeamImportor importor;
+    private USTATeamImportor importor;
 
     @Autowired
     private USTAMatchImportor matchImportor;
 
     @Autowired
-    private NewUSTATeamAnalyser teamAnalyser;
+    private USTATeamAnalyser teamAnalyser;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}")
-    public ResponseEntity<NewUSTATeam> team(@PathVariable("id") String id,
+    public ResponseEntity<USTATeam> team(@PathVariable("id") String id,
                                          @RequestParam(value = "matches", defaultValue = "false") boolean includeMatches
     ) {
-        NewUSTATeam team = ustaService.getTeam(id, includeMatches);
+        USTATeam team = ustaService.getTeam(id, includeMatches);
         if (team != null) {
             return ResponseEntity.ok(team);
         } else {
@@ -44,9 +44,9 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/search/teams")
-    public ResponseEntity<List<NewUSTATeam>> searchTeam(@RequestParam(value = "query") String query
+    public ResponseEntity<List<USTATeam>> searchTeam(@RequestParam(value = "query") String query
     ) {
-        List<NewUSTATeam> teams = ustaService.searchTeam(query);
+        List<USTATeam> teams = ustaService.searchTeam(query);
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -57,10 +57,10 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/divisions/{divId}/teams")
-    public ResponseEntity<List<NewUSTATeam>> getTeamsByDivision(@PathVariable("divId") String divId
+    public ResponseEntity<List<USTATeam>> getTeamsByDivision(@PathVariable("divId") String divId
     ) {
 
-        List<NewUSTATeam> teams = ustaService.getTeamsByDivision(divId);
+        List<USTATeam> teams = ustaService.getTeamsByDivision(divId);
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -99,9 +99,9 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/flights/{flightId}/teams")
-    public ResponseEntity<List<NewUSTATeam>> getTeamsByFlight(@PathVariable("flightId") String flightId
+    public ResponseEntity<List<USTATeam>> getTeamsByFlight(@PathVariable("flightId") String flightId
     ) {
-        List<NewUSTATeam> teams = ustaService.getTeamsByFlight(flightId);
+        List<USTATeam> teams = ustaService.getTeamsByFlight(flightId);
 
         if (teams.size() > 0) {
             return ResponseEntity.ok(teams);
@@ -167,12 +167,12 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/utrs")
-    public ResponseEntity<NewUSTATeam> updatePlayersUTRId(@PathVariable("id") String id,
+    public ResponseEntity<USTATeam> updatePlayersUTRId(@PathVariable("id") String id,
                                                        @RequestParam("action") String action
     ) {
 
         if (action.equals("refreshID")) {
-            NewUSTATeam team = ustaService.getTeam(id);
+            USTATeam team = ustaService.getTeam(id);
 
             if (team != null) {
                 importor.updateTeamPlayersUTRID(team);
@@ -183,7 +183,7 @@ public class USTAController {
 
         if (action.equals("refreshValue")) {
 
-            NewUSTATeam team = ustaService.getTeam(id);
+            USTATeam team = ustaService.getTeam(id);
 
             if (team != null) {
                 importor.updateTeamUTRInfo(team);
@@ -197,11 +197,11 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @PostMapping("/teams")
-    public ResponseEntity<NewUSTATeam> createTeam(@RequestBody USTATeamPO team) {
+    public ResponseEntity<USTATeam> createTeam(@RequestBody USTATeamPO team) {
 
         USTATeamEntity entity = importor.importUSTATeam(team.getLink());
 
-        NewUSTATeam newTeam = new NewUSTATeam(entity);
+        USTATeam newTeam = new USTATeam(entity);
 
         return new ResponseEntity<>(newTeam, HttpStatus.OK);
 
@@ -209,13 +209,13 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/players")
-    public ResponseEntity<NewUSTATeam> updatePlayers(@PathVariable("id") String id,
+    public ResponseEntity<USTATeam> updatePlayers(@PathVariable("id") String id,
                                                   @RequestParam("action") String action
     ) {
 
         if (action.equals("refresh")) {
 
-            NewUSTATeam team = ustaService.getTeam(id);
+            USTATeam team = ustaService.getTeam(id);
 
             if (team != null) {
 
@@ -233,13 +233,13 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/drs")
-    public ResponseEntity<NewUSTATeam> updatePlayersDR(@PathVariable("id") String id,
+    public ResponseEntity<USTATeam> updatePlayersDR(@PathVariable("id") String id,
                                                     @RequestParam("action") String action
     ) {
 
         if (action.equals("refresh")) {
 
-            NewUSTATeam team = ustaService.getTeam(id);
+            USTATeam team = ustaService.getTeam(id);
             if (team != null) {
 
                 importor.updateTeamPlayersDR(team);
@@ -290,7 +290,7 @@ public class USTAController {
 
         if (action.equals("fetch")) {
 
-            NewUSTATeam team = ustaService.getTeam(id, true);
+            USTATeam team = ustaService.getTeam(id, true);
 
             if (team != null) {
 
@@ -302,7 +302,7 @@ public class USTAController {
 
         if (action.equals("updateScore")) {
 
-            NewUSTATeam team = ustaService.getTeam(id);
+            USTATeam team = ustaService.getTeam(id);
 
             if (team != null) {
 
@@ -321,9 +321,9 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}/lineStat")
-    public ResponseEntity<NewUSTATeam> getTeamLineStat(@PathVariable("id") String id) {
+    public ResponseEntity<USTATeam> getTeamLineStat(@PathVariable("id") String id) {
 
-        NewUSTATeam team = ustaService.getTeam(id, true);
+        USTATeam team = ustaService.getTeam(id, true);
         if (team != null) {
             return new ResponseEntity<>(team, HttpStatus.OK);
         }
@@ -370,10 +370,10 @@ public class USTAController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/analysis/team/team1/{teamId1}/team2/{teamId2}")
-    public ResponseEntity<NewUSTATeamAnalysisResult> singleAnalysis(@PathVariable("teamId1") String teamId1,
+    public ResponseEntity<USTATeamAnalysisResult> singleAnalysis(@PathVariable("teamId1") String teamId1,
                                                                  @PathVariable("teamId2") String teamId2
     ) {
-        NewUSTATeamAnalysisResult result = teamAnalyser.compareTeam(teamId1, teamId2);
+        USTATeamAnalysisResult result = teamAnalyser.compareTeam(teamId1, teamId2);
 
         if (result != null) {
             return ResponseEntity.ok(result);
@@ -416,7 +416,7 @@ public class USTAController {
         ModelAndView mav = new ModelAndView();
         mav.setView(new USTATeamAnalyserExcelExport());
 
-        NewUSTATeamAnalysisResult result = teamAnalyser.compareTeam(teamId1, teamId2);
+        USTATeamAnalysisResult result = teamAnalyser.compareTeam(teamId1, teamId2);
 
         //send to excelImpl class
         mav.addObject("analysisresult", result);
@@ -429,7 +429,7 @@ public class USTAController {
         ModelAndView mav = new ModelAndView();
         mav.setView(new USTATeamExcelExport());
 
-        NewUSTATeam team = ustaService.getTeam(teamId, true);
+        USTATeam team = ustaService.getTeam(teamId, true);
 
         //send to excelImpl class
         mav.addObject("team", team);

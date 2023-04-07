@@ -37,7 +37,7 @@ class TeamLoaderTest {
     @Test
     void searchPlayer() {
 
-        PlayerResult result = loader.searchPlayerResult("1316122", true);
+        PlayerResult result = loader.searchPlayerResult("1316122", true, false);
 
         System.out.println(result);
     }
@@ -45,7 +45,7 @@ class TeamLoaderTest {
     @Test
     void searchPlayer2() {
 
-        List<Player> results = loader.queryPlayer("yanzhao xu", 5);
+        List<Player> results = loader.queryPlayer("yanzhao xu", 5, false);
 
         System.out.println(results);
     }
