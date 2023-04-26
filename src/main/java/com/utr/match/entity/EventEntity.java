@@ -15,6 +15,12 @@ public class EventEntity {
     @Column(name="event_name")
     private String name;
 
+    @Column(name="alias")
+    private String alias;
+
+    @Column(name="event_year")
+    private String year;
+
     @Column(name="event_type")
     private String type;
 
@@ -23,8 +29,9 @@ public class EventEntity {
 
     @Column(name="start_date")
     private Date startDate;
+
     @Column(name="status")
-    private String status;
+    private String status;  //Register, Ongoing, Completed
 
     @OneToMany(mappedBy = "event", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<DivisionEntity> divisions;
@@ -64,5 +71,21 @@ public class EventEntity {
 
     public List<DivisionEntity> getDivisions() {
         return divisions;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }

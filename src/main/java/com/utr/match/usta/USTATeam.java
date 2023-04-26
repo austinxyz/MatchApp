@@ -161,7 +161,7 @@ public class USTATeam {
             return null;
         }
         for (USTATeamMember member : this.players) {
-            if (member.getName().equals(name)) {
+            if (member.getName().equalsIgnoreCase(name)) {
                 return member;
             }
         }

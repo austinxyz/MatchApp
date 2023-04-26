@@ -69,7 +69,7 @@ class USTATeamRepositoryTest {
         if (!players.isEmpty()) {
             player = players.get(0);
         } else {
-            List<Player> utrPlayers = loader.queryPlayer(playerName, 5);
+            List<Player> utrPlayers = loader.queryPlayer(playerName, 5, false);
 
             if (!utrPlayers.isEmpty()) {
                 Player utrPlayer = utrPlayers.get(0);
@@ -213,7 +213,7 @@ class USTATeamRepositoryTest {
 
         for (USTATeamMember player : existTeam.getPlayers()) {
 
-            List<Player> utrplayers = parser.searchPlayers(player.getName(), 5);
+            List<Player> utrplayers = parser.searchPlayers(player.getName(), 5, false);
 
             if (player.getUtrId() == null) {
                 String candidateUTRId = findUTRID(utrplayers, player.getPlayer());

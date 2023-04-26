@@ -79,6 +79,7 @@ public class USTATeamExcelExport extends AbstractXlsxView {
         }
 
         if (team.getSingleLineStats() != null) {
+
             for (USTASingleLineStat singleStat : team.getSingleLineStats().values()) {
 
                 Row teamRow = sheet.createRow(rowNum++);
@@ -87,15 +88,18 @@ public class USTATeamExcelExport extends AbstractXlsxView {
                         + " - " + String.format("%.2f", singleStat.getWinPrecent() * 100));
 
                 teamRow = sheet.createRow(rowNum++);
-                teamRow.createCell(0).setCellValue("Pair");
-                teamRow.createCell(1).setCellValue("W/L");
+                teamRow.createCell(0).setCellValue("#");
+                teamRow.createCell(1).setCellValue("Pair");
+                teamRow.createCell(2).setCellValue("W/L");
 
+                int index=1;
                 for (USTATeamSingle single : singleStat.getSinglers()) {
                     teamRow = sheet.createRow(rowNum++);
+                    teamRow.createCell(0).setCellValue(index++);
                     if (single.getPlayer() != null) {
-                        teamRow.createCell(0).setCellValue(single.getPlayer().getPlayerInfo(true));
+                        teamRow.createCell(1).setCellValue(single.getPlayer().getPlayerInfo(true));
                     }
-                    teamRow.createCell(1).setCellValue(single.getWinMatchNo() + " / " + single.getLostMatchNo());
+                    teamRow.createCell(2).setCellValue(single.getWinMatchNo() + " / " + single.getLostMatchNo());
                 }
             }
         }
