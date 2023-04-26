@@ -1,5 +1,7 @@
 package com.utr.match.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +25,34 @@ public class DivisionEntity {
     @Column(name="formal_name_english")
     private String englishName;
 
+    public List<DivisionCandidate> getCandidates() {
+        candidates.sort((DivisionCandidate p1, DivisionCandidate p2) -> Double.compare(p2.getUTR(), p1.getUTR()));
+        return candidates;
+    }
+
+    public void setCandidates(List<DivisionCandidate> candidates) {
+        this.candidates = candidates;
+    }
+
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "division_players",
         joinColumns = {@JoinColumn(name="division_id")},
         inverseJoinColumns = {@JoinColumn(name="player_id")})
     private List<PlayerEntity> players;
 
+/*
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "division_candidates",
+            joinColumns = {@JoinColumn(name="division_id")},
+            inverseJoinColumns = {@JoinColumn(name="candidate_player_id")})
+    @OrderBy(" gender DESC, dutr DESC ")
+    private List<PlayerEntity> candidates;
+*/
+    @OneToMany(mappedBy = "division", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<DivisionCandidate> candidates;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private EventEntity event;
@@ -37,10 +61,12 @@ public class DivisionEntity {
         this.name = name;
         this.event = event;
         this.players = new ArrayList<>();
+        this.candidates = new ArrayList<>();
     }
 
     public DivisionEntity() {
         this.players = new ArrayList<>();
+        this.candidates = new ArrayList<>();
     }
 
     public long getId() {
@@ -99,5 +125,15 @@ public class DivisionEntity {
         if (target!=null) {
             this.players.remove(target);
         }
+    }
+
+    public void addCandidate(PlayerEntity player) {
+        for (DivisionCandidate candidate: this.candidates) {
+            if (candidate.getUtrId().equals(player.getUtrId())) {
+                return;
+            }
+        }
+        DivisionCandidate candidate = new DivisionCandidate(player, this);
+        this.candidates.add(candidate);
     }
 }

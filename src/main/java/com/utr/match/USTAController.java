@@ -111,7 +111,7 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/leagues/{id}/divisions/")
+    @GetMapping("/leagues/{id}/divisions")
     public ResponseEntity<List<USTADivision>> getDivisions(@PathVariable("id") String id
     ) {
 
@@ -125,7 +125,7 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/{year}/divisions/")
+    @GetMapping("/{year}/divisions")
     public ResponseEntity<List<USTADivision>> getDivisionsByYear(@PathVariable("year") String year
     ) {
 
@@ -139,10 +139,10 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/current/leagues/")
-    public ResponseEntity<List<USTALeaguePO>> getLeaguesFromUSTA() {
+    @GetMapping("/{year}/leagues")
+    public ResponseEntity<List<USTALeague>> getLeagues(@PathVariable("year") String year) {
 
-        List<USTALeaguePO> leagues = ustaService.getLeaguesFromUSTASite();
+        List<USTALeague> leagues = ustaService.getLeagues(year);
 
         if (leagues.size() > 0) {
             return ResponseEntity.ok(leagues);
@@ -152,11 +152,10 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/{year}/leagues/")
-    public ResponseEntity<List<USTALeague>> getLeagues(@PathVariable("year") String year
-    ) {
+    @GetMapping("/current/leagues")
+    public ResponseEntity<List<USTALeaguePO>> getLeaguesFromUSTA() {
 
-        List<USTALeague> leagues = ustaService.getLeagues(year);
+        List<USTALeaguePO> leagues = ustaService.getLeaguesFromUSTASite();
 
         if (leagues.size() > 0) {
             return ResponseEntity.ok(leagues);
