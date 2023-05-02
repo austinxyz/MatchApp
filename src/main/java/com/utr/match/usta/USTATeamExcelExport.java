@@ -152,14 +152,14 @@ public class USTATeamExcelExport extends AbstractXlsxView {
             teamRow = sheet.createRow(rowNum++);
             teamRow.createCell(0).setCellValue(doubleStat.getLineName());
             USTATeamPair bestPair = doubleStat.bestPair();
-            if (bestPair.getPlayer1()!=null) {
+            if (bestPair !=null && bestPair.getPlayer1()!=null) {
                 teamRow.createCell(1).setCellValue(bestPair.getPlayer1().getPlayerInfo(false));
             }
             teamRow.createCell(2).setCellValue(doubleStat.getWinMatchNo() + "/" + doubleStat.getLostMatchNo() + "(" + String.format("%.2f", doubleStat.getWinPrecent()*100) + "%)");
             teamRow.createCell(3).setCellValue(String.format("%.2f",doubleStat.averageUTRs()));
 
             teamRow = sheet.createRow(rowNum++);
-            if (bestPair.getPlayer2()!=null) {
+            if (bestPair !=null && bestPair.getPlayer2()!=null) {
                 teamRow.createCell(1).setCellValue(bestPair.getPlayer2().getPlayerInfo(false));
             }
         }

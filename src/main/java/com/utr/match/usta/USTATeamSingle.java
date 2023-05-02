@@ -53,7 +53,7 @@ public class USTATeamSingle {
     }
 
     public double getSingleUTR() {
-        return player.getSUTR();
+        return player==null?0.0d: player.getSUTR();
     }
 
     public float getSuccessRate() {
@@ -61,7 +61,7 @@ public class USTATeamSingle {
     }
 
     public String getPlayerName() {
-        return player.getName();
+        return player==null? "":player.getName();
     }
 
     public List<USTAMatchLine> getWinScores() {

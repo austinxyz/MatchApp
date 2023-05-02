@@ -235,6 +235,9 @@ public class USTAMatchLine {
     }
 
     public boolean isWinner(PlayerEntity player1) {
+        if (player1==null) {
+            return false;
+        }
         if (this.homePlayer1 != null && this.homePlayer1.getId() == player1.getId()
                 && this.homePlayer2 == null) {
             return this.homeTeamWin;
@@ -247,11 +250,11 @@ public class USTAMatchLine {
     }
 
     public boolean isWinnerTeam(String teamName) {
-        if (this.getMatch().getHomeTeam().getName().equals(teamName)) {
+        if (this.getMatch().getHomeTeamName().equals(teamName)) {
             return this.homeTeamWin;
         }
 
-        if (this.getMatch().getGuestTeam().getName().equals(teamName)) {
+        if (this.getMatch().getGuestTeamName().equals(teamName)) {
             return !this.homeTeamWin;
         }
 
@@ -277,11 +280,11 @@ public class USTAMatchLine {
     }
 
     public USTATeamPair getPair(String teamName) {
-        if (this.match.getHomeTeam().getName().equals(teamName)) {
+        if (this.match.getHomeTeamName().equals(teamName)) {
             return new USTATeamPair(this.homePlayer1, this.homePlayer2);
         }
 
-        if (this.match.getGuestTeam().getName().equals(teamName)) {
+        if (this.match.getGuestTeamName().equals(teamName)) {
             return new USTATeamPair(this.guestPlayer1, this.guestPlayer2);
         }
 
@@ -304,7 +307,7 @@ public class USTAMatchLine {
     @JsonIgnore
     public int isSurprisedResult(String teamName) { // 1 surprised win, -1 surprised lost, 0: no surprise
 
-        boolean isHomeTeam = this.match.getHomeTeam().getName().equals(teamName);
+        boolean isHomeTeam = this.match.getHomeTeamName().equals(teamName);
 
         if (this.homeTeamWin) {
             if (this.getHomeTotalUTR() <= this.getGuestTotalUTR()) {

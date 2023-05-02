@@ -58,7 +58,7 @@ public class USTADoubleLineStat {
 
         USTATeamPair pair = score.getPair(teamName);
 
-        if (pair.getPlayer1() == null) {
+        if (pair==null || pair.getPlayer1() == null) {
             return;
         }
 
