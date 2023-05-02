@@ -346,7 +346,8 @@ public class USTAMatchImportor {
 
         Object matchDateStr = obj.get("matchDate");
 
-        if (matchDateStr == null || matchDateStr.toString().trim().equals("") || matchDateStr.toString().trim().equals("to be posted")) {
+        if (matchDateStr == null || matchDateStr.toString().trim().equals("") || matchDateStr.toString().trim().equals("to be posted")
+            || matchDateStr.toString().trim().equals("Refer to Section Schedule")) {
             return null;
         }
 

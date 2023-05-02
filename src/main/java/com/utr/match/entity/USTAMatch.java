@@ -113,15 +113,15 @@ public class USTAMatch {
     }
 
     public String getOppTeamName(String teamName) {
-        if (this.getHomeTeam().getName().equals(teamName)) {
-            return this.getGuestTeam().getName();
+        if (this.getHomeTeamName()!=null && this.getHomeTeamName().equals(teamName)) {
+            return this.getGuestTeamName();
         } else {
-            return this.getHomeTeam().getName();
+            return this.getHomeTeamName();
         }
     }
 
     public int getScore(String teamName) {
-        if (this.getHomeTeam().getName().equals(teamName)) {
+        if (this.getHomeTeamName().equals(teamName)) {
             return this.getHomePoint();
         } else {
             return this.getGuestPoint();
@@ -130,9 +130,9 @@ public class USTAMatch {
 
     public boolean isWinner(String teamName) {
         if (this.homeWin) {
-            return this.getHomeTeam().getName().equals(teamName);
+            return this.getHomeTeamName().equals(teamName);
         } else {
-            return this.getGuestTeam().getName().equals(teamName);
+            return this.getGuestTeamName().equals(teamName);
         }
     }
     @JsonProperty

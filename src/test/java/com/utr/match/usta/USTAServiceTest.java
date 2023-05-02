@@ -33,4 +33,9 @@ class USTAServiceTest {
             System.out.println(team);
         }
     }
+
+    @Test
+    void getTeam() {
+        service.getTeam("213", true);
+    }
 }

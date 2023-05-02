@@ -60,6 +60,10 @@ public class USTASingleLineStat {
 
         USTATeamPair pair = score.getPair(teamName);
 
+        if (pair == null) {
+            return;
+        }
+
         PlayerEntity player = pair.getPlayer1();
 
         if (player == null) {
@@ -84,7 +88,7 @@ public class USTASingleLineStat {
         if (newSinglers.size() > 0) {
             return getSinglers().get(0);
         }
-        return null;
+        return new USTATeamSingle(null);
     }
 
     public int getWinMatchNo() {
