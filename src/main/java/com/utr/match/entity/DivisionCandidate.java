@@ -166,6 +166,14 @@ public class DivisionCandidate {
         this.range = range;
     }
 
+    public String getFirstName() {
+        return player.getFirstName();
+    }
+
+    public String getLastName() {
+        return player.getLastName();
+    }
+
     public double getUTR() {
         if (this.player.getDUTRStatus().equals("Rated")) {
             return getDUTR();

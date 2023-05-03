@@ -49,11 +49,12 @@ public class DivisionEntity {
     @OrderBy(" gender DESC, dutr DESC ")
     private List<PlayerEntity> candidates;
 */
+    @JsonIgnore
     @OneToMany(mappedBy = "division", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<DivisionCandidate> candidates;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id")
     private EventEntity event;
 

@@ -4,6 +4,7 @@ package com.utr.match;
 import com.utr.match.entity.*;
 import com.utr.match.usta.*;
 import com.utr.match.usta.po.*;
+import com.utr.match.utr.CandidateTeam;
 import com.utr.match.utr.UTRDivisionExcelExport;
 import com.utr.match.utr.UTRService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,21 @@ public class UTRController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/divisions/{id}/utrs")
-    public ResponseEntity<DivisionEntity> updateCandidatesUTR(@PathVariable("id") String id,
+    @GetMapping("/candidateTeams/{id}")
+    public ResponseEntity<CandidateTeam> candidateTeam(@PathVariable("id") String id
+    ) {
+        CandidateTeam team = utrService.getCandidateTeam(Long.valueOf(id));
+
+        if (team != null) {
+            return ResponseEntity.ok(team);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/candidateTeams/{id}/utrs")
+    public ResponseEntity<CandidateTeam> updateCandidatesUTR(@PathVariable("id") String id,
                                                        @RequestParam("action") String action
     ) {
 
@@ -45,8 +59,8 @@ public class UTRController {
             DivisionEntity division = utrService.getDivision(Long.valueOf(id));
 
             if (division != null) {
-                utrService.updateCandidatesUTRValue(division, false, false);
-                return new ResponseEntity<>(division, HttpStatus.OK);
+                CandidateTeam team = utrService.updateCandidatesUTRValue(division, false, false);
+                return new ResponseEntity<>(team, HttpStatus.OK);
             }
 
         }
@@ -65,5 +79,20 @@ public class UTRController {
         //send to excelImpl class
         mav.addObject("div", div);
         return mav;
+    }
+
+    @CrossOrigin(origins = "*")
+    @PutMapping("/divisions/{id}/candidate/{utrid}")
+    public ResponseEntity<PlayerEntity> updateLineScoreInfo(@PathVariable("id") long id, @PathVariable("utrid") String utrId ) {
+
+        DivisionEntity div = utrService.getDivision(Long.valueOf(id));
+
+        PlayerEntity player = utrService.addCandidate(div, utrId);
+
+        if (player != null) {
+            return new ResponseEntity<>(player, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
