@@ -16,7 +16,7 @@ class UTRServiceTest {
     @Test
     void addCandidate() {
         DivisionEntity div = service.getDivision(19L);
-        service.addCandidate(div, "3548017");
+/*        service.addCandidate(div, "3548017");
         service.addCandidate(div, "775653");
         service.addCandidate(div, "3763171");
         service.addCandidate(div, "3695913");
@@ -41,6 +41,14 @@ class UTRServiceTest {
         service.addCandidate(div, "3323081");
         service.addCandidate(div, "3601787");
         service.addCandidate(div, "2817725");
-        service.addCandidate(div, "3836627");
+        service.addCandidate(div, "3836627");*/
+        service.addCandidate(div, "2815594");
+        service.addCandidate(div, "1725624");
+    }
+
+    @Test
+    void getCandidateTeam() {
+        CandidateTeam team = service.getCandidateTeam(19L);
+        System.out.println(team);
     }
 }
