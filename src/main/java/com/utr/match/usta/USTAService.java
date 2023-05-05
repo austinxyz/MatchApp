@@ -2,6 +2,9 @@ package com.utr.match.usta;
 
 import com.utr.match.entity.*;
 import com.utr.match.usta.po.*;
+import com.utr.match.utr.CandidateTeam;
+import com.utr.model.Player;
+import com.utr.parser.UTRParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
@@ -11,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +49,12 @@ public class USTAService {
 
     @Autowired
     private USTASiteParser siteParser;
+
+    @Autowired
+    private USTACandidateTeamRepository candidateTeamRepository;
+
+    @Autowired
+    private UTRParser parser;
 
     private Map<String, USTADivisionPO> divisions;
 
@@ -326,6 +336,11 @@ public class USTAService {
     public List<USTATeam> getTeamsByDivision(String divId) {
         List<USTATeamEntity> teams = teamRepository.findByDivision_IdOrderByUstaFlightAsc(Long.valueOf(divId));
         return toUSTATeamList(teams);
+    }
+
+    public List<USTACandidateTeam> getCandidateTeamsByDivision(String divId) {
+        List<USTACandidateTeam> teams = candidateTeamRepository.findByDivision_Id(Long.valueOf(divId));
+        return teams;
     }
 
     public USTADivisionPO importDivisionFromUSTASite(String id, String leagueName) {
@@ -632,4 +647,62 @@ public class USTAService {
         return result;
 
     }
+
+    public USTACandidateTeam getCandidateTeam(String id) {
+
+        Optional<USTACandidateTeam> team = candidateTeamRepository.findById(Long.valueOf(id));
+
+        if (team.isPresent()) {
+            return team.get();
+        }
+        return null;
+    }
+    public USTACandidateTeam createCandidateTeam(String name, USTADivision division) {
+
+        USTACandidateTeam team = new USTACandidateTeam(name, division);
+
+        team = candidateTeamRepository.save(team);
+
+        return team;
+    }
+
+    public USTACandidateTeam addCandidate(USTACandidateTeam team, String playerUTRId) {
+        System.out.println("add canidate:" + playerUTRId);
+        PlayerEntity player = playerRepository.findByUtrId(playerUTRId);
+        if (player == null) {
+
+            Player candidate = null;
+            candidate = parser.getPlayer(playerUTRId, true);
+
+            if (candidate == null) {
+                System.out.println("UTR ID is not valid, skip");
+                return null;
+            }
+            System.out.println("candidate" + candidate.getName() + " is not in database, add into DB");
+            player = new PlayerEntity();
+            player.setName(candidate.getName());
+            player.setFirstName(candidate.getFirstName());
+            player.setLastName(candidate.getLastName());
+            player.setUtrId(playerUTRId);
+            player.setDUTR(candidate.getdUTR());
+            player.setDUTRStatus(candidate.getdUTRStatus());
+            player.setSUTR(candidate.getsUTR());
+            player.setSUTRStatus(candidate.getsUTRStatus());
+            player.setSuccessRate(candidate.getSuccessRate());
+            player.setWholeSuccessRate(candidate.getWholeSuccessRate());
+            player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+            player.setArea(candidate.getLocation());
+            player.setGender(candidate.getGender());
+            player = playerRepository.save(player);
+
+        }
+
+        USTACandidate result = team.addCandidate(player);
+        result.setRating(player.getUstaRating());
+        team = candidateTeamRepository.save(team);
+        System.out.println("candidate " + player.getName() + " is added into team");
+
+        return team;
+    }
+
 }
