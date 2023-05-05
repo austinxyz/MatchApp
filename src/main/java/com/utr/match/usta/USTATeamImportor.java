@@ -303,6 +303,15 @@ public class USTATeamImportor {
         }
 
     }
+    public void updateUSTACandidateListUTRInfo(List<USTACandidate> players, boolean forceUpdate, boolean includeWinPercent) {
+
+        for (USTACandidate player : players) {
+
+            updatePlayerUTRInfo(player.getPlayer(), forceUpdate, includeWinPercent);
+
+        }
+
+    }
 
     public void updatePlayerListUTRInfo(List<PlayerEntity> players, boolean forceUpdate, boolean includeWinPercent) {
 

@@ -22,11 +22,11 @@ class USTADivisionRepositoryTest {
 
     @Test
     void createDivision() {
-        Optional<USTALeague> league = leagueRepository.findById(3L);
+        Optional<USTALeague> league = leagueRepository.findById(5L);
 
         if(league.isPresent()) {
 
-            USTADivision division = new USTADivision("2022 Adult 40 & Over Mens 4.0", "4.0", league.get());
+            USTADivision division = new USTADivision("2023 Mixed 40 & Over 6.0", "6.0", league.get());
             division.setAgeRange("40+");
 
             divisionRepository.save(division);

@@ -29,7 +29,11 @@ public class UTRService {
     @Autowired
     private USTATeamImportor importor;
 
-    public List<EventEntity> getEvents() {
+    public List<EventEntity> getEvents(boolean active) {
+
+        if (active) {
+            return eventRepository.findByStatusNot("Completed");
+        }
         return eventRepository.findAll();
     }
 

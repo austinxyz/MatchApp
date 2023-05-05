@@ -8,6 +8,8 @@ public interface EventRepository extends CrudRepository<EventEntity, Long> {
 
     List<EventEntity> findByNameLike(String name);
 
+    List<EventEntity> findByStatusNot(String status);
+
     EventEntity findByEventId(String id);
 
     List<EventEntity> findAll();

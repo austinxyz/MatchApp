@@ -4,6 +4,8 @@ package com.utr.match;
 import com.utr.match.entity.*;
 import com.utr.match.usta.*;
 import com.utr.match.usta.po.*;
+import com.utr.match.utr.CandidateTeam;
+import com.utr.match.utr.UTRDivisionExcelExport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,6 +94,34 @@ public class USTAController {
 
         if (flights.size() > 0) {
             return ResponseEntity.ok(flights);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/divisions/{divId}/candidateTeams")
+    public ResponseEntity<List<USTACandidateTeam>> getCanidateTeamsByDivision(@PathVariable("divId") String divId
+    ) {
+
+        List<USTACandidateTeam> teams = ustaService.getCandidateTeamsByDivision(divId);
+
+        if (teams.size() > 0) {
+            return ResponseEntity.ok(teams);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/candidateTeams/{id}")
+    public ResponseEntity<USTACandidateTeam> getCanidateTeamById(@PathVariable("id") String id
+    ) {
+
+        USTACandidateTeam team = ustaService.getCandidateTeam(id);
+
+        if (team != null) {
+            return ResponseEntity.ok(team);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -433,5 +463,51 @@ public class USTAController {
         //send to excelImpl class
         mav.addObject("team", team);
         return mav;
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/candidateTeams/{id}/utrs")
+    public ResponseEntity<USTACandidateTeam> updateCandidatesUTR(@PathVariable("id") String id,
+                                                             @RequestParam("action") String action
+    ) {
+
+        if (action.equals("refreshValue")) {
+
+            USTACandidateTeam team = ustaService.getCandidateTeam(id);
+
+            if (team != null) {
+                importor.updateUSTACandidateListUTRInfo(team.getCandidates(), false, false);
+                return new ResponseEntity<>(team, HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/exportExcel/candidateTeam/{id}")
+    public ModelAndView exportDivisionToExcel(@PathVariable("id") String id) {
+        ModelAndView mav = new ModelAndView();
+        mav.setView(new USTACandidateTeamExcelExport());
+
+        USTACandidateTeam team = ustaService.getCandidateTeam(id);
+
+        //send to excelImpl class
+        mav.addObject("candidateTeam", team);
+        return mav;
+    }
+
+    @CrossOrigin(origins = "*")
+    @PutMapping("/candidateTeam/{id}/candidate/{utrid}")
+    public ResponseEntity<USTACandidateTeam> addCandidate(@PathVariable("id") String id, @PathVariable("utrid") String utrId ) {
+
+        USTACandidateTeam team = ustaService.getCandidateTeam(id);
+
+        if (team != null) {
+            team = ustaService.addCandidate(team, utrId);
+            return new ResponseEntity<>(team, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

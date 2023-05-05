@@ -24,9 +24,9 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/events")
-    public ResponseEntity<List<EventEntity>> events(
+    public ResponseEntity<List<EventEntity>> events(@RequestParam(value = "status", defaultValue = "active") String status
     ) {
-        List<EventEntity> events = utrService.getEvents();
+        List<EventEntity> events = utrService.getEvents(status.equals("active"));
 
         if (!events.isEmpty()) {
             return ResponseEntity.ok(events);
@@ -83,7 +83,7 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @PutMapping("/divisions/{id}/candidate/{utrid}")
-    public ResponseEntity<PlayerEntity> updateLineScoreInfo(@PathVariable("id") long id, @PathVariable("utrid") String utrId ) {
+    public ResponseEntity<PlayerEntity> addCandidate(@PathVariable("id") long id, @PathVariable("utrid") String utrId ) {
 
         DivisionEntity div = utrService.getDivision(Long.valueOf(id));
 
