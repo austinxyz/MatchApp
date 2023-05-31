@@ -29,10 +29,12 @@ public class TeamFactory {
         String teamId = Long.toString(div.getId());
         if (teams.containsKey(teamId)) {
             if (!forceUpdate) {
-                return teams.get(teamId);
-            } else {
-                teams.remove(teamId);
+                CandidateTeam existTeam = teams.get(teamId);
+                if (existTeam.getCandidates().size() == div.getCandidates().size()) {
+                    return teams.get(teamId);
+                }
             }
+            teams.remove(teamId);
         }
 
         CandidateTeam team = null;
@@ -54,11 +56,17 @@ public class TeamFactory {
     private void initLinePairs(CandidateTeam team) {
         int size = team.getCandidates().size();
         for (int i=0; i< size-1; i++) {
-            Player player1 = toPlayer(team.getCandidates().get(i));
+            DivisionCandidate candidate1 = team.getCandidates().get(i);
+            Player player1 = toPlayer(candidate1);
             for (int j=i+1; j<size; j++) {
-                Player player2 = toPlayer(team.getCandidates().get(j));
+                DivisionCandidate candidate2 = team.getCandidates().get(j);
+                Player player2 = toPlayer(candidate2);
                 PlayerPair pair = new PlayerPair(player1, player2);
                 for (Line line : team.getLines().values()) {
+                    if (line.isMatch(pair)) {
+                        candidate1.addPartner(line.getName(), pair);
+                        candidate2.addPartner(line.getName(), pair);
+                    }
                     line.addMatchedPair(pair);
                 }
             }
@@ -71,6 +79,7 @@ public class TeamFactory {
         player.setsUTR(candidate.getSUTR());
         player.setdUTRStatus(candidate.getDUTRStatus());
         player.setsUTRStatus(candidate.getSUTRStatus());
+        player.setUTR(String.valueOf(candidate.getUTR()));
         player.setId(candidate.getUtrId());
         return player;
     }

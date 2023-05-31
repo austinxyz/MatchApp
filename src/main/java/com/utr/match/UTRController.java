@@ -74,10 +74,10 @@ public class UTRController {
         ModelAndView mav = new ModelAndView();
         mav.setView(new UTRDivisionExcelExport());
 
-        DivisionEntity div = utrService.getDivision(Long.valueOf(divisionId));
+        CandidateTeam team = utrService.getCandidateTeam(Long.valueOf(divisionId));
 
         //send to excelImpl class
-        mav.addObject("div", div);
+        mav.addObject("team", team);
         return mav;
     }
 

@@ -1,9 +1,6 @@
 package com.utr.parser;
 
-import com.utr.model.Club;
-import com.utr.model.Event;
-import com.utr.model.Player;
-import com.utr.model.PlayerResult;
+import com.utr.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -32,12 +29,18 @@ public class UTRParser {
     public static final String PLAYER_SEARCH = "https://app.universaltennis.com/api/v2/search/players?query=";
     public static final String CLUB_EVENTS = "https://app.universaltennis.com/api/v1/club/%s/events";
     public static final String CLUB_URL = "https://app.universaltennis.com/api/v1/club/%s";
+    public static final String LEAGUE_TEAM_URL = "https://leagues-api.universaltennis.com/v1/leagues/teams/%s/members";
+    public static final String LEAGUE_TEAMS_URL = "https://leagues-api.universaltennis.com/v1/leagues/sessions/%s/teams";
+    public static final String LEAGUE_SESSION_URL = "https://leagues-api.universaltennis.com/v1/leagues/sessions/%s";
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNDcxODQ3MCIsIm5iZiI6MTY4MjMwODQwNywiZXhwIjoxNjg0OTAwNDA3LCJpYXQiOjE2ODIzMDg0MDd9.q8KzZlC0EncsRTATrJq6UvPQF7tN8pG1608mUN933O8";
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNDk2NjE2NiIsIm5iZiI6MTY4Mzk4ODI2NCwiZXhwIjoxNjg2NTgwMjY0LCJpYXQiOjE2ODM5ODgyNjR9.tOJTGfLMIkIf4RBgkeuMo-jgK_bt--8PJzcrIxRVMPQ";
     Map<String, PlayerResult> playerResults;
     Map<String, Player> players;
     Map<String, Event> events;
     Map<String, Club> clubs;
+
+    Map<String, League> leagues;
+
     private final Map<String, LocalDate> fetchedTimes;
 
     public UTRParser() {
@@ -46,6 +49,7 @@ public class UTRParser {
         clubs = new HashMap<>();
         players = new HashMap<>();
         fetchedTimes = new HashMap<>();
+        leagues = new HashMap<>();
     }
 
     public List<Event> getClubEvents(String clubId, boolean withToken) {
@@ -124,6 +128,44 @@ public class UTRParser {
             return 0.0f;
         }
         return (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber());
+    }
+
+    public League parseLeague(String sessionId) {
+        LeagueParser parser = new LeagueParser();
+        League league = parser.buildLeague(getLeagueJson(sessionId));
+
+        parser.buildTeams(league, getLeagueTeamsJson(sessionId));
+        return league;
+    }
+
+    public Team parseTeam(League league, String teamId) {
+        LeagueParser parser = new LeagueParser();
+        Team team = league.getTeam(teamId);
+        if (team!= null) {
+            parser.buildTeamPlayers(team, getTeamMemberJson(teamId));
+        }
+        return team;
+    }
+
+    private String getTeamMemberJson(String teamId) {
+        String getCallURL
+                = String.format(LEAGUE_TEAM_URL, teamId);
+
+        return restGetCall(getCallURL, true);
+    }
+
+    private String getLeagueTeamsJson(String sessionId) {
+        String getCallURL
+                = String.format(LEAGUE_TEAMS_URL, sessionId);
+
+        return restGetCall(getCallURL, true);
+    }
+
+    private String getLeagueJson(String sessionId) {
+        String getCallURL
+                = String.format(LEAGUE_SESSION_URL, sessionId);
+
+        return restGetCall(getCallURL, true);
     }
 
     private String getResultJson(String playerId, boolean latest, boolean withToken) {

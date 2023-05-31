@@ -54,37 +54,7 @@ class USTAServiceTest {
     @Test
     void addCandidate() {
         USTACandidateTeam team = service.getCandidateTeam("2"); // 7.0 mixed team.
-        team = service.addCandidate(team, "2953087");
-        team = service.addCandidate(team, "3412468");
-        team = service.addCandidate(team, "3324379");
-        team = service.addCandidate(team, "3206704");
-        team = service.addCandidate(team, "1927566");
+        team = service.addCandidate(team, "2138695");
 
-        team = service.addCandidate(team, "3841734");
-        team = service.addCandidate(team, "3588179");
-        team = service.addCandidate(team, "3541936");
-
-
-        team = service.addCandidate(team, "1010539");
-        team = service.addCandidate(team, "3151793");
-        team = service.addCandidate(team, "737069");
-        team = service.addCandidate(team, "750748");
-        team = service.addCandidate(team, "2547696");
-
-        team = service.addCandidate(team, "1316122");
-        team = service.addCandidate(team, "2961800");
-        team = service.addCandidate(team, "1935242");
-        //team = service.addCandidate(team, "733770");
-
-/*        team = service.addCandidate(team, "2953087");
-        team = service.addCandidate(team, "3412468");
-        team = service.addCandidate(team, "3324379");
-        team = service.addCandidate(team, "3206704");
-        team = service.addCandidate(team, "3148025");
-        team = service.addCandidate(team, "391527");
-        team = service.addCandidate(team, "479452");
-        team = service.addCandidate(team, "733770");
-        team = service.addCandidate(team, "1935242");
-        team = service.addCandidate(team, "2961800");*/
     }
 }

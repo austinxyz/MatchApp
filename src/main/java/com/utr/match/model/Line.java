@@ -65,9 +65,9 @@ public class Line {
         return result;
     }
 
-    boolean isMatch(PlayerPair pair) {
+    public boolean isMatch(PlayerPair pair) {
         return pair.getWCount() >= this.femaleCount &&
-                pair.getTotalUTR() <= this.utrLimit ;
+                pair.getTotalUTR() <= this.utrLimit && pair.getTotalUTR() >= this.utrLimit-2 ;
     }
 
     public void addMatchedPair(PlayerPair pair) {
