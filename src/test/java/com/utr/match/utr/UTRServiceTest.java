@@ -42,8 +42,9 @@ class UTRServiceTest {
         service.addCandidate(div, "3601787");
         service.addCandidate(div, "2817725");
         service.addCandidate(div, "3836627");*/
-        service.addCandidate(div, "2815594");
-        service.addCandidate(div, "1725624");
+        //service.addCandidate(div, "2815594");
+        //service.addCandidate(div, "1725624");
+        service.addCandidate(div, "2497820");
     }
 
     @Test

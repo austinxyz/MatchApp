@@ -2,8 +2,14 @@ package com.utr.match.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.utr.match.model.PlayerPair;
+import com.utr.model.Player;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "team_candidates")
@@ -30,6 +36,9 @@ public class DivisionCandidate {
 
     @Column(name = "level_range")
     private String range; // Below, Avg, Good, Strong, Top
+
+    @Transient
+    Map<String, List<Player>> candidatePartners = new HashMap<>();
 
     public DivisionCandidate() {
     }
@@ -195,5 +204,42 @@ public class DivisionCandidate {
         }
 
         return this.getRange() + " " + this.getRating() + "s Player";
+    }
+
+    @JsonProperty
+    public Map<String, String> getLinePartners() {
+        Map<String, String> results = new HashMap<>();
+
+        for (String key: this.candidatePartners.keySet()) {
+            List<Player> partners = this.candidatePartners.get(key);
+            partners.sort((Player o1, Player o2) -> Float.compare(o2.getUTR(), o1.getUTR()));
+            StringBuilder builder = new StringBuilder();
+            int index = 0;
+            for (Player partner: partners) {
+                builder.append(partner.getName()).append("(").append(partner.getGender()).append(")-").append(partner.getUTR()).append(",");
+                index++;
+                if (index >4) {
+                    break;
+                }
+            }
+            results.put(key, builder.toString());
+
+        }
+        return results;
+    }
+
+    public void addPartner(String lineName, PlayerPair pair) {
+        Player partner = null;
+        if (pair.getPlayer1().getId().equals(this.player.getUtrId())) {
+            partner = pair.getPlayer2();
+        } else if (pair.getPlayer2().getId().equals(this.player.getUtrId())) {
+            partner = pair.getPlayer1();
+        } else {
+            return;
+        }
+
+        List<Player> partners = this.candidatePartners.getOrDefault(lineName, new ArrayList<>());
+        partners.add(partner);
+        this.candidatePartners.put(lineName, partners);
     }
 }

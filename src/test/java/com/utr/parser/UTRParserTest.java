@@ -80,4 +80,18 @@ class UTRParserTest {
             System.out.println(ChronoUnit.DAYS.between(fetchDate, date));
 
     }
+
+    @Test
+    void parseLeague() {
+        UTRParser parser = new UTRParser();
+        League league = parser.parseLeague("356");
+        System.out.println(league);
+        for (Team team: league.getTeams()) {
+            parser.parseTeam(league, team.getId());
+            System.out.println(team);
+            for (Player player: team.getPlayers()) {
+                System.out.println(player);
+            }
+        }
+    }
 }

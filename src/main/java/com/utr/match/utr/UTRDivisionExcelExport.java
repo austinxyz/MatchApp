@@ -24,7 +24,7 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
 
         // read data provided by controller
         @SuppressWarnings("unchecked")
-        DivisionEntity division = (DivisionEntity) model.get("div");
+        CandidateTeam division = (CandidateTeam) model.get("team");
 
         CreationHelper helper = workbook.getCreationHelper();
 
@@ -42,13 +42,13 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
 
     }
 
-    private int createDivisionPlayerInfo(DivisionEntity team, Sheet sheet, CreationHelper helper, CellStyle hylinkSytle) {
+    private int createDivisionPlayerInfo(CandidateTeam team, Sheet sheet, CreationHelper helper, CellStyle hylinkSytle) {
 
         int rowNum = 0;
 
         Row teamRow = sheet.createRow(rowNum++);
         teamRow.createCell(0).setCellValue("Team Name");
-        teamRow.createCell(1).setCellValue(team.getChineseName());
+        teamRow.createCell(1).setCellValue(team.getDisplayName());
         teamRow.createCell(2).setCellValue(team.getEnglishName());
 
         // create row0 as a header
@@ -61,10 +61,15 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
         row0.createCell(5).setCellValue("Self Rating");
         row0.createCell(6).setCellValue("Adjusted UTR");
 
-        int index = 1;
+        int index=7;
+        for (String key: team.getLines().keySet()) {
+            row0.createCell(index).setCellValue(key);
+            index++;
+        }
+
+        index = 1;
         // create row1 onwards from List<T>
         for(DivisionCandidate member: team.getCandidates()) {
-
 
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(index++);
@@ -83,6 +88,12 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
             row.createCell(4).setCellValue(member.getDUTR());
             row.createCell(5).setCellValue(member.getSelfRating());
             row.createCell(6).setCellValue(member.getUTR());
+
+            int rowIndex=7;
+            for (String key: team.getLines().keySet()) {
+                row.createCell(rowIndex).setCellValue(member.getLinePartners().get(key));
+                rowIndex++;
+            }
         }
 
         return rowNum;
