@@ -1,14 +1,12 @@
 package com.utr.match.utr;
 
 import com.utr.match.entity.*;
-import com.utr.match.usta.*;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Map;
 
 public class UTRDivisionExcelExport extends AbstractXlsxView {
@@ -69,7 +67,7 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
 
         index = 1;
         // create row1 onwards from List<T>
-        for(DivisionCandidate member: team.getCandidates()) {
+        for(UTRTeamCandidate member: team.getCandidates()) {
 
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(index++);

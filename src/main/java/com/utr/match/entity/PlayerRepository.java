@@ -8,7 +8,7 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, Jp
 
     List<PlayerEntity> findAll();
 
-    PlayerEntity findByUtrId(String id);
+    List<PlayerEntity> findByUtrId(String id);
 
     List<PlayerEntity> findByFirstNameLike(String name);
 

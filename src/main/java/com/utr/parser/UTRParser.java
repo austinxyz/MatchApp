@@ -32,6 +32,8 @@ public class UTRParser {
     public static final String LEAGUE_TEAM_URL = "https://leagues-api.universaltennis.com/v1/leagues/teams/%s/members";
     public static final String LEAGUE_TEAMS_URL = "https://leagues-api.universaltennis.com/v1/leagues/sessions/%s/teams";
     public static final String LEAGUE_SESSION_URL = "https://leagues-api.universaltennis.com/v1/leagues/sessions/%s";
+    public static final String LEAGUE_CONFERENCE_URL = "https://leagues-api.universaltennis.com/v1/leagues/conferences/%s";
+    public static final String LEAGUE_URL = "https://leagues-api.universaltennis.com/v1/leagues/%s/summary";
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNDk2NjE2NiIsIm5iZiI6MTY4Mzk4ODI2NCwiZXhwIjoxNjg2NTgwMjY0LCJpYXQiOjE2ODM5ODgyNjR9.tOJTGfLMIkIf4RBgkeuMo-jgK_bt--8PJzcrIxRVMPQ";
     Map<String, PlayerResult> playerResults;
@@ -130,17 +132,36 @@ public class UTRParser {
         return (float) result.getWinsNumber() / (float) (result.getLossesNumber() + result.getWinsNumber());
     }
 
-    public League parseLeague(String sessionId) {
+    public League parseLeague(String leagueId) {
         LeagueParser parser = new LeagueParser();
-        League league = parser.buildLeague(getLeagueJson(sessionId));
+        League league = parser.buildLeague(getLeagueJson(leagueId));
 
-        parser.buildTeams(league, getLeagueTeamsJson(sessionId));
+        for (Conference conf : league.getConferences()) {
+            parser.buildSessions(conf, getConfJson(conf.getId()));
+            for (Session session: conf.getSessions()) {
+                parser.buildTeams(session, getLeagueTeamsJson(session.getId()));
+            }
+        }
         return league;
     }
 
-    public Team parseTeam(League league, String teamId) {
+    private String getSessionJson(String id) {
+        String getCallURL
+                = String.format(LEAGUE_SESSION_URL, id);
+
+        return restGetCall(getCallURL, true);
+    }
+
+    private String getConfJson(String id) {
+        String getCallURL
+                = String.format(LEAGUE_CONFERENCE_URL, id);
+
+        return restGetCall(getCallURL, true);
+    }
+
+    public UTRTeam parseTeamMembers(League league, String teamId) {
         LeagueParser parser = new LeagueParser();
-        Team team = league.getTeam(teamId);
+        UTRTeam team = league.getTeam(teamId);
         if (team!= null) {
             parser.buildTeamPlayers(team, getTeamMemberJson(teamId));
         }
@@ -161,9 +182,9 @@ public class UTRParser {
         return restGetCall(getCallURL, true);
     }
 
-    private String getLeagueJson(String sessionId) {
+    private String getLeagueJson(String leagueId) {
         String getCallURL
-                = String.format(LEAGUE_SESSION_URL, sessionId);
+                = String.format(LEAGUE_URL, leagueId);
 
         return restGetCall(getCallURL, true);
     }
@@ -304,5 +325,19 @@ public class UTRParser {
         }
 
         return result;
+    }
+
+    public League getLeague(String id) {
+
+        if (leagues.containsKey(id)) {
+            return leagues.get(id);
+        }
+
+        League league = parseLeague(id);
+        if (league!=null) {
+            leagues.put(id, league);
+        }
+
+        return league;
     }
 }

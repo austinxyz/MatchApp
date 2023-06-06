@@ -151,10 +151,12 @@ public class USTAService {
     public PlayerEntity createPlayer(PlayerEntity player) {
 
         if (player.getUtrId() != null) {
-            PlayerEntity existedPlayer = playerRepository.findByUtrId(player.getUtrId());
-            if (existedPlayer != null) {
-                return existedPlayer;
+            List<PlayerEntity> players = playerRepository.findByUtrId(player.getUtrId());
+
+            if (players.size() > 0) {
+                return players.get(0);
             }
+
         }
 
         PlayerEntity entity = playerRepository.save(player);
@@ -295,7 +297,12 @@ public class USTAService {
     }
 
     public PlayerEntity getPlayerByUTRId(String utrId) {
-        return playerRepository.findByUtrId(utrId);
+
+        List<PlayerEntity> players = playerRepository.findByUtrId(utrId);
+        if (players.size() > 0) {
+            return players.get(0);
+        }
+        return null;
     }
 
     public PlayerEntity updatePlayerUTRId(String utrId) {
@@ -668,7 +675,7 @@ public class USTAService {
 
     public USTACandidateTeam addCandidate(USTACandidateTeam team, String playerUTRId) {
         System.out.println("add canidate:" + playerUTRId);
-        PlayerEntity player = playerRepository.findByUtrId(playerUTRId);
+        PlayerEntity player = playerRepository.findByUtrId(playerUTRId).get(0);
         if (player == null) {
 
             Player candidate = null;

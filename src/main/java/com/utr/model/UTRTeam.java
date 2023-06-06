@@ -3,13 +3,13 @@ package com.utr.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Team {
+public class UTRTeam {
     String id;
     String name;
     List<Player> captains;
     List<Player> players;
 
-    public Team() {
+    public UTRTeam() {
         captains = new ArrayList<>();
         players = new ArrayList<>();
     }

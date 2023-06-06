@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "team_candidates")
-public class DivisionCandidate {
+public class UTRTeamCandidate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,10 +40,10 @@ public class DivisionCandidate {
     @Transient
     Map<String, List<Player>> candidatePartners = new HashMap<>();
 
-    public DivisionCandidate() {
+    public UTRTeamCandidate() {
     }
 
-    public DivisionCandidate(PlayerEntity player, DivisionEntity division) {
+    public UTRTeamCandidate(PlayerEntity player, DivisionEntity division) {
         this.player = player;
         this.division = division;
     }

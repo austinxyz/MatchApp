@@ -1,7 +1,6 @@
 package com.utr.parser;
 
 import com.utr.model.*;
-import com.utr.parser.UTRParser;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -84,13 +83,19 @@ class UTRParserTest {
     @Test
     void parseLeague() {
         UTRParser parser = new UTRParser();
-        League league = parser.parseLeague("356");
+        League league = parser.parseLeague("26");
         System.out.println(league);
-        for (Team team: league.getTeams()) {
-            parser.parseTeam(league, team.getId());
-            System.out.println(team);
-            for (Player player: team.getPlayers()) {
-                System.out.println(player);
+        for (Conference conf: league.getConferences()) {
+            System.out.println(conf);
+            for (Session session: conf.getSessions()) {
+                System.out.println(session);
+                for (UTRTeam team: session.getTeams()) {
+                    parser.parseTeamMembers(league, team.getId());
+                    System.out.println(team);
+                    for (Player player: team.getPlayers()) {
+                        System.out.println(player);
+                    }
+                }
             }
         }
     }

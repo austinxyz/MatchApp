@@ -17,13 +17,51 @@ public class LeagueParser extends UTRJSONHandler {
 
         String id = leagueJson.get("id").toString();
         String name = leagueJson.get("name").toString();
+        String clubId = leagueJson.get("owningClubId").toString();
 
         league.setId(id);
         league.setName(name);
+        league.setClubId(clubId);
+
+        List confs = (List)leagueJson.get("conferences");
+
+        for (Object conf : confs) {
+            Map<String, Object> confJson = (Map<String, Object>)conf;
+            league.getConferences().add(parseConf(confJson));
+        }
+
         return league;
     }
 
-    public League buildTeams(League league, String teamsJsonString) {
+    private Conference parseConf(Map<String, Object> confJson) {
+        Conference conf = new Conference();
+
+        String id = confJson.get("id").toString();
+        String name = confJson.get("name").toString();
+
+        conf.setId(id);
+        conf.setName(name);
+
+        return conf;
+    }
+
+    public Conference buildSessions(Conference conf, String confJsonString) {
+
+        Map<String, Object> confObj = parseJsonMap(confJsonString);
+
+        List sessions = (List)confObj.get("sessions");
+
+        for (Object sessionObj : sessions) {
+            Map<String, Object> sessionJson = (Map<String, Object>)sessionObj;
+            Session session = new Session();
+            session.setId(sessionJson.get("id").toString());
+            session.setName(sessionJson.get("name").toString());
+            conf.getSessions().add(session);
+        }
+
+        return conf;
+    }
+    public Session buildTeams(Session session, String teamsJsonString) {
 
         Map<String, Object> teamsObj = parseJsonMap(teamsJsonString);
 
@@ -31,13 +69,13 @@ public class LeagueParser extends UTRJSONHandler {
 
         for (Object team : teams) {
             Map<String, Object> teamJson = (Map<String, Object>)team;
-            league.getTeams().add(parseTeam(teamJson));
+            session.getTeams().add(parseTeam(teamJson));
         }
 
-        return league;
+        return session;
     }
 
-    public Team buildTeamPlayers(Team team, String teamJsonString) {
+    public UTRTeam buildTeamPlayers(UTRTeam team, String teamJsonString) {
         Map<String, Object> teamObj = parseJsonMap(teamJsonString);
 
         List members = (List)teamObj.get("teamMembers");
@@ -78,8 +116,8 @@ public class LeagueParser extends UTRJSONHandler {
         return player;
     }
 
-    private Team parseTeam(Map<String, Object> teamJson) {
-        Team team = new Team();
+    private UTRTeam parseTeam(Map<String, Object> teamJson) {
+        UTRTeam team = new UTRTeam();
         if (teamJson == null) {
             return team;
         }

@@ -1,7 +1,5 @@
 package com.utr.match.usta;
 
-import com.utr.match.entity.DivisionCandidate;
-import com.utr.match.entity.DivisionEntity;
 import com.utr.match.entity.USTACandidate;
 import com.utr.match.entity.USTACandidateTeam;
 import org.apache.poi.common.usermodel.HyperlinkType;
