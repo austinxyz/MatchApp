@@ -25,12 +25,12 @@ public class DivisionEntity {
     @Column(name="formal_name_english")
     private String englishName;
 
-    public List<DivisionCandidate> getCandidates() {
-        candidates.sort((DivisionCandidate p1, DivisionCandidate p2) -> Double.compare(p2.getUTR(), p1.getUTR()));
+    public List<UTRTeamCandidate> getCandidates() {
+        candidates.sort((UTRTeamCandidate p1, UTRTeamCandidate p2) -> Double.compare(p2.getUTR(), p1.getUTR()));
         return candidates;
     }
 
-    public void setCandidates(List<DivisionCandidate> candidates) {
+    public void setCandidates(List<UTRTeamCandidate> candidates) {
         this.candidates = candidates;
     }
 
@@ -51,7 +51,7 @@ public class DivisionEntity {
 */
     @JsonIgnore
     @OneToMany(mappedBy = "division", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<DivisionCandidate> candidates;
+    private List<UTRTeamCandidate> candidates;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
@@ -129,12 +129,12 @@ public class DivisionEntity {
     }
 
     public void addCandidate(PlayerEntity player) {
-        for (DivisionCandidate candidate: this.candidates) {
+        for (UTRTeamCandidate candidate: this.candidates) {
             if (candidate.getUtrId().equals(player.getUtrId())) {
                 return;
             }
         }
-        DivisionCandidate candidate = new DivisionCandidate(player, this);
+        UTRTeamCandidate candidate = new UTRTeamCandidate(player, this);
         this.candidates.add(candidate);
     }
 }

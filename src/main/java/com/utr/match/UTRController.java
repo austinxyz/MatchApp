@@ -7,6 +7,8 @@ import com.utr.match.usta.po.*;
 import com.utr.match.utr.CandidateTeam;
 import com.utr.match.utr.UTRDivisionExcelExport;
 import com.utr.match.utr.UTRService;
+import com.utr.model.League;
+import com.utr.model.UTRTeam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,32 @@ public class UTRController {
 
         if (!events.isEmpty()) {
             return ResponseEntity.ok(events);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/leagues/{id}")
+    public ResponseEntity<League> getLeague(@PathVariable("id") String id
+    ) {
+        League league = utrService.getLeague(id);
+
+        if (league != null) {
+            return ResponseEntity.ok(league);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams/{id}")
+    public ResponseEntity<UTRTeamEntity> getTeam(@PathVariable("id") String id
+    ) {
+        UTRTeamEntity team = utrService.getTeam(id);
+
+        if (team != null) {
+            return ResponseEntity.ok(team);
         } else {
             return ResponseEntity.notFound().build();
         }

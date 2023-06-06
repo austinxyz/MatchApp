@@ -1,12 +1,9 @@
 package com.utr.match.utr;
 
-import com.utr.match.entity.DivisionCandidate;
+import com.utr.match.entity.UTRTeamCandidate;
 import com.utr.match.entity.DivisionEntity;
-import com.utr.match.entity.PlayerEntity;
 import com.utr.match.model.Line;
 import com.utr.match.model.PlayerPair;
-import com.utr.match.model.Team;
-import com.utr.model.Event;
 import com.utr.model.Player;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -56,10 +53,10 @@ public class TeamFactory {
     private void initLinePairs(CandidateTeam team) {
         int size = team.getCandidates().size();
         for (int i=0; i< size-1; i++) {
-            DivisionCandidate candidate1 = team.getCandidates().get(i);
+            UTRTeamCandidate candidate1 = team.getCandidates().get(i);
             Player player1 = toPlayer(candidate1);
             for (int j=i+1; j<size; j++) {
-                DivisionCandidate candidate2 = team.getCandidates().get(j);
+                UTRTeamCandidate candidate2 = team.getCandidates().get(j);
                 Player player2 = toPlayer(candidate2);
                 PlayerPair pair = new PlayerPair(player1, player2);
                 for (Line line : team.getLines().values()) {
@@ -73,7 +70,7 @@ public class TeamFactory {
         }
     }
 
-    private Player toPlayer(DivisionCandidate candidate) {
+    private Player toPlayer(UTRTeamCandidate candidate) {
         Player player = new Player(candidate.getFirstName(), candidate.getLastName(), candidate.getGender(), Double.toString(candidate.getUTR()));
         player.setdUTR(candidate.getDUTR());
         player.setsUTR(candidate.getSUTR());

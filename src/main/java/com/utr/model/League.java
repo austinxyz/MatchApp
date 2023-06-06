@@ -6,10 +6,11 @@ import java.util.List;
 public class League {
     String id;
     String name;
-    List<Team> teams;
+    String clubId;
+    List<Conference> conferences;
 
     public League() {
-        teams = new ArrayList<>();
+        conferences = new ArrayList<>();
     }
 
     @Override
@@ -18,10 +19,6 @@ public class League {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 '}';
-    }
-
-    public List<Team> getTeams() {
-        return teams;
     }
 
     public String getId() {
@@ -40,11 +37,34 @@ public class League {
         this.name = name;
     }
 
+    public String getClubId() {
+        return clubId;
+    }
 
-    public Team getTeam(String teamId) {
-        for (Team team: this.teams) {
-            if (teamId.equals(team.getId())) {
+    public void setClubId(String clubId) {
+        this.clubId = clubId;
+    }
+
+    public List<Conference> getConferences() {
+        return conferences;
+    }
+
+    public UTRTeam getTeam(String teamId) {
+        for (Conference conf: this.conferences) {
+            UTRTeam team = conf.getTeam(teamId);
+            if (team != null) {
                 return team;
+            }
+        }
+        return null;
+    }
+
+    public Session getSession(String sessionName) {
+        for (Conference conf: this.conferences) {
+            for (Session session: conf.getSessions()) {
+                if (session.getName().trim().equals(sessionName.trim())) {
+                    return session;
+                }
             }
         }
         return null;

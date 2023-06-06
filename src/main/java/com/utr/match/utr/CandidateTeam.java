@@ -1,13 +1,10 @@
 package com.utr.match.utr;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.utr.match.entity.DivisionCandidate;
+import com.utr.match.entity.UTRTeamCandidate;
 import com.utr.match.entity.DivisionEntity;
 import com.utr.match.model.Line;
-import com.utr.match.model.Lineup;
-import com.utr.model.Player;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +36,7 @@ public class CandidateTeam {
         return div.getEnglishName();
     }
 
-    public List<DivisionCandidate> getCandidates() {
+    public List<UTRTeamCandidate> getCandidates() {
         return div.getCandidates();
     }
 

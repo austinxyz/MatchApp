@@ -294,9 +294,9 @@ public class USTATeamImportor {
 
     }
 
-    public void updateCandidateListUTRInfo(List<DivisionCandidate> players, boolean forceUpdate, boolean includeWinPercent) {
+    public void updateCandidateListUTRInfo(List<UTRTeamCandidate> players, boolean forceUpdate, boolean includeWinPercent) {
 
-        for (DivisionCandidate player : players) {
+        for (UTRTeamCandidate player : players) {
 
             updatePlayerUTRInfo(player.getPlayer(), forceUpdate, includeWinPercent);
 

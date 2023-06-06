@@ -104,7 +104,7 @@ class PlayerRepositoryTest {
     @Test
     @Transactional
     void findByUTR() {
-        PlayerEntity player = playerRepo.findByUtrId("1316122");
+        PlayerEntity player = playerRepo.findByUtrId("1316122").get(0);
         System.out.println(player.getFirstName() + " " + player.getLastName());
 
         for (USTATeamMember member: player.getTeamMembers()) {
@@ -165,14 +165,13 @@ class PlayerRepositoryTest {
 //        }
 
         //String fullnameList = "Lee Tzong-Han";
-        String fullnameList=
+        String ids=
         //"Vasseghi Jing,"+
-        "Yang Chuo-Yun";
+        "908248,886674,3542931,2718355,737470,1947802,2991444,3114695,3024263,1906109";
 
-        for (String playerName: fullnameList.split(",")) {
-            playerName = playerName.trim();
+        for (String id: ids.split(",")) {
 
-            List<PlayerEntity> players = playerRepo.findByName(playerName);
+            List<PlayerEntity> players = playerRepo.findByUtrId(id);
 
             PlayerEntity primaryPlayer = null;
 
@@ -211,7 +210,7 @@ class PlayerRepositoryTest {
                     playerRepo.save(primaryPlayer);
                     playerRepo.save(player);
 
-                    System.out.println(playerName +"'s update is completed");
+                    System.out.println(player.getName() +"'s update is completed");
                 }
             }
 
@@ -259,14 +258,14 @@ class PlayerRepositoryTest {
     @Test
     void cleanFullNameIssues() {
 
-        String fullnameList=
-                "Vasseghi Jing,"+
-                        "Yang Chuo-Yun";
+        String ids=
+                //"Vasseghi Jing,"+
+                "908248,886674,3542931,2718355,737470,1947802,2991444,3114695,3024263,1906109";
 
-        for (String playerName: fullnameList.split(",")) {
-            playerName = playerName.trim();
+        for (String id: ids.split(",")) {
 
-            List<PlayerEntity> players = playerRepo.findByName(playerName);
+
+            List<PlayerEntity> players = playerRepo.findByUtrId(id);
 
             PlayerEntity primaryPlayer = null;
 

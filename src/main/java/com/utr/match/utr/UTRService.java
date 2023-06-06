@@ -2,7 +2,9 @@ package com.utr.match.utr;
 
 import com.utr.match.entity.*;
 import com.utr.match.usta.USTATeamImportor;
+import com.utr.model.League;
 import com.utr.model.Player;
+import com.utr.model.UTRTeam;
 import com.utr.parser.UTRParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -29,12 +31,75 @@ public class UTRService {
     @Autowired
     private USTATeamImportor importor;
 
+    @Autowired
+    private UTRTeamRepository teamRepository;
+
+    public League getLeague(String id) {
+        return parser.getLeague(id);
+    }
+
     public List<EventEntity> getEvents(boolean active) {
 
         if (active) {
             return eventRepository.findByStatusNot("Completed");
         }
         return eventRepository.findAll();
+    }
+
+    public UTRTeamEntity getTeam(String teamId) {
+        return teamRepository.findByUtrTeamId(teamId);
+    }
+
+    public UTRTeamEntity importTeam(String teamId, League league) {
+
+        UTRTeamEntity teamEntity = teamRepository.findByUtrTeamId(teamId);
+
+        UTRTeam team = parser.parseTeamMembers(league, teamId);
+
+        if (team == null) {
+            System.out.println("team id" + teamId + " is not existed in UTR");
+            return null;
+        }
+
+        if (teamEntity == null) {
+
+            System.out.println("team is not in db, init team: " + team.getName());
+            teamEntity = new UTRTeamEntity(team.getName(), team.getId());
+
+            if (team.getCaptains().size()>0) {
+                PlayerEntity captain = createOrGetPlayer(team.getCaptains().get(0).getId());
+                if (captain!=null) {
+                    teamEntity.setCaptain(captain);
+                }
+            }
+
+            teamEntity = teamRepository.save(teamEntity);
+
+            for(Player player: team.getPlayers()) {
+                PlayerEntity playerEntity = createOrGetPlayer(player.getId());
+                UTRTeamMember member = new UTRTeamMember(playerEntity);
+                member.setTeam(teamEntity);
+                teamEntity.getPlayers().add(member);
+                System.out.println("add member: " + member.getName());
+            }
+
+        } else {
+            for (Player player: team.getPlayers()) {
+                UTRTeamMember member = teamEntity.getMember(player.getId());
+                if (member == null) {
+                    PlayerEntity playerEntity = createOrGetPlayer(player.getId());
+                    member = new UTRTeamMember(playerEntity);
+                    member.setTeam(teamEntity);
+                    teamEntity.getPlayers().add(member);
+                    System.out.println("add member: " + member.getName());
+                }
+            }
+        }
+
+        teamEntity = teamRepository.save(teamEntity);
+        System.out.println("team: " + team.getName() + " is updated");
+
+        return teamEntity;
     }
 
     public EventEntity getEvent(String id) {
@@ -59,38 +124,61 @@ public class UTRService {
 
     public PlayerEntity addCandidate(DivisionEntity division, String playerUTRId) {
         System.out.println("add canidate:" + playerUTRId);
-        PlayerEntity player = playerRepository.findByUtrId(playerUTRId);
+        PlayerEntity player = createOrGetPlayer(playerUTRId);
+
         if (player == null) {
-
-            Player candidate = null;
-            candidate = parser.getPlayer(playerUTRId, true);
-
-            if (candidate == null) {
-                System.out.println("UTR ID is not valid, skip");
-                return null;
-            }
-            System.out.println("candidate" + candidate.getName() + " is not in database, add into DB");
-            player = new PlayerEntity();
-            player.setName(candidate.getName());
-            player.setFirstName(candidate.getFirstName());
-            player.setLastName(candidate.getLastName());
-            player.setUtrId(playerUTRId);
-            player.setDUTR(candidate.getdUTR());
-            player.setDUTRStatus(candidate.getdUTRStatus());
-            player.setSUTR(candidate.getsUTR());
-            player.setSUTRStatus(candidate.getsUTRStatus());
-            player.setSuccessRate(candidate.getSuccessRate());
-            player.setWholeSuccessRate(candidate.getWholeSuccessRate());
-            player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
-            player.setArea(candidate.getLocation());
-            player.setGender(candidate.getGender());
-            player = playerRepository.save(player);
-
+            return null;
         }
 
         division.addCandidate(player);
         divisionRepository.save(division);
         System.out.println("candidate " + player.getName() + " is added into team");
+
+        return player;
+    }
+
+    private PlayerEntity createOrGetPlayer(String playerUTRId) {
+        List<PlayerEntity> players = playerRepository.findByUtrId(playerUTRId);
+
+        PlayerEntity player = null;
+        if (players.size() == 0) {
+            player = createPlayerEntity(playerUTRId);
+        } else {
+            player = players.get(0);
+        }
+        return player;
+    }
+
+    private PlayerEntity createPlayerEntity(String playerUTRId) {
+        PlayerEntity player;
+
+        Player candidate = null;
+        candidate = parser.getPlayer(playerUTRId, true);
+
+        if (candidate == null) {
+            System.out.println("UTR ID is not valid, skip");
+            return null;
+        }
+
+        System.out.println("candidate " + candidate.getName() + " is not in database, add into DB");
+
+        player = new PlayerEntity();
+        player.setName(candidate.getName());
+        player.setFirstName(candidate.getFirstName());
+        player.setLastName(candidate.getLastName());
+        player.setUtrId(playerUTRId);
+        player.setDUTR(candidate.getdUTR());
+        player.setDUTRStatus(candidate.getdUTRStatus());
+        player.setSUTR(candidate.getsUTR());
+        player.setSUTRStatus(candidate.getsUTRStatus());
+        player.setSuccessRate(candidate.getSuccessRate());
+        player.setWholeSuccessRate(candidate.getWholeSuccessRate());
+        player.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+        player.setArea(candidate.getLocation());
+        player.setGender(candidate.getGender());
+        player = playerRepository.save(player);
+
+        System.out.println("player:"  + player.getName() + " is created");
 
         return player;
     }
