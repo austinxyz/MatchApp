@@ -28,6 +28,8 @@ public class Player {
 
     float wholeSuccessRate;
 
+    String ustaRating;
+
     Timestamp utrFetchedTime;
 
     public Player(String firstName, String lastName, String gender, String UTR) {
@@ -169,6 +171,14 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUstaRating() {
+        return ustaRating;
+    }
+
+    public void setUstaRating(String ustaRating) {
+        this.ustaRating = ustaRating;
     }
 
     @Override

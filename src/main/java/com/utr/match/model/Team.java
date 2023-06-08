@@ -13,7 +13,6 @@ public class Team {
     String name;
     List<Player> players;
     String displayName;
-    @JsonIgnore
     Map<String, Line> lines;
     @JsonIgnore
     String teamId;

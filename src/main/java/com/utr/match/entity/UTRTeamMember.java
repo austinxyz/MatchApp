@@ -172,4 +172,12 @@ public class UTRTeamMember {
         return player.getArea();
     }
 
+    public String getFirstName() {
+        return player.getFirstName();
+    }
+
+    public String getLastName() {
+        return player.getLastName();
+    }
+
 }

@@ -75,11 +75,16 @@ public class UTRExcelImporter {
                     }
 
                     String matchUTR = row.getCell(14).toString();
-                    if (!matchUTR.equals("TBD")) {
+                    if (matchUTR.equals("TBD")) {
+                        matchUTR = row.getCell(15).toString();
+                    }
+                    if (!matchUTR.trim().equals("")) {
                         member.setMatchUTR(Double.parseDouble(matchUTR));
                         memberRepository.save(member);
-                        System.out.println(member.getName() + " match UTR is saved");
+                        System.out.println(member.getName() + " match UTR:" + member.getMatchUTR() + " is saved");
                     }
+
+
                 }
                 rowIndex++;
 
