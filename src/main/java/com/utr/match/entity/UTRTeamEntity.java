@@ -20,6 +20,9 @@ public class UTRTeamEntity {
     @Column(name = "utr_id")
     private String utrTeamId;
 
+    @Column(name = "type")
+    private String type;
+
     @OneToMany(mappedBy = "team", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<UTRTeamMember> players;
 
@@ -47,6 +50,14 @@ public class UTRTeamEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<UTRTeamMember> getPlayers() {

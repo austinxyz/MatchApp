@@ -41,11 +41,17 @@ public class TeamFactory {
         for (UTRTeamMember member: teamEntity.getPlayers()) {
             team.getPlayers().add(toPlayer(member));
         }
-
-        team.getLines().put("D1", new Line("D1", (float) 12.5, 0));
-        team.getLines().put("D2", new Line("D2", (float) 10.5, 0));
-        team.getLines().put("D3", new Line("D3", (float) 9.5, 0));
-        team.getLines().put("D4", new Line("D4", (float) 8.0, 0));
+        if (teamEntity.getType().equals("Gold")) {
+            team.getLines().put("D1", new Line("D1", (float) 17, 0));
+            team.getLines().put("D2", new Line("D2", (float) 15, 0));
+            team.getLines().put("D3", new Line("D3", (float) 13, 0));
+            team.getLines().put("D4", new Line("D4", (float) 11, 0));
+        } else {
+            team.getLines().put("D1", new Line("D1", (float) 12.5, 0));
+            team.getLines().put("D2", new Line("D2", (float) 10.5, 0));
+            team.getLines().put("D3", new Line("D3", (float) 9.5, 0));
+            team.getLines().put("D4", new Line("D4", (float) 8.0, 0));
+        }
 
         int size = teamEntity.getPlayers().size();
         for (int i=0; i< size-1; i++) {
