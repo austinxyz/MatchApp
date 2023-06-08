@@ -1,6 +1,7 @@
 package com.utr.match.utr;
 
 import com.utr.match.entity.*;
+import com.utr.match.model.Team;
 import com.utr.match.usta.USTATeamImportor;
 import com.utr.model.League;
 import com.utr.model.Player;
@@ -46,8 +47,12 @@ public class UTRService {
         return eventRepository.findAll();
     }
 
-    public UTRTeamEntity getTeam(String teamId) {
-        return teamRepository.findByUtrTeamId(teamId);
+    public Team getTeam(String teamId) {
+        UTRTeamEntity teamEntity = teamRepository.findByUtrTeamId(teamId);
+        if (teamEntity!=null) {
+            return teamFactory.createTeam(teamEntity);
+        }
+        return null;
     }
 
     public UTRTeamEntity importTeam(String teamId, League league) {
@@ -117,7 +122,7 @@ public class UTRService {
     public CandidateTeam getCandidateTeam(Long id) {
         DivisionEntity div = getDivision(id);
         if (div != null) {
-            return teamFactory.createTeam(div);
+            return teamFactory.createCandidateTeam(div);
         }
         return null;
     }
@@ -185,7 +190,7 @@ public class UTRService {
 
     public CandidateTeam updateCandidatesUTRValue(DivisionEntity div, boolean forceUpdate, boolean includesWinPercent) {
         importor.updateCandidateListUTRInfo(div.getCandidates(), forceUpdate, includesWinPercent);
-        return teamFactory.createTeam(div, true);
+        return teamFactory.createCandidateTeam(div, true);
     }
 
     public void updatePlayersUTRValue(DivisionEntity division, boolean forceUpdate, boolean includesWinPercent) {

@@ -2,6 +2,7 @@ package com.utr.match;
 
 
 import com.utr.match.entity.*;
+import com.utr.match.model.Team;
 import com.utr.match.usta.*;
 import com.utr.match.usta.po.*;
 import com.utr.match.utr.CandidateTeam;
@@ -52,9 +53,9 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}")
-    public ResponseEntity<UTRTeamEntity> getTeam(@PathVariable("id") String id
+    public ResponseEntity<Team> getTeam(@PathVariable("id") String id
     ) {
-        UTRTeamEntity team = utrService.getTeam(id);
+        Team team = utrService.getTeam(id);
 
         if (team != null) {
             return ResponseEntity.ok(team);
