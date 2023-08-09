@@ -96,6 +96,13 @@ public class USTAMatch {
 
     private String getTeamName(USTATeamEntity team) {
         if (team != null) {
+                return team.getName();
+        }
+        return "";
+    }
+
+    private String getTeamNameWithAlias(USTATeamEntity team) {
+        if (team != null) {
             if (team.getAlias() != null && !team.getAlias().trim().equals("")) {
                 return team.getName() + "-" + team.getAlias();
             } else {

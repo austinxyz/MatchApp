@@ -37,7 +37,7 @@ public class UTRExcelImporter {
         try {
             file = new FileInputStream(new File(fileLocation));
             Workbook workbook = new XSSFWorkbook(file);
-            Sheet sheet = workbook.getSheet("Player Match UTR");
+            Sheet sheet = workbook.getSheet("Player Match UTR for Match 4");
             int rowIndex = 1;
             boolean notEmpty = true;
             UTRTeamEntity team = null;
@@ -74,9 +74,9 @@ public class UTRExcelImporter {
                         continue;
                     }
 
-                    String matchUTR = row.getCell(14).toString();
+                    String matchUTR = row.getCell(6).toString();
                     if (matchUTR.equals("TBD")) {
-                        matchUTR = row.getCell(15).toString();
+                        matchUTR = row.getCell(7).toString();
                     }
                     if (!matchUTR.trim().equals("")) {
                         member.setMatchUTR(Double.parseDouble(matchUTR));
