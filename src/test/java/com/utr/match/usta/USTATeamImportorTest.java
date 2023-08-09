@@ -21,9 +21,9 @@ class USTATeamImportorTest {
 
 
     final String teamURL = "https://www.ustanorcal.com/teaminfo.asp?id=96444";
-    final String teamName = "MORGAN HILL TC/MORGAN HILL TC 18MX7.0B";
+    final String teamName = "BAY CLUB COURTSIDE 40MX7.0D";
 
-    String divisionName = "2023 Mixed 18 & Over 7.0";
+    String divisionName = "2023 Mixed 40 & Over 7.0";
     final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-ds&l=17838:2605&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
@@ -136,5 +136,12 @@ class USTATeamImportorTest {
             USTATeam team = new USTATeam(teamEntity);
             importor.updateTeamPlayersDR(team);
         }
+    }
+
+    @Test
+    void updateTeamUTRInfo() {
+        USTATeamEntity teamEntity = teamRepository.findByNameAndDivision_Name(teamName, divisionName);
+        USTATeam team = new USTATeam(teamEntity);
+        importor.updateTeamUTRInfo(team, true, false);
     }
 }

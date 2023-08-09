@@ -93,6 +93,9 @@ public class UTRService {
                 UTRTeamMember member = teamEntity.getMember(player.getId());
                 if (member == null) {
                     PlayerEntity playerEntity = createOrGetPlayer(player.getId());
+                    if (playerEntity == null) {
+                        continue;
+                    }
                     member = new UTRTeamMember(playerEntity);
                     member.setTeam(teamEntity);
                     teamEntity.getPlayers().add(member);

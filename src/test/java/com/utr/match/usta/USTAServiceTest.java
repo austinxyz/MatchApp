@@ -42,7 +42,7 @@ class USTAServiceTest {
 
     @Test
     void getTeam() {
-        service.getTeam("213", true);
+        service.getTeam("357", true);
     }
 
     @Test

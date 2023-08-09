@@ -41,7 +41,7 @@ public class TeamFactory {
         for (UTRTeamMember member: teamEntity.getPlayers()) {
             team.getPlayers().add(toPlayer(member));
         }
-        if (teamEntity.getType().equals("Gold")) {
+        if (teamEntity.getType()!=null && teamEntity.getType().equals("Gold")) {
             team.getLines().put("D1", new Line("D1", (float) 17, 0));
             team.getLines().put("D2", new Line("D2", (float) 15, 0));
             team.getLines().put("D3", new Line("D3", (float) 13, 0));
