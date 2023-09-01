@@ -17,17 +17,17 @@ class EventRepositoryTest {
 
     @Test
     void createEvents() {
-        EventEntity event = new EventEntity("2023 HeCares Cup Doubles League and Tournament", "UTR", "1111");
+        EventEntity event = new EventEntity("2023 Zijing Cup Alumni Tennis Team Championships Silver Group", "UTR", "2222");
         eventRepository.save(event);
     }
 
     @Test
     void createDivision() {
-        EventEntity event = eventRepository.findByEventId("1111");
+        EventEntity event = eventRepository.findByEventId("2222");
 
-        DivisionEntity division = new DivisionEntity("EVL", event);
-        division.setEnglishName("Ever Victorious Land");
-        division.setChineseName("常胜谷");
+        DivisionEntity division = new DivisionEntity("ZJU-HQU-CMU", event);
+        division.setEnglishName("ZJU-HQU-CMU");
+        division.setChineseName("浙江华耐吉");
         divisionRepository.save(division);
     }
 

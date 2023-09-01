@@ -112,14 +112,14 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @PutMapping("/divisions/{id}/candidate/{utrid}")
-    public ResponseEntity<PlayerEntity> addCandidate(@PathVariable("id") long id, @PathVariable("utrid") String utrId ) {
+    public ResponseEntity<DivisionEntity> addCandidate(@PathVariable("id") long id, @PathVariable("utrid") String utrId ) {
 
         DivisionEntity div = utrService.getDivision(Long.valueOf(id));
 
-        PlayerEntity player = utrService.addCandidate(div, utrId);
+        div = utrService.addCandidate(div, utrId);
 
-        if (player != null) {
-            return new ResponseEntity<>(player, HttpStatus.OK);
+        if (div != null) {
+            return new ResponseEntity<>(div, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
