@@ -130,7 +130,7 @@ public class UTRService {
         return null;
     }
 
-    public PlayerEntity addCandidate(DivisionEntity division, String playerUTRId) {
+    public DivisionEntity addCandidate(DivisionEntity division, String playerUTRId) {
         System.out.println("add canidate:" + playerUTRId);
         PlayerEntity player = createOrGetPlayer(playerUTRId);
 
@@ -139,10 +139,10 @@ public class UTRService {
         }
 
         division.addCandidate(player);
-        divisionRepository.save(division);
+        DivisionEntity result = divisionRepository.save(division);
         System.out.println("candidate " + player.getName() + " is added into team");
 
-        return player;
+        return result;
     }
 
     private PlayerEntity createOrGetPlayer(String playerUTRId) {

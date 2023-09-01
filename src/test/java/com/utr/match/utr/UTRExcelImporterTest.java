@@ -18,6 +18,6 @@ class UTRExcelImporterTest {
     void importUTR() {
         League league = null;
         league = service.getLeague("26");
-        importer.importUTR(league, false);
+        importer.importUTR(league, true);
     }
 }

@@ -37,7 +37,7 @@ public class UTRExcelImporter {
         try {
             file = new FileInputStream(new File(fileLocation));
             Workbook workbook = new XSSFWorkbook(file);
-            Sheet sheet = workbook.getSheet("Player Match UTR for Match 4");
+            Sheet sheet = workbook.getSheet("Player Match UTR for Match 6");
             int rowIndex = 1;
             boolean notEmpty = true;
             UTRTeamEntity team = null;

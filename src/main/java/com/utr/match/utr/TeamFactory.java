@@ -90,6 +90,10 @@ public class TeamFactory {
             team = createHCCandidateTeam(div);
         }
 
+        if (div.getEvent().getType().equals("ZJ")) {
+            team = createZJCandidateTeam(div);
+        }
+
         if (team == null) {
             return null;
         }
@@ -152,6 +156,16 @@ public class TeamFactory {
         team.getLines().put("D2", new Line("D2", (float) 10.5, 0));
         team.getLines().put("D3", new Line("D3", (float) 9.5, 0));
         team.getLines().put("D4", new Line("D4", (float) 8.0, 0));
+        return team;
+    }
+
+    private CandidateTeam createZJCandidateTeam(DivisionEntity div) {
+        CandidateTeam team = new CandidateTeam(div);
+        team.getLines().put("D1", new Line("D1", (float) 13.0, 0));
+        team.getLines().put("D2", new Line("D2", (float) 12.0, 0));
+        team.getLines().put("D3", new Line("D3", (float) 11.0, 0));
+        team.getLines().put("MD", new Line("MD", (float) 10.5, 1));
+        team.getLines().put("WD", new Line("WD", (float) 9.5, 2));
         return team;
     }
 }
