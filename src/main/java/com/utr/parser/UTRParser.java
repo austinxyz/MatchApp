@@ -125,7 +125,7 @@ public class UTRParser {
 
     public float getWinPercent(String playerId, boolean latest) {
         PlayerResultParser resultParser = new PlayerResultParser(playerId);
-        PlayerResult result = resultParser.parseResult(getResultJson(playerId, latest, false), false);
+        PlayerResult result = resultParser.parseResult(getResultJson(playerId, latest, true), false);
         if (result.getLossesNumber() + result.getWinsNumber() == 0) {
             return 0.0f;
         }

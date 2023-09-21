@@ -3,6 +3,7 @@ package com.utr.match.utr;
 import com.utr.match.entity.*;
 import com.utr.match.model.Team;
 import com.utr.match.usta.USTATeamImportor;
+import com.utr.model.Division;
 import com.utr.model.League;
 import com.utr.model.Player;
 import com.utr.model.UTRTeam;
@@ -53,6 +54,47 @@ public class UTRService {
             return teamFactory.createTeam(teamEntity);
         }
         return null;
+    }
+
+    public UTRTeamEntity importTeam(Division division) {
+
+        UTRTeamEntity teamEntity = teamRepository.findByUtrTeamId(division.getId());
+
+        if (teamEntity == null) {
+
+            System.out.println("division is not in db, init team: " + division.getName());
+            teamEntity = new UTRTeamEntity(division.getName(), division.getId());
+
+            teamEntity = teamRepository.save(teamEntity);
+
+            for(Player player: division.getPlayers()) {
+                PlayerEntity playerEntity = createOrGetPlayer(player.getId());
+                UTRTeamMember member = new UTRTeamMember(playerEntity);
+                member.setTeam(teamEntity);
+                teamEntity.getPlayers().add(member);
+                System.out.println("add member: " + member.getName());
+            }
+
+        } else {
+            for (Player player: division.getPlayers()) {
+                UTRTeamMember member = teamEntity.getMember(player.getId());
+                if (member == null) {
+                    PlayerEntity playerEntity = createOrGetPlayer(player.getId());
+                    if (playerEntity == null) {
+                        continue;
+                    }
+                    member = new UTRTeamMember(playerEntity);
+                    member.setTeam(teamEntity);
+                    teamEntity.getPlayers().add(member);
+                    System.out.println("add member: " + member.getName());
+                }
+            }
+        }
+
+        teamEntity = teamRepository.save(teamEntity);
+        System.out.println("division: " + division.getName() + " is updated");
+
+        return teamEntity;
     }
 
     public UTRTeamEntity importTeam(String teamId, League league) {

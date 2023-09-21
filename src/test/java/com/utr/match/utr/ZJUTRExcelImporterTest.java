@@ -1,19 +1,25 @@
 package com.utr.match.utr;
 
+import com.utr.model.League;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
-class PlayerImporterTest {
+class ZJUTRExcelImporterTest {
 
     @Autowired
-    PlayerImporter importer;
+    ZJUTRExcelImporter importer;
+
 
     @Test
     void importUTR() {
-        importer.importUTR("2023 USTA 2.5.xlsx");
+        importer.importUTR("ZJU-HQU-CMU", true);
+    }
+
+    @Test
+    void updateTeamChineseName() {
+        importer.updateTeamChineseName();
     }
 }

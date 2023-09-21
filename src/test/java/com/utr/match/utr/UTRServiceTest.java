@@ -1,11 +1,9 @@
 package com.utr.match.utr;
 
+import com.utr.match.TeamLoader;
 import com.utr.match.entity.DivisionEntity;
 import com.utr.match.entity.UTRTeamCandidate;
-import com.utr.model.Conference;
-import com.utr.model.League;
-import com.utr.model.Session;
-import com.utr.model.UTRTeam;
+import com.utr.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,11 +16,14 @@ class UTRServiceTest {
     @Autowired
     UTRService service;
 
+    @Autowired
+    TeamLoader loader;
+
     @Test
     void addCandidate() {
         DivisionEntity div = service.getDivision(20L);
-        div = service.addCandidate(div, "4029352");
-        div =service.addCandidate(div, "2970765");
+        div = service.addCandidate(div, "3822713");
+        //div =service.addCandidate(div, "2970765");
 /*        div = service.addCandidate(div, "3501040");
         div = service.addCandidate(div, "2683513");
         div =service.addCandidate(div, "1316122");
@@ -71,4 +72,12 @@ class UTRServiceTest {
             }
         }
     }
+
+    @Test
+    void importEvent() {
+        for (Division div: loader.getDivisions()) {
+            service.importTeam(div);
+        }
+    }
+
 }

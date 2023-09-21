@@ -52,14 +52,15 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
         // create row0 as a header
         Row row0 = sheet.createRow(rowNum++);
         row0.createCell(0).setCellValue("#");
-        row0.createCell(1).setCellValue("Player");
-        row0.createCell(2).setCellValue("UTR");
-        row0.createCell(3).setCellValue("UTR WPct");
-        row0.createCell(4).setCellValue("Double UTR");
-        row0.createCell(5).setCellValue("Self Rating");
-        row0.createCell(6).setCellValue("Adjusted UTR");
+        row0.createCell(1).setCellValue("Last Name");
+        row0.createCell(2).setCellValue("First Name");
+        row0.createCell(3).setCellValue("UTR");
+        row0.createCell(4).setCellValue("UTR WPct");
+        row0.createCell(5).setCellValue("Double UTR");
+        row0.createCell(6).setCellValue("Self Rating");
+        row0.createCell(7).setCellValue("Adjusted UTR");
 
-        int index=7;
+        int index=8;
         for (String key: team.getLines().keySet()) {
             row0.createCell(index).setCellValue(key);
             index++;
@@ -71,9 +72,11 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
 
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(index++);
-            Cell player = row.createCell(1);
-            player.setCellValue(member.getName() + "(" + member.getGender() + ")");
-            Cell utr = row.createCell(2);
+            Cell lastName = row.createCell(1);
+            lastName.setCellValue(member.getLastName());
+            Cell firstName = row.createCell(2);
+            firstName.setCellValue(member.getFirstName());
+            Cell utr = row.createCell(3);
             utr.setCellValue(member.getDUTR() + "D(" + member.getDUTRStatus() + ")/" + member.getSUTR()+"S("+member.getSUTRStatus()+")");
             if (member.getUtrId()!=null && !member.getUtrId().trim().equals("")) {
                 Hyperlink link = helper.createHyperlink(HyperlinkType.URL);
@@ -82,12 +85,12 @@ public class UTRDivisionExcelExport extends AbstractXlsxView {
                 utr.setCellStyle(hylinkSytle);
             }
 
-            row.createCell(3).setCellValue(String.format("%.2f", member.getSuccessRate()*100) + "%/" + String.format("%.2f",member.getWholeSuccessRate()*100)+"%");
-            row.createCell(4).setCellValue(member.getDUTR());
-            row.createCell(5).setCellValue(member.getSelfRating());
-            row.createCell(6).setCellValue(member.getUTR());
+            row.createCell(4).setCellValue(String.format("%.2f", member.getSuccessRate()*100) + "%/" + String.format("%.2f",member.getWholeSuccessRate()*100)+"%");
+            row.createCell(5).setCellValue(member.getDUTR());
+            row.createCell(6).setCellValue(member.getSelfRating());
+            row.createCell(7).setCellValue(member.getUTR());
 
-            int rowIndex=7;
+            int rowIndex=8;
             for (String key: team.getLines().keySet()) {
                 row.createCell(rowIndex).setCellValue(member.getLinePartners().get(key));
                 rowIndex++;

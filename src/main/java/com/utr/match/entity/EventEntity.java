@@ -73,6 +73,15 @@ public class EventEntity {
         return divisions;
     }
 
+    public DivisionEntity getDivision(String divId) {
+        for (DivisionEntity div: this.divisions) {
+            if (div.getDivisionId().equals(divId)) {
+                return div;
+            }
+        }
+        return null;
+    }
+
     public String getAlias() {
         return alias;
     }

@@ -18,7 +18,7 @@ public class Division {
     }
 
     public String getDisplayName() {
-        return displayName;
+        return displayName==null? name: displayName;
     }
 
     public void setDisplayName(String displayName) {

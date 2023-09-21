@@ -12,4 +12,6 @@ public interface DivisionRepository extends CrudRepository<DivisionEntity, Long>
 
     DivisionEntity findByName(String name);
 
+    List<DivisionEntity> findByEvent_IdAndName(long id, String name);
+
 }
