@@ -1,6 +1,6 @@
 package com.utr.match;
 
-import com.utr.match.entity.EventDBLoader;
+import com.utr.match.entity.*;
 import com.utr.match.model.Line;
 import com.utr.match.model.PlayerPair;
 import com.utr.match.model.Team;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Scope("singleton")
 public class TeamLoader {
 
-    public static final String DEFAULT_EVENT_ID = "123233";
+    public static final String DEFAULT_EVENT_ID = "196830";
     public static final String DEFAULT_CLUB_ID = "3156";
     Map<String, Event> events;
     Map<String, Club> clubs;
@@ -30,6 +30,9 @@ public class TeamLoader {
 
     @Autowired
     EventDBLoader loader;
+
+    @Autowired
+    UTRTeamRepository utrTeamRepository;
 
     private TeamLoader() {
 
@@ -116,10 +119,14 @@ public class TeamLoader {
         return club;
     }
 
-    public Team initTeam(String teamName) {
+/*    public Team initTeam(String teamName) {
         Event event = getOrFetchEvent(DEFAULT_EVENT_ID, true);
 
         Division div = event.getDivisionByName(teamName);
+
+        if (div == null) {
+            return null;
+        }
 
         Team team = createTeam(div);
 
@@ -128,6 +135,47 @@ public class TeamLoader {
         }
 
         return team;
+    }*/
+
+    public Team initTeam(String teamName) {
+
+        Event event = getOrFetchEvent(DEFAULT_EVENT_ID, true);
+
+        Division div = event.getDivisionByName(teamName);
+
+        if (div == null) {
+            return null;
+        }
+
+        UTRTeamEntity teamEntity = utrTeamRepository.findByUtrTeamId(div.getId());
+
+        if (teamEntity == null) {
+            return null;
+        }
+
+        Team team = createTeam(teamEntity);
+
+        for (UTRTeamMember member : teamEntity.getPlayers()) {
+            Player player = toPlayer(member, div);
+
+            createPlayer(team, player);
+        }
+
+        return team;
+    }
+
+    private Player toPlayer(UTRTeamMember member, Division div) {
+        Player player = div.getPlayerByUTRId(member.getUtrId());
+        if (member.getMatchUTR() >= 0.1d) {
+            player.setUTR(String.valueOf(member.getMatchUTR()));
+        } else {
+            //player.setUTR(String.valueOf(member.getDUTR()));
+        }
+        player.setId(member.getUtrId());
+        player.setUstaRating(member.getUSTARating());
+        player.setSuccessRate(member.getSuccessRate());
+        player.setWholeSuccessRate(member.getWholeSuccessRate());
+        return player;
     }
 
     public Team initTeam(String teamId, String eventId, boolean withToken) {
@@ -176,6 +224,17 @@ public class TeamLoader {
         Team team = new Team(div.getName());
         team.setDisplayName(div.getDisplayName());
         team.setTeamId(div.getId());
+        team.getLines().put("D3", new Line("D3", (float) 11.0, 0));
+        team.getLines().put("MD", new Line("MD", (float) 10.5, 1));
+        team.getLines().put("D2", new Line("D2", (float) 12.0, 0));
+        team.getLines().put("D1", new Line("D1", (float) 13.0, 0));
+        team.getLines().put("WD", new Line("WD", (float) 9.5, 2));
+        return team;
+    }
+
+    private Team createTeam(UTRTeamEntity teamEntity) {
+        Team team = new Team(teamEntity.getName());
+        team.setTeamId(teamEntity.getUtrTeamId());
         team.getLines().put("D3", new Line("D3", (float) 11.0, 0));
         team.getLines().put("MD", new Line("MD", (float) 10.5, 1));
         team.getLines().put("D2", new Line("D2", (float) 12.0, 0));

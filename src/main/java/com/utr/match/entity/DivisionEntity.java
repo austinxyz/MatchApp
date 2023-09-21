@@ -35,7 +35,7 @@ public class DivisionEntity {
     }
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "division_players",
         joinColumns = {@JoinColumn(name="division_id")},
         inverseJoinColumns = {@JoinColumn(name="player_id")})
@@ -50,7 +50,7 @@ public class DivisionEntity {
     private List<PlayerEntity> candidates;
 */
     @JsonIgnore
-    @OneToMany(mappedBy = "division", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "division", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UTRTeamCandidate> candidates;
 
     @JsonIgnore

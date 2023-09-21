@@ -3,6 +3,7 @@ package com.utr.match.usta;
 import com.utr.match.entity.*;
 import com.utr.match.usta.po.USTALeaguePO;
 import com.utr.match.usta.po.USTATeamPO;
+import com.utr.model.League;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,9 @@ class USTAServiceTest {
     @Autowired
     private USTADivisionRepository ustaDivisionRepository;
 
+    @Autowired
+    private USTALeagueRepository leagueRepository;
+
     @Test
     void getPlayerScores() {
         System.out.println(service.getPlayerScores("20"));
@@ -28,6 +32,16 @@ class USTAServiceTest {
     void getLeaguesFromUSTASite() {
         for (USTALeaguePO league:service.getLeaguesFromUSTASite()) {
             System.out.println(league);
+        }
+    }
+
+    @Test
+    void createLeaguesFromUSTASite() {
+        for (USTALeaguePO league:service.getLeaguesFromUSTASite()) {
+            if (league.getName().indexOf("Combo") > 0 && !league.isInDB()) {
+                USTALeague ustaLeague = new USTALeague(league.getName(), league.getYear());
+                leagueRepository.save(ustaLeague);
+            }
         }
     }
 

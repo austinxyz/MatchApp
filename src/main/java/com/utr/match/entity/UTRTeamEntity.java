@@ -97,4 +97,12 @@ public class UTRTeamEntity {
             + " in team:" + this.getName());
         return null;
     }
+
+    public String getUtrTeamId() {
+        return utrTeamId;
+    }
+
+    public void setUtrTeamId(String utrTeamId) {
+        this.utrTeamId = utrTeamId;
+    }
 }

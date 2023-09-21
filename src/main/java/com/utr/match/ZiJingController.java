@@ -110,10 +110,10 @@ public class ZiJingController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/team")
-    public ResponseEntity<Team> team(@RequestParam(value = "team", defaultValue = "ZJU-BYD") String teamName) {
+    public ResponseEntity<Team> team(@RequestParam(value = "team", defaultValue = "ZJU-HQU-CMU") String teamName) {
         Team team = loader.initTeam(teamName);
 
-        if (team.getPlayers().size() > 0) {
+        if (team!=null && team.getPlayers().size() > 0) {
             return ResponseEntity.ok(team);
         } else {
             return ResponseEntity.notFound().build();

@@ -56,21 +56,27 @@ public class PlayerImporter {
                 }
 
 
-                String area = row.getCell(2).toString().trim();
-                String gender = row.getCell(3).toString().trim();
+                String area = row.getCell(1).toString().trim();
+                String gender = "F";
+
+                if (name == null || name.trim().equals("")) {
+                    notEmpty = false;
+                    continue;
+                }
 
                 String utrID = findUTRID(name, gender, area);
 
                 if (!utrID.equals("")) {
                     System.out.println("Find " + name + "UTRID " + utrID);
                     Player player = parser.getPlayer(utrID, true);
-                    row.createCell(4).setCellValue(utrID);
-                    row.createCell(5).setCellValue(player.getdUTR());
-                    row.createCell(6).setCellValue(player.getdUTRStatus());
+                    row.createCell(3).setCellValue(utrID);
+                    row.createCell(4).setCellValue(player.getdUTR());
+                    row.createCell(5).setCellValue(player.getdUTRStatus());
                 } else {
                     System.out.println("Can not find " + name + "'s UTRID ");
                 }
 
+                Thread.sleep(5000);
                 rowIndex++;
 
             }
@@ -81,6 +87,8 @@ public class PlayerImporter {
             outputStream.close();
 
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
@@ -104,9 +112,9 @@ public class PlayerImporter {
                 continue;
             }
 
-            if (utrPlayer.getLocation() == null || !utrPlayer.getLocation().startsWith(area)) {
+/*            if (utrPlayer.getLocation() == null || !utrPlayer.getLocation().startsWith(area)) {
                 continue;
-            }
+            }*/
 
             candidateUTRIds.add(utrPlayer.getId());
         }
