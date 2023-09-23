@@ -35,7 +35,7 @@ public class UTRParser {
     public static final String LEAGUE_CONFERENCE_URL = "https://leagues-api.universaltennis.com/v1/leagues/conferences/%s";
     public static final String LEAGUE_URL = "https://leagues-api.universaltennis.com/v1/leagues/%s/summary";
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNjI2MjAxMCIsIm5iZiI6MTY5MjgwOTAzMCwiZXhwIjoxNjk1NDAxMDI5LCJpYXQiOjE2OTI4MDkwMzB9.AciEVUprmbOdQVNsaBjW-_vR4ssWR2WcfC9rzzG854s";
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNjcwNDM4NCIsIm5iZiI6MTY5NTQxODU1NSwiZXhwIjoxNjk4MDEwNTU1LCJpYXQiOjE2OTU0MTg1NTV9.vFwNNDR93AAE9vTw7_FuuH-JJRR3dep6Xes4dmw52R0";
     Map<String, PlayerResult> playerResults;
     Map<String, Player> players;
     Map<String, Event> events;

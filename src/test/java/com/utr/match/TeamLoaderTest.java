@@ -31,7 +31,7 @@ class TeamLoaderTest {
     @Transactional
     @Test
     void initTeam() {
-        Team team = loader.initTeam("THU-UW-UCB");
+        Team team = loader.initTeam("USTC");
 
         System.out.println(team);
     }

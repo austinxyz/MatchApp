@@ -98,7 +98,7 @@ public class ZJUTRExcelImporter {
             while(notEmpty) {
                 Row row = sheet.getRow(rowIndex);
 
-                if (row == null) {
+                if (row == null || row.getCell(0) == null) {
                     notEmpty = false;
                     continue;
                 }

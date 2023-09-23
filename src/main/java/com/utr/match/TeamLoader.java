@@ -97,13 +97,19 @@ public class TeamLoader {
         if (events.containsKey(eventId)) {
             event = events.get(eventId);
         } else {
-            event = parser.parseEvent(eventId, withToken);
-
-            if (eventId.equals(DEFAULT_EVENT_ID)) {
-                loader.updateEvent(event);
-            }
-            events.put(eventId, event);
+            event = fetchEvent(eventId, withToken);
         }
+        return event;
+    }
+
+    private Event fetchEvent(String eventId, boolean withToken) {
+        Event event;
+        event = parser.parseEvent(eventId, withToken);
+
+        if (eventId.equals(DEFAULT_EVENT_ID)) {
+            loader.updateEvent(event);
+        }
+        events.put(eventId, event);
         return event;
     }
 
@@ -119,49 +125,13 @@ public class TeamLoader {
         return club;
     }
 
-/*    public Team initTeam(String teamName) {
-        Event event = getOrFetchEvent(DEFAULT_EVENT_ID, true);
-
-        Division div = event.getDivisionByName(teamName);
-
-        if (div == null) {
-            return null;
-        }
-
-        Team team = createTeam(div);
-
-        for (Player player : div.getPlayers()) {
-            createPlayer(team, player);
-        }
-
-        return team;
-    }*/
-
     public Team initTeam(String teamName) {
 
         Event event = getOrFetchEvent(DEFAULT_EVENT_ID, true);
 
         Division div = event.getDivisionByName(teamName);
 
-        if (div == null) {
-            return null;
-        }
-
-        UTRTeamEntity teamEntity = utrTeamRepository.findByUtrTeamId(div.getId());
-
-        if (teamEntity == null) {
-            return null;
-        }
-
-        Team team = createTeam(teamEntity);
-
-        for (UTRTeamMember member : teamEntity.getPlayers()) {
-            Player player = toPlayer(member, div);
-
-            createPlayer(team, player);
-        }
-
-        return team;
+        return getTeam(div, DEFAULT_EVENT_ID);
     }
 
     private Player toPlayer(UTRTeamMember member, Division div) {
@@ -180,17 +150,35 @@ public class TeamLoader {
 
     public Team initTeam(String teamId, String eventId, boolean withToken) {
 
-        Event event = getOrFetchEvent(eventId, withToken);
+        Event event = getOrFetchEvent(eventId, true);
 
         Division div = event.getDivision(teamId);
 
+        return getTeam(div, eventId);
+    }
+
+    private Team getTeam(Division div, String eventId) {
         if (div == null) {
             return null;
         }
 
-        Team team = createTeam(div);
+        UTRTeamEntity teamEntity = utrTeamRepository.findByUtrTeamId(div.getId());
 
-        for (Player player : div.getPlayers()) {
+        if (teamEntity == null) {
+            return null;
+        }
+
+        if (teamEntity.getPlayers().size() != div.getPlayers().size()) {
+            Event event = fetchEvent(eventId, true);
+            div = event.getDivision(div.getId());
+        }
+
+        Team team = createTeam(teamEntity);
+
+        for (UTRTeamMember member : teamEntity.getPlayers()) {
+            Player player = toPlayer(member, div);
+
+
             createPlayer(team, player);
         }
 
