@@ -1,6 +1,7 @@
 package com.utr.match.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.utr.match.entity.USTATeamMember;
 import com.utr.model.Player;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class Team {
     }
 
     public List<Player> getPlayers() {
+        players.sort((Player o1, Player o2) -> Double.compare(o2.getUTR(), o1.getUTR()));
         return players;
     }
 
