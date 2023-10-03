@@ -74,6 +74,10 @@ public class UTRTeamEntity {
         return null;
     }
 
+    public void removePlayer(UTRTeamMember member) {
+        players.remove(member);
+    }
+
     public void addPlayer(UTRTeamMember member) {
         players.add(member);
     }

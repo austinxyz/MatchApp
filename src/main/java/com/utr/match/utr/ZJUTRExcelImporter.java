@@ -74,26 +74,18 @@ public class ZJUTRExcelImporter {
         }
     }
 
-    public void importUTR(String teamName, boolean force) {
+    public void importUTR(boolean force) {
 
         String fileLocation = "input/196830/2023 Zijing Cup Team Captain Registration.xlsx";
         FileInputStream file = null;
         try {
             file = new FileInputStream(new File(fileLocation));
             Workbook workbook = new XSSFWorkbook(file);
-            Sheet sheet = workbook.getSheet(teamName);
-            int rowIndex = 1;
+            Sheet sheet = workbook.getSheet("Player UTR (Silver)");
+            int rowIndex = 9;
             boolean notEmpty = true;
 
-            List<UTRTeamEntity> teams = teamRepository.findByName(teamName);
-
             UTRTeamEntity team = null;
-
-            if (teams.size() > 0){
-                team = teams.get(0);
-            } else {
-                return;
-            }
 
             while(notEmpty) {
                 Row row = sheet.getRow(rowIndex);
@@ -103,14 +95,24 @@ public class ZJUTRExcelImporter {
                     continue;
                 }
 
-                String lastName = row.getCell(0).toString();
+                String teamName = row.getCell(0).toString();
 
-                if (lastName == null || lastName.trim().equals("")) {
+                if (teamName == null || teamName.trim().equals("")) {
                     notEmpty = false;
                     continue;
                 }
 
-                String firstName = row.getCell(1).toString();
+                if (team ==null || !team.getName().equals(teamName)) {
+                    List<UTRTeamEntity> teams = teamRepository.findByName(teamName);
+                    if (teams.size() > 0) {
+                        team = teams.get(0);
+                    } else {
+                        continue;
+                    }
+                }
+
+                String lastName = row.getCell(1).toString();
+                String firstName = row.getCell(2).toString();
 
                 UTRTeamMember member = team.getMember(firstName, lastName);
 
@@ -121,7 +123,7 @@ public class ZJUTRExcelImporter {
                     }
 
                     String matchUTR = row.getCell(5).toString();
-                    if (!matchUTR.trim().equals("")) {
+                    if (!matchUTR.trim().equals("") && !matchUTR.equals(String.valueOf(member.getMatchUTR()))) {
                         member.setMatchUTR(Double.parseDouble(matchUTR));
                         memberRepository.save(member);
                         System.out.println(member.getName() + " match UTR:" + member.getMatchUTR() + " is saved");

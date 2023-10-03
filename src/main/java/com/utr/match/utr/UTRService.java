@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +36,9 @@ public class UTRService {
 
     @Autowired
     private UTRTeamRepository teamRepository;
+
+    @Autowired
+    private UTRTeamMemberRepository memberRepository;
 
     public League getLeague(String id) {
         return parser.getLeague(id);
@@ -76,6 +80,7 @@ public class UTRService {
             }
 
         } else {
+
             for (Player player: division.getPlayers()) {
                 UTRTeamMember member = teamEntity.getMember(player.getId());
                 if (member == null) {
@@ -89,6 +94,23 @@ public class UTRService {
                     System.out.println("add member: " + member.getName());
                 }
             }
+
+            List<UTRTeamMember> removed = new ArrayList<>();
+            for (UTRTeamMember member: teamEntity.getPlayers()) {
+                if (division.getPlayerByUTRId(member.getUtrId()) == null) {
+                    // removed
+                    removed.add(member);
+                }
+            }
+
+            for (UTRTeamMember member: removed) {
+                teamEntity.removePlayer(member);
+                member.setTeam(null);
+                System.out.println(member.getName() + " " + member.getPlayer().getId() + " is not existed in team " + teamEntity.getName() + ", removed");
+                memberRepository.delete(member);
+            }
+
+            System.out.println(teamEntity.getPlayers().size() + " vs. " + division.getPlayers().size());
         }
 
         teamEntity = teamRepository.save(teamEntity);

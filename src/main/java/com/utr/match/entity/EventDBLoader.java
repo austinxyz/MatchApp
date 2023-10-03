@@ -29,6 +29,10 @@ public class EventDBLoader {
         for (DivisionEntity divisionEntity: entity.getDivisions()) {
             //System.out.println(divisionEntity.getName());
             Division div = event.getDivisionByName(divisionEntity.getName());
+            if (div == null) {
+                System.out.println(divisionEntity.getName() + " is not existed!");
+                continue;
+            }
             div.setDisplayName(divisionEntity.getChineseName());
             convertDivision(divisionEntity, div);
         }

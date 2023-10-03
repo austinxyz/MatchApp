@@ -136,6 +136,9 @@ public class TeamLoader {
 
     private Player toPlayer(UTRTeamMember member, Division div) {
         Player player = div.getPlayerByUTRId(member.getUtrId());
+        if (player == null) {
+            return player;
+        }
         if (member.getMatchUTR() >= 0.1d) {
             player.setUTR(String.valueOf(member.getMatchUTR()));
         } else {
@@ -169,8 +172,13 @@ public class TeamLoader {
         }
 
         if (teamEntity.getPlayers().size() != div.getPlayers().size()) {
+            System.out.println("team " + teamEntity.getName() + " has " + teamEntity.getPlayers().size() + " not same players in utr :" + div.getPlayers().size());
             Event event = fetchEvent(eventId, true);
             div = event.getDivision(div.getId());
+
+            if (div == null) {
+                return null;
+            }
         }
 
         Team team = createTeam(teamEntity);
@@ -178,9 +186,14 @@ public class TeamLoader {
         for (UTRTeamMember member : teamEntity.getPlayers()) {
             Player player = toPlayer(member, div);
 
+            if (player == null) {
+                continue;
+            }
 
             createPlayer(team, player);
         }
+
+        team.caculateTeamUTR();
 
         return team;
     }
@@ -216,7 +229,7 @@ public class TeamLoader {
         team.getLines().put("MD", new Line("MD", (float) 10.5, 1));
         team.getLines().put("D2", new Line("D2", (float) 12.0, 0));
         team.getLines().put("D1", new Line("D1", (float) 13.0, 0));
-        team.getLines().put("WD", new Line("WD", (float) 9.5, 2));
+        team.getLines().put("WD", new Line("WD", (float) 9.5, 2, 4.5f));
         return team;
     }
 
@@ -227,7 +240,7 @@ public class TeamLoader {
         team.getLines().put("MD", new Line("MD", (float) 10.5, 1));
         team.getLines().put("D2", new Line("D2", (float) 12.0, 0));
         team.getLines().put("D1", new Line("D1", (float) 13.0, 0));
-        team.getLines().put("WD", new Line("WD", (float) 9.5, 2));
+        team.getLines().put("WD", new Line("WD", (float) 9.5, 2, 4.5f));
         return team;
     }
 }
