@@ -18,13 +18,24 @@ public class Line {
     int count = 12;
 
     @JsonIgnore
+    float pairScope = 2.0f;
+
+    @JsonIgnore
     List<PlayerPair> matchedPairs;
 
+    public int getFemaleCount() {
+        return femaleCount;
+    }
+
     public Line(String name, float utrLimit, int femaleCount) {
+        this(name, utrLimit, femaleCount, 2.0f);
+    }
+    public Line(String name, float utrLimit, int femaleCount, float pareScope) {
         this.name = name;
         this.utrLimit = utrLimit;
         this.femaleCount = femaleCount;
         this.matchedPairs = new ArrayList<>();
+        this.pairScope = pareScope;
     }
 
     public float getUtrLimit() {
@@ -67,7 +78,7 @@ public class Line {
 
     public boolean isMatch(PlayerPair pair) {
         return pair.getWCount() >= this.femaleCount &&
-                pair.getTotalUTR() <= this.utrLimit && pair.getTotalUTR() >= this.utrLimit-2 ;
+                pair.getTotalUTR() <= this.utrLimit && pair.getTotalUTR() >= this.utrLimit-this.pairScope ;
     }
 
     public void addMatchedPair(PlayerPair pair) {

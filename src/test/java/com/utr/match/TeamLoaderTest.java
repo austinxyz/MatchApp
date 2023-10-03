@@ -32,8 +32,9 @@ class TeamLoaderTest {
     @Test
     void initTeam() {
         Team team = loader.initTeam("USTC");
-
+        team.caculateTeamUTR();
         System.out.println(team);
+        System.out.println(team.getTeamUTR());
     }
 
     @Test

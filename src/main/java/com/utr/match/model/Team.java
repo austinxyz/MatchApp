@@ -19,6 +19,12 @@ public class Team {
     String teamId;
     List<Lineup> preferedLineups;
 
+    float teamUTR;
+
+    public float getTeamUTR() {
+        return teamUTR;
+    }
+
     public Team(String name) {
         this.name = name;
         this.players = new ArrayList<>();
@@ -48,6 +54,42 @@ public class Team {
     public List<Player> getPlayers() {
         players.sort((Player o1, Player o2) -> Double.compare(o2.getUTR(), o1.getUTR()));
         return players;
+    }
+
+    public void caculateTeamUTR() {
+
+        int maleCount = 0;
+        int femaleCount = 0;
+
+        for (Line line: lines.values()) {
+            femaleCount += line.getFemaleCount();
+            maleCount += (2-line.getFemaleCount());
+        }
+
+        float sumUTR = 0.0f;
+        int maleIndex = 0;
+        int femaleIndex = 0;
+        int i = 0;
+
+        List<Player> sortedPlayers = this.getPlayers();
+
+        while (maleIndex < maleCount || femaleIndex < femaleCount) {
+            Player player = sortedPlayers.get(i);
+
+            if (player.getGender().equals("M") && maleIndex < maleCount) {
+                sumUTR += player.getUTR();
+                maleIndex++;
+            }
+
+            if (player.getGender().equals("F") && femaleIndex < femaleCount) {
+                sumUTR += player.getUTR();
+                femaleIndex++;
+            }
+
+            i++;
+        }
+
+        this.teamUTR = sumUTR / (float)(femaleCount + maleCount);
     }
 
     public Map<String, Line> getLines() {

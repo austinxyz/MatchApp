@@ -15,7 +15,8 @@ class ZJUTRExcelImporterTest {
 
     @Test
     void importUTR() {
-        importer.importUTR("ZJU-HQU-CMU", true);
+
+        importer.importUTR( true);
     }
 
     @Test
