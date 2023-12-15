@@ -24,7 +24,7 @@ class USTATeamImportorTest {
     final String teamName = "BAY CLUB COURTSIDE 40MX7.0D";
 
     String divisionName = "2023 Mixed 40 & Over 7.0";
-    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-ds&l=17838:2605&r=L";
+    final String flightURL = "https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-eb&l=18480:2706&r=L";
 
     final String scoreCardURL = "https://www.ustanorcal.com/scorecard.asp?id=753886&l=17624:2624";
     @Autowired

@@ -16,7 +16,7 @@ class USTALeagueRepositoryTest {
     @Test
     void createLeague() {
 
-        USTALeague league = new USTALeague("2023 Mixed 40 & Over", "2023");
+        USTALeague league = new USTALeague("Tri-Level 3.5/4.0/4.5", "2023");
 
         leagueRepository.save(league);
 

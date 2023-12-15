@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 @SpringBootTest
 class USTAServiceTest {
 
@@ -37,8 +39,9 @@ class USTAServiceTest {
 
     @Test
     void createLeaguesFromUSTASite() {
-        for (USTALeaguePO league:service.getLeaguesFromUSTASite()) {
-            if (league.getName().indexOf("Combo") > 0 && !league.isInDB()) {
+        List<USTALeaguePO> leaguesFromUSTASite = service.getLeaguesFromUSTASite();
+        for (USTALeaguePO league: leaguesFromUSTASite) {
+            if ((league.getName().indexOf("Daytime") + league.getName().indexOf("Reno"))< 0  && !league.isInDB()) {
                 USTALeague ustaLeague = new USTALeague(league.getName(), league.getYear());
                 leagueRepository.save(ustaLeague);
             }

@@ -269,9 +269,9 @@ public class USTATeamExcelExport extends AbstractXlsxView {
         // create row1 onwards from List<T>
         for(USTATeamMember member: team.players) {
 
-            if (!member.isQualifiedPo()) {
-                continue;
-            }
+            //if (!member.isQualifiedPo()) {
+            //    continue;
+            //}
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(index++);
             Cell player = row.createCell(1);
