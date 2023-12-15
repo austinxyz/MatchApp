@@ -35,7 +35,11 @@ public class UTRParser {
     public static final String LEAGUE_CONFERENCE_URL = "https://leagues-api.universaltennis.com/v1/leagues/conferences/%s";
     public static final String LEAGUE_URL = "https://leagues-api.universaltennis.com/v1/leagues/%s/summary";
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNjcwNDM4NCIsIm5iZiI6MTY5NTQxODU1NSwiZXhwIjoxNjk4MDEwNTU1LCJpYXQiOjE2OTU0MTg1NTV9.vFwNNDR93AAE9vTw7_FuuH-JJRR3dep6Xes4dmw52R0";
+    //private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzE3MDczNSIsIm5iZiI6MTY5ODUzNzIyOSwiZXhwIjoxNzAxMTI5MjI5LCJpYXQiOjE2OTg1MzcyMjl9.YTea4jg2wgeH2CIX5mKqTBd2gc3jReeAqjI9ZbSQ5N4";
+
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjM5MTg5MyIsImVtYWlsIjoiaGV3ZW54aW5AaG90bWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzU0NzQ5NCIsIm5iZiI6MTcwMTE5MDY4OSwiZXhwIjoxNzAzNzgyNjg5LCJpYXQiOjE3MDExOTA2ODl9.vAIqpnc8B4QTg2NYNyr7qXeeL7uohrgRO21XWgUmQMk";
+
+
     Map<String, PlayerResult> playerResults;
     Map<String, Player> players;
     Map<String, Event> events;

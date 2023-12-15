@@ -56,8 +56,8 @@ public class PlayerImporter {
                 }
 
 
-                String area = row.getCell(1).toString().trim();
-                String gender = "F";
+                String area = row.getCell(2).toString().trim();
+                String gender = row.getCell(1).toString().trim();
 
                 if (name == null || name.trim().equals("")) {
                     notEmpty = false;
@@ -69,9 +69,9 @@ public class PlayerImporter {
                 if (!utrID.equals("")) {
                     System.out.println("Find " + name + "UTRID " + utrID);
                     Player player = parser.getPlayer(utrID, true);
-                    row.createCell(3).setCellValue(utrID);
-                    row.createCell(4).setCellValue(player.getdUTR());
-                    row.createCell(5).setCellValue(player.getdUTRStatus());
+                    row.createCell(4).setCellValue(utrID);
+                    row.createCell(5).setCellValue(player.getdUTR());
+                    row.createCell(6).setCellValue(player.getdUTRStatus());
                 } else {
                     System.out.println("Can not find " + name + "'s UTRID ");
                 }

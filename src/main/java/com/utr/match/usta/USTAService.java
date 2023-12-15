@@ -557,7 +557,8 @@ public class USTAService {
             for (String leagueName: leaguesFromSite.keySet()) {
                 if (!addedLeague.contains(leagueName)) {
                     Map<String, USTADivisionPO> leaugeDivisions = leaguesFromSite.get(leagueName);
-                    USTALeaguePO leaguePO = new USTALeaguePO(leagueName, "2023");
+                    String year = leagueName.substring(0,4);
+                    USTALeaguePO leaguePO = new USTALeaguePO(leagueName, year);
                     leaguePO.setInDB(false);
                     leaguePO.getDivisions().addAll(leaugeDivisions.values());
                     divisions.putAll(leaugeDivisions);

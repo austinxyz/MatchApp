@@ -132,7 +132,7 @@ public class USTASiteParser {
                 }
 
                 JSONObject scoreCard;
-                if (status.startsWith("Confirmed")) {
+                if (status.startsWith("Confirmed") || status.startsWith("Verify")) {
                     String href = tr.child(2).child(0).attr("href");
                     scoreCard = parseScoreCard("https://www.ustanorcal.com/" + href);
                     scoreCard.put("type", type);

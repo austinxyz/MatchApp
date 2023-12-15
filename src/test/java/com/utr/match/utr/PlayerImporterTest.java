@@ -14,6 +14,6 @@ class PlayerImporterTest {
 
     @Test
     void importUTR() {
-        importer.importUTR("2023 USTA 2.5.xlsx");
+        importer.importUTR("2023 USTA 7.0 18.xlsx");
     }
 }

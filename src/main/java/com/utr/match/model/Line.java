@@ -76,6 +76,11 @@ public class Line {
         return result;
     }
 
+    public void resetMatchPairs(int number) {
+
+        this.matchedPairs = getTopNPairs(number);
+    }
+
     public boolean isMatch(PlayerPair pair) {
         return pair.getWCount() >= this.femaleCount &&
                 pair.getTotalUTR() <= this.utrLimit && pair.getTotalUTR() >= this.utrLimit-this.pairScope ;

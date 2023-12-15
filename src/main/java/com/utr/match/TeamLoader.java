@@ -193,6 +193,8 @@ public class TeamLoader {
             createPlayer(team, player);
         }
 
+        team.getWD().resetMatchPairs(20);
+
         team.caculateTeamUTR();
 
         return team;
