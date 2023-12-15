@@ -366,7 +366,13 @@ public class USTASiteParser {
         Element parent = tr.parent().parent();
         Element td = parent.children().get(1);
         String text = td.text();
-        int start = text.indexOf("Area:") + 5;
+
+        int start = text.indexOf("Area:");
+        if (start == -1) {
+            return;
+        }
+
+        start = start + 5;
         int hindex = text.indexOf("Home");
         int orgIndex = text.indexOf("Org");
         int end = hindex;

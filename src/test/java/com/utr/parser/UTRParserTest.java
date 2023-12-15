@@ -39,7 +39,7 @@ class UTRParserTest {
     void searchPlayer() {
 
         UTRParser parser = new UTRParser();
-        List<Player> results = parser.searchPlayers("Wang Shan", 5, false);
+        List<Player> results = parser.searchPlayers("Wang Shan", 5, true);
 
         System.out.println(results);
     }

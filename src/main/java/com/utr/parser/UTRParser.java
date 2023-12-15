@@ -23,12 +23,12 @@ import java.util.Map;
 @Scope("singleton")
 public class UTRParser {
 
-    public static final String EVENTS_URL = "https://app.universaltennis.com/api/v1/tms/events/";
-    public static final String PLAYER_RESULT = "https://app.universaltennis.com/api/v1/player/";
-    public static final String PLAYER_PROFILE = "https://app.universaltennis.com/api/v1/player/%s/profile";
-    public static final String PLAYER_SEARCH = "https://app.universaltennis.com/api/v2/search/players?query=";
-    public static final String CLUB_EVENTS = "https://app.universaltennis.com/api/v1/club/%s/events";
-    public static final String CLUB_URL = "https://app.universaltennis.com/api/v1/club/%s";
+    public static final String EVENTS_URL = "https://app.utrsports.net/api/v1/tms/events/";
+    public static final String PLAYER_RESULT = "https://app.utrsports.net/api/v1/player/";
+    public static final String PLAYER_PROFILE = "https://app.utrsports.net/api/v1/player/%s/profile";
+    public static final String PLAYER_SEARCH = "https://app.utrsports.net/api/v2/search/players?query=";
+    public static final String CLUB_EVENTS = "https://app.utrsports.net/api/v1/club/%s/events";
+    public static final String CLUB_URL = "https://app.utrsports.net/api/v1/club/%s";
     public static final String LEAGUE_TEAM_URL = "https://leagues-api.universaltennis.com/v1/leagues/teams/%s/members";
     public static final String LEAGUE_TEAMS_URL = "https://leagues-api.universaltennis.com/v1/leagues/sessions/%s/teams";
     public static final String LEAGUE_SESSION_URL = "https://leagues-api.universaltennis.com/v1/leagues/sessions/%s";
@@ -37,9 +37,7 @@ public class UTRParser {
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
     //private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzE3MDczNSIsIm5iZiI6MTY5ODUzNzIyOSwiZXhwIjoxNzAxMTI5MjI5LCJpYXQiOjE2OTg1MzcyMjl9.YTea4jg2wgeH2CIX5mKqTBd2gc3jReeAqjI9ZbSQ5N4";
 
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjM5MTg5MyIsImVtYWlsIjoiaGV3ZW54aW5AaG90bWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzU0NzQ5NCIsIm5iZiI6MTcwMTE5MDY4OSwiZXhwIjoxNzAzNzgyNjg5LCJpYXQiOjE3MDExOTA2ODl9.vAIqpnc8B4QTg2NYNyr7qXeeL7uohrgRO21XWgUmQMk";
-
-
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzc3NTAzNSIsIm5iZiI6MTcwMjYxNzg2NSwiZXhwIjoxNzA1MjA5ODY1LCJpYXQiOjE3MDI2MTc4NjV9.RcT3TbFE6DEnrAB6RSdXEhCjiMjgJJOuVD8r8jPiWic";
     Map<String, PlayerResult> playerResults;
     Map<String, Player> players;
     Map<String, Event> events;
@@ -237,10 +235,9 @@ public class UTRParser {
     )
     public String restGetCall(String getCallURL, boolean withToken) {
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = getHeaders();
         String accessToken = withToken? TOKEN: "";
         headers.set("Authorization", "Bearer " + accessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
         try {
             String requestJson = "{}";
             HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
@@ -254,6 +251,13 @@ public class UTRParser {
             logger.debug("Call REST API failed: " + getCallURL);
         }
         return "";
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+        return headers;
     }
 
     public Player getPlayer(String utrId, boolean withToken) {
