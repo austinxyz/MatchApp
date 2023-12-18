@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Scope("singleton")
 public class USTAService {
 
+    public static final String START_YEAR = "2023";
     @Autowired
     USTATeamRepository teamRepository;
 
@@ -517,7 +519,21 @@ public class USTAService {
     }
 
     public List<USTALeague> getLeagues(String year) {
-        return leagueRepository.findByYear(year);
+        List<String> years = new ArrayList<>();
+
+        int currYear = Year.now().getValue() + 1;
+        int startYear = Integer.valueOf(year);
+
+        while (startYear <=currYear) {
+            years.add(String.valueOf(startYear));
+            startYear++;
+        }
+
+        return getLeagues(years);
+    }
+
+    private List<USTALeague> getLeagues(List<String> years) {
+        return leagueRepository.findByYearIn(years);
     }
 
     public List<USTALeaguePO> getLeaguesFromUSTASite() {
@@ -525,7 +541,7 @@ public class USTAService {
             return leagues;
         }
 
-        List<USTALeague> leaguesInDB = getLeagues("2023");
+        List<USTALeague> leaguesInDB = getLeagues(START_YEAR);
         String url = "https://www.ustanorcal.com/listdivisions.asp";
         try {
             Map<String, Map> leaguesFromSite = siteParser.parseLeagues(url);
