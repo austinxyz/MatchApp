@@ -223,6 +223,10 @@ public class USTATeam {
                 }
             }
 
+            if (pairs.isEmpty()) {
+                return null;
+            }
+
             pairs.sort((USTATeamPair p1, USTATeamPair p2) -> Double.compare(p2.getTotalUTR(), p1.getTotalUTR()));
 
             return pairs.iterator().next();
@@ -260,6 +264,10 @@ public class USTATeam {
                         pairs.add(new USTATeamPair(male.getPlayer(), female.getPlayer()));
                     }
                 }
+            }
+
+            if (pairs.isEmpty()) {
+                return null;
             }
 
             pairs.sort((USTATeamPair p1, USTATeamPair p2) -> Double.compare(p2.getTotalDR(), p1.getTotalDR()));

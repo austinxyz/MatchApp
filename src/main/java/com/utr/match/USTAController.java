@@ -172,6 +172,7 @@ public class USTAController {
     @GetMapping("/{year}/leagues")
     public ResponseEntity<List<USTALeague>> getLeagues(@PathVariable("year") String year) {
 
+
         List<USTALeague> leagues = ustaService.getLeagues(year);
 
         if (leagues.size() > 0) {
