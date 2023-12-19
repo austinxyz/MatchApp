@@ -131,6 +131,10 @@ public class USTAService {
     public List<PlayerEntity> searchPlayersByName(String name) {
         List<PlayerEntity> players = new ArrayList<>();
 
+        if (name == null || name.trim().equals("") ) {
+            return players;
+        }
+
         if (isUTRId(name)) {
             PlayerEntity player = getPlayerByUTRId(name);
             if (player != null) {

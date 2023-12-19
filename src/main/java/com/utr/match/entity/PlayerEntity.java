@@ -372,4 +372,18 @@ public class PlayerEntity {
         return ChronoUnit.DAYS.between(fetchedDate, nowDate) == 0;
 
     }
+
+    @JsonProperty
+    public boolean isUTRRequriedRefresh() {
+
+        if (this.utrFetchedTime == null) {
+            return true;
+        }
+
+        Timestamp now=new Timestamp(System.currentTimeMillis());
+        LocalDate nowDate = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate fetchedDate = this.getUtrFetchedTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return ChronoUnit.DAYS.between(fetchedDate, nowDate) >= 60;
+
+    }
 }
