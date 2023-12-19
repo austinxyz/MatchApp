@@ -99,6 +99,10 @@ public class UTRTeamCandidate {
         return player.isRefreshedUTR();
     }
 
+    public boolean isUTRRequriedRefresh() {
+        return player.isUTRRequriedRefresh();
+    }
+
     public float getSuccessRate() {
         return player.getSuccessRate();
     }
