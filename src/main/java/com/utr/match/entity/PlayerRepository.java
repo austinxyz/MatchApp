@@ -3,6 +3,7 @@ package com.utr.match.entity;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, JpaSpecificationExecutor<PlayerEntity> {
 
@@ -21,6 +22,8 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, Jp
     List<PlayerEntity> findByUtrFetchedTimeNull();
 
     List<PlayerEntity> findByNoncalLinkNotNullAndUstaNorcalIdNull();
+
+    List<PlayerEntity> findByUstaIdNull();
 
     PlayerEntity findByUstaNorcalId(String ustaNorcalId);
 

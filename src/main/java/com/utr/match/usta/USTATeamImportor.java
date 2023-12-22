@@ -367,7 +367,7 @@ public class USTATeamImportor {
 
         logger.debug(member.getName() + " start to query utr and win ratio");
 
-        if (inlcudeWinPercent) {
+        if (forceUpdate || (inlcudeWinPercent && member.isUTRRequriedRefresh())) {
             float successRate = parser.getWinPercent(utrId, true);
             float wholeSuccessRate = parser.getWinPercent(utrId, false);
             member.setSuccessRate(successRate);

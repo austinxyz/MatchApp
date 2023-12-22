@@ -12,4 +12,6 @@ public interface USTACandidateTeamRepository extends CrudRepository<USTACandidat
 
     List<USTACandidateTeam> findByDivision_Id(long id);
 
+    List<USTACandidateTeam> findByCaptain_Id(long id);
+
 }

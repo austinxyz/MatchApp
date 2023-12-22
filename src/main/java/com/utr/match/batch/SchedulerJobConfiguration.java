@@ -52,12 +52,12 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
 
     //@Scheduled(cron = "*/5 * * * * *")
-    @Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
     public void refreshUSTARating() {
         LOG.debug("Start to refresh Player's USTA Rating........");
 
-        List<PlayerEntity> members = service.searchByUTR("2.5", "16.0",
-                "0.0", "double", "M", "18+", "false", 0, 150);
+        List<PlayerEntity> members = service.searchByUTR("3.5", "16.0",
+                "0.0", "double", "F", "18+", "false", 0, 150);
 
 
         try {
@@ -74,6 +74,24 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
             throw new RuntimeException(e);
         }
 
+
+        LOG.debug("Complete to update all Player's USTA Rating........");
+    }
+
+    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    public void mergePlayers() {
+        LOG.debug("Start to merge USTA players........");
+
+        for (PlayerEntity player : playerRepository.findByUstaIdNull()) {
+
+            LOG.info("Player: " + player.getName());
+
+            if (service.mergePlayer(player.getUtrId())) {
+
+            } else {
+                LOG.info("No need to merge");
+            }
+        }
 
         LOG.debug("Complete to update all Player's USTA Rating........");
     }

@@ -20,7 +20,7 @@ public class ZiJingController {
     @Autowired
     TeamLoader loader;
 
-    boolean withToken = false;
+    boolean withToken = true;
 
     private static void initFixedPairs(String pairNames, Map<String, Set<String>> fixedPairs, String lineName) {
         if (!pairNames.equals("")) {
@@ -52,7 +52,7 @@ public class ZiJingController {
     @CrossOrigin(origins = "*")
     @GetMapping("/club/{clubId}")
     public ResponseEntity<Club> club(@PathVariable("clubId") String clubId) {
-        Club club = loader.getClub(clubId, withToken);
+        Club club = loader.getClub(clubId, false);
 
         if (club != null) {
             return ResponseEntity.ok(club);
@@ -75,7 +75,7 @@ public class ZiJingController {
     @CrossOrigin(origins = "*")
     @GetMapping("/event/{eventId}")
     public ResponseEntity<Event> event(@PathVariable("eventId") String eventId) {
-        Event event = loader.getEvent(eventId, withToken);
+        Event event = loader.getEvent(eventId, false);
 
         if (event != null) {
             return ResponseEntity.ok(event);
@@ -128,7 +128,7 @@ public class ZiJingController {
             return ResponseEntity.notFound().build();
         }
 
-        PlayerResult player = loader.searchPlayerResult(id, year.equals("latest"), withToken);
+        PlayerResult player = loader.searchPlayerResult(id, year.equals("latest"), false);
 
         if (player != null) {
             return ResponseEntity.ok(player);
