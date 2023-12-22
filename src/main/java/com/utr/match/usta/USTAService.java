@@ -58,6 +58,9 @@ public class USTAService {
     @Autowired
     private UTRParser parser;
 
+    @Autowired
+    private USTAPlayerMerger merger;
+
     private Map<String, USTADivisionPO> divisions;
 
     private List<USTALeaguePO> leagues;
@@ -635,6 +638,18 @@ public class USTAService {
         }
 
         return null;
+    }
+
+    public boolean mergePlayer(String id1, String id2) {
+        return merger.mergePlayer(id1, id2);
+    }
+
+    public boolean mergePlayer(String utrId) {
+
+        if (utrId == null || utrId.trim().equals("")) {
+            return false;
+        }
+        return merger.mergePlayer(utrId);
     }
 
     private List<USTATeam> toUSTATeamList(List<USTATeamEntity> teams) {
