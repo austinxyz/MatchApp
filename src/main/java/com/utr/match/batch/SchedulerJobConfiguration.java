@@ -57,7 +57,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         LOG.debug("Start to refresh Player's USTA Rating........");
 
         List<PlayerEntity> members = service.searchByUTR("3.5", "16.0",
-                "0.0", "double", "F", "18+", "false", 0, 150);
+                "0.0", "double", "F", "18+", "false", 0, 150, false);
 
 
         try {

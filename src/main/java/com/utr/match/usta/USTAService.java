@@ -181,7 +181,8 @@ public class USTAService {
                                             String ageRange,
                                             String ratedOnlyStr,
                                             int start,
-                                            int size
+                                            int size,
+                                            boolean asc
     ) {
         Pageable firstPage = PageRequest.of(start, size);
         PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating));
@@ -191,14 +192,14 @@ public class USTAService {
         boolean ratedOnly = !ratedOnlyStr.equals("false");
         if (type.equalsIgnoreCase("double")) {
             UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf(utrValue)),
-                    new OrderByCriteria("dUTR", false));
+                    new OrderByCriteria("dUTR",  asc));
             utrLimitSpec = new PlayerSpecification(new SearchCriteria("dUTR", "<", utrLimitValue));
             if (ratedOnly) {
                 ratedOnlySpec = new PlayerSpecification(new SearchCriteria("dUTRStatus", ":", "Rated"));
             }
         } else {
             UTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", Double.valueOf(utrValue)),
-                    new OrderByCriteria("sUTR", false));
+                    new OrderByCriteria("sUTR", asc));
             utrLimitSpec = new PlayerSpecification(new SearchCriteria("sUTR", "<", utrLimitValue));
             if (ratedOnly) {
                 ratedOnlySpec = new PlayerSpecification(new SearchCriteria("sUTRStatus", ":", "Rated"));

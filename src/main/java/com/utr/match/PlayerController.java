@@ -80,10 +80,11 @@ public class PlayerController {
                                                             @RequestParam(value = "ageRange") String ageRange,
                                                             @RequestParam(value = "ratedOnly", defaultValue = "false") String ratedOnlyStr,
                                                             @RequestParam(value = "start", defaultValue = "0") int start,
-                                                            @RequestParam(value = "size", defaultValue = "10") int size
+                                                            @RequestParam(value = "size", defaultValue = "10") int size,
+                                                            @RequestParam(value = "asc", defaultValue = "false") String asc
     ) {
         List<PlayerEntity> members = service.searchByUTR(ustaRating, utrLimitValue,
-                utrValue, type, gender, ageRange, ratedOnlyStr, start, size);
+                utrValue, type, gender, ageRange, ratedOnlyStr, start, size, asc.equals("true"));
 
         if (!members.isEmpty()) {
             return ResponseEntity.ok(members);
