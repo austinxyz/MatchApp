@@ -156,7 +156,11 @@ public class USTATeamMember {
     public float getLevel() {
         String rating = this.player.getUstaRating();
         if (rating != null && rating.length() >=3) {
-            return Float.parseFloat(rating.substring(0,3));
+            try {
+                return Float.parseFloat(rating.substring(0, 3));
+            } catch (NumberFormatException ex){
+                System.out.println(" wrong rating " + rating);
+            }
         }
         return 0.0f;
     }

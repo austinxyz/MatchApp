@@ -2,10 +2,9 @@ package com.utr.match.entity;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerSpecification implements Specification<PlayerEntity> {
 
@@ -26,8 +25,13 @@ public class PlayerSpecification implements Specification<PlayerEntity> {
     public Predicate toPredicate(Root<PlayerEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
 
         if (orderBy != null) {
-            query.orderBy(orderBy.isAsc()? criteriaBuilder.asc(root.<String>get(orderBy.getKey()))
-                    : criteriaBuilder.desc(root.<String>get(orderBy.getKey())));
+            List<Order> orders = new ArrayList<Order>();
+            for (OrderByCriteria.SortOrder order : orderBy.getOrders()) {
+                Order orderOps = order.isAsc()? criteriaBuilder.asc(root.<String>get(order.getKey()))
+                        :criteriaBuilder.desc(root.<String>get(order.getKey()));
+                orders.add(orderOps);
+            }
+            query.orderBy(orders);
         }
 
         if (criteria.getOperation().equalsIgnoreCase(">")) {
