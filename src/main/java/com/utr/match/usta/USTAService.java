@@ -185,21 +185,21 @@ public class USTAService {
                                             boolean asc
     ) {
         Pageable firstPage = PageRequest.of(start, size);
-        PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating));
+        OrderByCriteria orderByCriteria = getOrderByCriteria(type, asc);
+        PlayerSpecification ustaRatingSpec = new PlayerSpecification(new SearchCriteria("ustaRating", ":", ustaRating), orderByCriteria);
         PlayerSpecification UTRSpec;
         PlayerSpecification utrLimitSpec;
         PlayerSpecification ratedOnlySpec = null;
         boolean ratedOnly = !ratedOnlyStr.equals("false");
+        boolean ignoreUTR = utrLimitValue.equals("16.0") && utrValue.equals("0.0");
         if (type.equalsIgnoreCase("double")) {
-            UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf(utrValue)),
-                    new OrderByCriteria("dUTR",  asc));
+            UTRSpec = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf(utrValue)));
             utrLimitSpec = new PlayerSpecification(new SearchCriteria("dUTR", "<", utrLimitValue));
             if (ratedOnly) {
                 ratedOnlySpec = new PlayerSpecification(new SearchCriteria("dUTRStatus", ":", "Rated"));
             }
         } else {
-            UTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", Double.valueOf(utrValue)),
-                    new OrderByCriteria("sUTR", asc));
+            UTRSpec = new PlayerSpecification(new SearchCriteria("sUTR", ">", Double.valueOf(utrValue)));
             utrLimitSpec = new PlayerSpecification(new SearchCriteria("sUTR", "<", utrLimitValue));
             if (ratedOnly) {
                 ratedOnlySpec = new PlayerSpecification(new SearchCriteria("sUTRStatus", ":", "Rated"));
@@ -207,7 +207,13 @@ public class USTAService {
         }
         PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
         PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
-        Specification spec = Specification.where(ustaRatingSpec).and(utrLimitSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
+
+        Specification spec;
+        if (ignoreUTR) {
+            spec = Specification.where(ustaRatingSpec).and(genderSpec).and(ageRangeSpec);
+        } else {
+            spec = Specification.where(ustaRatingSpec).and(utrLimitSpec).and(UTRSpec).and(genderSpec).and(ageRangeSpec);
+        }
 
         if (ratedOnly && ratedOnlySpec != null) {
             spec = spec.and(ratedOnlySpec);
@@ -216,6 +222,19 @@ public class USTAService {
         Page<PlayerEntity> players = playerRepository.findAll(spec, firstPage);
         return players.stream().toList();
 
+    }
+
+    private OrderByCriteria getOrderByCriteria(String type, boolean asc) {
+
+        if (type.equalsIgnoreCase("double")) {
+            OrderByCriteria orderByCriteria = new OrderByCriteria("dUTR", asc);
+            orderByCriteria.addOrder("sUTR", asc);
+            return orderByCriteria;
+        } else {
+            OrderByCriteria orderByCriteria = new OrderByCriteria("dUTR", asc);
+            orderByCriteria.addOrder("sUTR", asc);
+            return orderByCriteria;
+        }
     }
 
     public Map<String, Object> statUTR(String ustaRating,

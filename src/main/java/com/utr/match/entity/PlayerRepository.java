@@ -33,6 +33,8 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, Jp
 
     List<PlayerEntity> findByUtrIdNull();
 
+    List<PlayerEntity> findByUstaNorcalIdNotNullAndUstaRatingNull();
+
 
 
 }

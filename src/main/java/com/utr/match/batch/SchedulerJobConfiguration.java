@@ -79,6 +79,27 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
     }
 
     //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    public void fixUSTARating() {
+        LOG.debug("Start to fix Player's USTA Rating........");
+
+        List<PlayerEntity> members = playerRepository.findByUstaNorcalIdNotNullAndUstaRatingNull();
+
+        try {
+            for (PlayerEntity player : members) {
+                Map<String, String> playerUSTAInfo = parser.parseUSTANumber("https://www.ustanorcal.com/playermatches.asp?id=" + player.getUstaNorcalId());
+                String newRating = playerUSTAInfo.get("Rating");
+                LOG.debug("Player " + player.getName() + " has rating:" + newRating);
+                player.setUstaRating(newRating);
+                playerRepository.save(player);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        LOG.debug("Complete to fix all Player's USTA Rating........");
+    }
+    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
     public void mergePlayers() {
         LOG.debug("Start to merge USTA players........");
 
