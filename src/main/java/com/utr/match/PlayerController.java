@@ -38,6 +38,9 @@ public class PlayerController {
             if (action.equals("updateUTRId")) {
                 importor.updatePlayerUTRID(player);
             }
+            if (action.equals("updateDR")) {
+                importor.updatePlayerDR(player);
+            }
             return ResponseEntity.ok(player);
         } else {
             return ResponseEntity.notFound().build();
@@ -157,6 +160,7 @@ public class PlayerController {
     @PutMapping("/{id}")
     public ResponseEntity<PlayerEntity> updatePlayer(@PathVariable("id") String id, @RequestBody PlayerEntity player) {
 
+        System.out.println("USTA Rating:" + player.getUstaRating());
         PlayerEntity member = service.updatePlayer(id, player);
 
         if (member != null) {

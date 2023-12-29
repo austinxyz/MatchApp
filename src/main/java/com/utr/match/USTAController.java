@@ -395,6 +395,16 @@ public class USTAController {
             }
         }
 
+        if (action.equals("refreshDR")) {
+
+            if (member != null) {
+
+                member = importor.updatePlayerDR(member);
+
+                return new ResponseEntity<>(member, HttpStatus.OK);
+            }
+        }
+
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
