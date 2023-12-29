@@ -3,7 +3,6 @@ package com.utr.match.entity;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import java.util.List;
-import java.util.Optional;
 
 public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, JpaSpecificationExecutor<PlayerEntity> {
 
@@ -35,6 +34,7 @@ public interface PlayerRepository extends CrudRepository<PlayerEntity, Long>, Jp
 
     List<PlayerEntity> findByUstaNorcalIdNotNullAndUstaRatingNull();
 
+    List<PlayerEntity> findTop100ByUtrIdNullAndUstaRatingLikeAndGenderAndMemoNull(String ustaRating, String gender);
 
-
+    List<PlayerEntity> findTop100ByUtrIdNullAndMemoNull();
 }
