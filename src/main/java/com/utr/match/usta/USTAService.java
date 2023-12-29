@@ -357,6 +357,7 @@ public class USTAService {
             member.setUstaId(player.getUstaId());
             member.setUtrId(player.getUtrId());
             member.setUstaNorcalId(player.getUstaNorcalId());
+            member.setUstaRating(player.getUstaRating());
             member.setSummary(player.getSummary());
             member.setMemo(player.getMemo());
             member.setLefty(player.isLefty());

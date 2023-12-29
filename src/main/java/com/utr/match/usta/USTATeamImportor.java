@@ -286,6 +286,27 @@ public class USTATeamImportor {
 
     }
 
+    public PlayerEntity updatePlayerDR(PlayerEntity player) {
+
+        USTASiteParser util = new USTASiteParser();
+
+        try {
+            String dynamicRating = util.getDynamicRating(player.getTennisRecordLink());
+            if (dynamicRating!=null && !dynamicRating.startsWith("-")) {
+                player.setDynamicRating(Double.parseDouble(dynamicRating));
+                player = playerRepository.save(player);
+                logger.debug("player " + player.getId() + " " + player.getName() + " dr " + player.getDynamicRating() + " updated");
+            } else {
+                logger.debug("player " + player.getId() + " " + player.getName() + " no dr rating");
+            }
+        } catch (IOException e) {
+            logger.error(e.toString());
+            //throw new RuntimeException(e);
+        }
+
+        return player;
+    }
+
     public void updateTeamUTRInfo(USTATeam existTeam) {
 
         for (USTATeamMember player : existTeam.getPlayers()) {
