@@ -235,11 +235,13 @@ public class USTATeamImportor {
         if (member.getUtrId() == null || member.getUtrId().trim().equals("")) {
             List<Player> utrplayers = parser.searchPlayers(member.getName(), 10, true);
             String candidateUTRId = findUTRID(utrplayers, member);
-            if (candidateUTRId != null) {
+            if (candidateUTRId != null && !candidateUTRId.equals("")) {
                 member.setUtrId(candidateUTRId);
                 member = playerRepository.save(member);
                 logger.debug("Player:" + member.getName() + " utr: " + member.getUtrId() + " Saved ");
             } else {
+                member.setMemo("No UTR ID");
+                member = playerRepository.save(member);
                 logger.debug("Player:" + member.getName() + " has no UTRId");
             }
         }

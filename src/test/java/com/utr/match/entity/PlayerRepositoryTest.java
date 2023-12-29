@@ -488,4 +488,12 @@ class PlayerRepositoryTest {
 
         return primaryPlayer;
     }
+
+    @Test
+    void findPlayers() {
+        List<PlayerEntity> players = playerRepo.findTop100ByUtrIdNullAndUstaRatingLikeAndGenderAndMemoNull("3.5%", "F");
+        for (PlayerEntity player: players) {
+            logger.info(player.getName());
+        }
+    }
 }

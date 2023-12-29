@@ -137,6 +137,29 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         LOG.debug("Complete to update all Player's UTR........");
     }
 
+    @Scheduled(fixedDelayString = "PT6H", initialDelay = 3000)
+    public void findPlayersUTR() {
+        LOG.debug("Start to refresh Player's UTR........");
+
+        boolean forceUpdate = false;
+        boolean includeWinPercent = true;
+
+        //List<PlayerEntity> players = playerRepository.findTop100ByUtrIdNullAndUstaRatingLikeAndGenderAndMemoNull("3%", "M");
+        List<PlayerEntity> players = playerRepository.findTop100ByUtrIdNullAndMemoNull();
+        try {
+        for (PlayerEntity player: players) {
+            LOG.debug("Start to update UTR for player:" + player.getName());
+            player = importor.updatePlayerUTRID(player);
+            importor.updatePlayerUTRInfo(player, forceUpdate, includeWinPercent);
+            Thread.sleep(60000);
+            LOG.debug("Complete updating UTR for player:" + player.getName());
+        }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        LOG.debug("Complete to update all Player's UTR........");
+    }
+
     //@Scheduled(fixedDelayString = "PT36H", initialDelayString = "PT36H")
     public void refreshDR() {
         LOG.debug("Start to refresh Player's DR........");
