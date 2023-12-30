@@ -154,7 +154,7 @@ public class USTATeamMember {
     }
 
     public float getLevel() {
-        String rating = this.player.getUstaRating();
+        String rating = this.getRating()==null? this.player.getUstaRating(): this.getRating();
         if (rating != null && rating.length() >=3) {
             try {
                 return Float.parseFloat(rating.substring(0, 3));

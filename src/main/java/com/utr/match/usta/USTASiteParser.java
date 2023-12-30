@@ -332,6 +332,7 @@ public class USTASiteParser {
                     USTATeamMember member = new USTATeamMember();
                     member.setPlayer(playerEntity);
                     member.setQualifiedPo(matches.indexOf("^")>0);
+                    member.setRating(rating);
 
                     team.getPlayers().add(member);
 

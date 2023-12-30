@@ -64,6 +64,8 @@ public class USTATeam {
 
     float level = 7.0f;
 
+    String ageLevel = "18";
+
     public USTATeam(USTATeamEntity teamEntity) {
         this.teamEntity = teamEntity;
         this.players = new ArrayList<>();
@@ -102,6 +104,14 @@ public class USTATeam {
         String levelStr = name.substring(start, end);
 
         this.level = Float.parseFloat(levelStr);
+
+        end = name.indexOf(leagueAbbr);
+
+        if (end <2) {
+            return;
+        }
+
+        this.ageLevel = name.substring(end-2, end);
     }
 
     public void addMatch(USTAMatch match) {
@@ -364,5 +374,15 @@ public class USTATeam {
             }
         }
         return false;
+    }
+
+    @JsonProperty
+    public double getTeamScore() {
+        ITeamScoreBuilder builder = TeamScoreFactory.getTeamScoreBuilder(ageLevel, mixed, level);
+        return builder.getScore(teamEntity);
+    }
+
+    public String getAgeLevel() {
+        return ageLevel;
     }
 }
