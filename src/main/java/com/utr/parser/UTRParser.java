@@ -348,4 +348,9 @@ public class UTRParser {
 
         return league;
     }
+
+    public boolean isTokenExpired(String playerId) {
+        TokenCheckParser resultParser = new TokenCheckParser(playerId);
+        return resultParser.parseResult(getPlayerJson(playerId, true));
+    }
 }

@@ -503,4 +503,7 @@ public class USTATeamImportor {
     }
 
 
+    public boolean isTokenExpired(String playerId) {
+        return parser.isTokenExpired(playerId);
+    }
 }
