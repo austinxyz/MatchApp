@@ -144,6 +144,14 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         boolean forceUpdate = false;
         boolean includeWinPercent = true;
 
+        boolean isTokenExpired = importor.isTokenExpired("1316122");
+
+        if (isTokenExpired) {
+            LOG.debug("UTR Token is expired, stop update! please refresh token");
+        } else {
+            LOG.debug("UTR Token is valid");
+        }
+
         //List<PlayerEntity> players = playerRepository.findTop100ByUtrIdNullAndUstaRatingLikeAndGenderAndMemoNull("3%", "M");
         List<PlayerEntity> players = playerRepository.findTop100ByUtrIdNullAndMemoNull();
         try {
