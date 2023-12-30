@@ -158,6 +158,13 @@ public class USTATeamImportor {
                     //member = ustaTeamMemberRepository.save(member);
                     existTeam.addPlayer(member);
                     logger.debug(" add player " + player.getName() + " into team");
+                } else {
+                    USTATeamMember member = existTeam.getPlayer(existedPlayer.getName()) ;
+                    if (member.getRating()== null || !member.getRating().equals(player.getRating())) {
+                        member.setRating(player.getRating());
+                        ustaTeamMemberRepository.save(member);
+                        logger.debug(" update player " + player.getName() + "'s rating to " + member.getRating());
+                    }
                 }
             }
 
