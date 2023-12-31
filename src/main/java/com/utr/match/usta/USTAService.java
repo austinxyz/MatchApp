@@ -356,6 +356,10 @@ public class USTAService {
         if (member != null) {
             member.setUstaId(player.getUstaId());
             member.setUtrId(player.getUtrId());
+            if (member.getUtrId() == null || member.getUtrId().equals("")) {
+                member.setDUTR(0.0d);
+                member.setSUTR(0.0d);
+            }
             member.setUstaNorcalId(player.getUstaNorcalId());
             member.setUstaRating(player.getUstaRating());
             member.setSummary(player.getSummary());

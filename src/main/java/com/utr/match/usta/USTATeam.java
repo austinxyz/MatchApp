@@ -62,6 +62,8 @@ public class USTATeam {
 
     boolean mixed = false;
 
+    boolean combo = false;
+
     float level = 7.0f;
 
     String ageLevel = "18";
@@ -74,6 +76,7 @@ public class USTATeam {
 
         this.players = teamEntity.getPlayers();
         this.mixed = teamEntity.getName().indexOf("MX") > 0;
+        this.combo = teamEntity.getName().indexOf("CM") > 0 || teamEntity.getName().indexOf("CW") >0;
 
         updateTeamLevel(mixed, teamEntity.getName());
         
@@ -119,6 +122,10 @@ public class USTATeam {
         if (match.getLines() != null && !match.getLines().isEmpty()) {
             this.addScore(match);
         }
+    }
+
+    public boolean isCombo() {
+        return combo;
     }
 
     private void addScore(USTAMatch match) {
@@ -377,9 +384,15 @@ public class USTATeam {
     }
 
     @JsonProperty
-    public double getTeamScore() {
-        ITeamScoreBuilder builder = TeamScoreFactory.getTeamScoreBuilder(ageLevel, mixed, level);
-        return builder.getScore(teamEntity);
+    public double getTeamRating() {
+        ITeamRatingBuilder builder = TeamRatingFactory.getTeamScoreBuilder(ageLevel, mixed, combo, level);
+        return builder.getRating(teamEntity);
+    }
+
+    @JsonProperty
+    public double getTeamStrongestRating() {
+        ITeamRatingBuilder builder = TeamRatingFactory.getTeamScoreBuilder(ageLevel, mixed, combo, level);
+        return builder.getStrongestRating(teamEntity);
     }
 
     public String getAgeLevel() {

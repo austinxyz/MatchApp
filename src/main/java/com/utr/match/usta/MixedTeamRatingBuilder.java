@@ -1,24 +1,31 @@
 package com.utr.match.usta;
 
-import com.utr.match.entity.PlayerEntity;
 import com.utr.match.entity.USTATeamEntity;
 import com.utr.match.entity.USTATeamMember;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MixedTeamScoreBuilder implements ITeamScoreBuilder {
+public class MixedTeamRatingBuilder implements ITeamRatingBuilder {
 
     float level;
 
-    int top = 5;
-
-    public MixedTeamScoreBuilder(float level) {
+    public MixedTeamRatingBuilder(float level) {
         this.level = level;
     }
 
     @Override
-    public double getScore(USTATeamEntity teamEntity) {
+    public double getRating(USTATeamEntity teamEntity) {
+
+        return getRating(teamEntity, 5);
+
+    }
+    @Override
+    public double getStrongestRating(USTATeamEntity teamEntity) {
+        return getRating(teamEntity, 3);
+    }
+
+    private double getRating(USTATeamEntity teamEntity, int top) {
 
         List<USTATeamMember> players = teamEntity.getPlayers();
 
@@ -42,27 +49,35 @@ public class MixedTeamScoreBuilder implements ITeamScoreBuilder {
         double[][] pair = new double[3][top];
         for (int i=0; i<3; i++) {
             float mLevel = level/2.0f + 0.5f * (float)(1-i);
-            pair[i] = caculateDouble(mPlayers, fPlayers, mLevel);
+            pair[i] = caculateDouble(mPlayers, fPlayers, mLevel, top);
         }
 
-        return getScore(pair);
-
+        return getScore(pair, top);
     }
 
-    private double getScore(double[][] pair) {
-        double res = 0.0;
+
+    private double getScore(double[][] pair, int top) {
+        double res = pair[0][top-1]* top;
 
         for (int i = 0; i< top - 1 ; i++) {
             for (int j = 0; j< top-i-1; j++ ) {
-                res = Math.max(pair[0][i] * (i+1) + pair[1][j] * (j+1) +
-                        (i+j+2 < top? pair[2][top-i-j-3] * (top-i-j-2):0.0d), res);
+                double cScore = pair[0][i] * (i + 1) + pair[1][j] * (j + 1) +
+                        (i + j + 2 < top ? pair[2][top - i - j - 3] * (top - i - j - 2) : 0.0d);
+                System.out.println("i:" + i + ", j:" + j + "k:" + (top-i-j-3) + " res:" + cScore);
+                res = Math.max(cScore, res);
             }
         }
+
+        for (int j=0; j<top-1; j++) {
+            res = Math.max(pair[1][j] * (j+1) + pair[2][top-j-2]*(top-j-1), res);
+        }
+
+        res = Math.max(res, pair[1][top-1] * top);
 
         return res/(double)top;
     }
 
-    private double[] caculateDouble(List<USTATeamMember> mPlayers, List<USTATeamMember> fPlayers, float mLevel) {
+    private double[] caculateDouble(List<USTATeamMember> mPlayers, List<USTATeamMember> fPlayers, float mLevel, int top) {
         float fLevel = this.level - mLevel;
 
         double[] res = new double[top];
