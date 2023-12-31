@@ -60,7 +60,7 @@ class USTAServiceTest {
     @Test
     void getTeam() {
         USTATeam team = service.getTeam("657", true);
-        team.getTeamScore();
+        team.getTeamRating();
     }
 
     @Test
