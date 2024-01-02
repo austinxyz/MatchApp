@@ -201,6 +201,10 @@ public class USTATeamMember {
         return player.getArea();
     }
 
+    public boolean isRegisteredBayArea() {
+        return player.isRegisteredBayArea();
+    }
+
     public float getWinPercent() {
         if (this.getWinNo() + this.getLostNo() == 0) {
             return 0.0f;

@@ -63,7 +63,6 @@ public class MixedTeamRatingBuilder implements ITeamRatingBuilder {
             for (int j = 0; j< top-i-1; j++ ) {
                 double cScore = pair[0][i] * (i + 1) + pair[1][j] * (j + 1) +
                         (i + j + 2 < top ? pair[2][top - i - j - 3] * (top - i - j - 2) : 0.0d);
-                System.out.println("i:" + i + ", j:" + j + "k:" + (top-i-j-3) + " res:" + cScore);
                 res = Math.max(cScore, res);
             }
         }

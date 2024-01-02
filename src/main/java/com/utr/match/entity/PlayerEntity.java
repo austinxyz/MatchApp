@@ -51,6 +51,9 @@ public class PlayerEntity {
     @Column(name="registered_area")
     private String area;
 
+    @Column(name="registered_bay_area")
+    private Boolean registeredBayArea;
+
     @Column(name="gender")
     private String gender;
 
@@ -183,6 +186,14 @@ public class PlayerEntity {
 
     public boolean isLefty() {
         return lefty==null? false:lefty.booleanValue();
+    }
+
+    public boolean isRegisteredBayArea() {
+        return registeredBayArea == null? false: registeredBayArea.booleanValue();
+    }
+
+    public void setRegisteredBayArea(boolean registeredBayArea) {
+        this.registeredBayArea = registeredBayArea;
     }
 
     public String getSummary() {
