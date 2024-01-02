@@ -119,6 +119,8 @@ public class USTATeamImportor {
                 logger.debug("new team " + existTeam.getName() + " with id: " + existTeam.getId() + " is created");
             }
 
+            boolean inBayArea = team.inBayArea();
+
             for (USTATeamMember player : team.getPlayers()) {
 
                 PlayerEntity existedPlayer = playerRepository.findByUstaNorcalId(player.getUstaNorcalId());
@@ -144,8 +146,18 @@ public class USTATeamImportor {
                         existedPlayer = playerRepository.save(existedPlayer);
                         logger.debug(player.getName() + " is existed, update USTA info");
                     }
+                    if (inBayArea) {
+                        if (!existedPlayer.isRegisteredBayArea()) {
+                            existedPlayer.setRegisteredBayArea(true);
+                            existedPlayer = playerRepository.save(existedPlayer);
+                            logger.debug(player.getName() + " now registered in bay area team");
+                        }
+                    }
                 } else {
                     setAgeRange(player.getPlayer(), division);
+                    if (inBayArea) {
+                        player.getPlayer().setRegisteredBayArea(true);
+                    }
                     existedPlayer = playerRepository.save(player.getPlayer());
                     logger.debug("new player " + player.getName() + " is created");
                 }

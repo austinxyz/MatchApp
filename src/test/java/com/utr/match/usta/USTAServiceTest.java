@@ -75,4 +75,14 @@ class USTAServiceTest {
         team = service.addCandidate(team, "2138695");
 
     }
+
+    @Test
+    void searchByUTR() {
+        List<PlayerEntity> members = service.searchByUTR("3.5", "16.0",
+                "0.0", "double", "F", "18+", "false", 0, 5, false, true);
+
+        for (PlayerEntity member: members) {
+            System.out.println(member.getName() + " " + member.getArea() + " " + member.isRegisteredBayArea());
+        }
+    }
 }

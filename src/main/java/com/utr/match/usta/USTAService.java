@@ -182,7 +182,8 @@ public class USTAService {
                                             String ratedOnlyStr,
                                             int start,
                                             int size,
-                                            boolean asc
+                                            boolean asc,
+                                            boolean bayArea
     ) {
         Pageable firstPage = PageRequest.of(start, size);
         OrderByCriteria orderByCriteria = getOrderByCriteria(type, asc);
@@ -208,6 +209,8 @@ public class USTAService {
         PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", gender));
         PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", ageRange));
 
+
+
         Specification spec;
         if (ignoreUTR) {
             spec = Specification.where(ustaRatingSpec).and(genderSpec).and(ageRangeSpec);
@@ -217,6 +220,11 @@ public class USTAService {
 
         if (ratedOnly && ratedOnlySpec != null) {
             spec = spec.and(ratedOnlySpec);
+        }
+
+        if (bayArea) {
+            PlayerSpecification bayAreaSpec = new PlayerSpecification(new SearchCriteria("registeredBayArea", ":", Boolean.TRUE));
+            spec = spec.and(bayAreaSpec);
         }
 
         Page<PlayerEntity> players = playerRepository.findAll(spec, firstPage);
