@@ -221,6 +221,14 @@ public class USTATeamEntity {
         this.ustaFlight = ustaFlight;
     }
 
+    @JsonIgnore
+    public boolean inBayArea() {
+        return this.area != null && (this.area.equals("South Bay")
+                || this.area.equals("Peninsula - Mid")
+                || this.area.equals("Peninsula - Lower")
+                || this.area.equals("Diablo South") );
+    }
+
     @Override
     public String toString() {
         return "USTATeam{" +
