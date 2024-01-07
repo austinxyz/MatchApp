@@ -190,6 +190,7 @@ public class USTATeamImportor {
 
             for (USTATeamMember player : toRemovePlayers) {
                 existTeam.getPlayers().remove(player);
+                ustaTeamMemberRepository.delete(player);
             }
 
             if (existTeam.getCaptain() == null) {

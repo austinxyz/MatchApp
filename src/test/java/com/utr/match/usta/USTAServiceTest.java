@@ -85,4 +85,9 @@ class USTAServiceTest {
             System.out.println(member.getName() + " " + member.getArea() + " " + member.isRegisteredBayArea());
         }
     }
+
+    @Test
+    void mergePlayer() {
+        service.mergePlayer("6446", "7143");
+    }
 }
