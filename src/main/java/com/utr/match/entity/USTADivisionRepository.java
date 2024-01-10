@@ -16,6 +16,8 @@ public interface USTADivisionRepository extends CrudRepository<USTADivision, Lon
 
     List<USTADivision> findByLeague_Year(String year);
 
+    List<USTADivision> findByLeague_Status(String status);
+
 
 
 }

@@ -88,6 +88,6 @@ class USTAServiceTest {
 
     @Test
     void mergePlayer() {
-        service.mergePlayer("6446", "7143");
+        service.mergePlayer("7541", "87");
     }
 }

@@ -169,11 +169,38 @@ public class USTAController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/open/divisions")
+    public ResponseEntity<List<USTADivision>> getOpenDivisions(
+    ) {
+
+        List<USTADivision> divisions = ustaService.getOpenDivisions();
+
+        if (divisions.size() > 0) {
+            return ResponseEntity.ok(divisions);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/{year}/leagues")
     public ResponseEntity<List<USTALeague>> getLeagues(@PathVariable("year") String year) {
 
 
         List<USTALeague> leagues = ustaService.getLeagues(year);
+
+        if (leagues.size() > 0) {
+            return ResponseEntity.ok(leagues);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/open/leagues")
+    public ResponseEntity<List<USTALeague>> getLeagues() {
+
+        List<USTALeague> leagues = ustaService.getOpenLeagues();
 
         if (leagues.size() > 0) {
             return ResponseEntity.ok(leagues);
