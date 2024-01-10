@@ -558,6 +558,10 @@ public class USTAService {
         return divisionRepository.findByLeague_Year(year);
     }
 
+    public List<USTADivision> getOpenDivisions() {
+        return divisionRepository.findByLeague_Status("Open");
+    }
+
     public List<USTALeague> getLeagues(String year) {
         List<String> years = new ArrayList<>();
 
@@ -570,6 +574,10 @@ public class USTAService {
         }
 
         return getLeagues(years);
+    }
+
+    public List<USTALeague> getOpenLeagues() {
+        return leagueRepository.findByStatus("Open");
     }
 
     private List<USTALeague> getLeagues(List<String> years) {

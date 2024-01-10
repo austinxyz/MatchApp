@@ -15,6 +15,9 @@ public class USTALeague {
     @Column(name = "league_year")
     private String year;
 
+    @Column(name = "status")
+    private String status;
+
     public USTALeague(String name, String year) {
         this.name = name;
         this.year = year;
@@ -41,5 +44,13 @@ public class USTALeague {
 
     public void setYear(String year) {
         this.year = year;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
