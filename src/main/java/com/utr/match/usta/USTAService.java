@@ -589,7 +589,8 @@ public class USTAService {
             return leagues;
         }
 
-        List<USTALeague> leaguesInDB = getLeagues(START_YEAR);
+        List<USTALeague> leaguesInDB = getOpenLeagues();
+                //getLeagues(START_YEAR);
         String url = "https://www.ustanorcal.com/listdivisions.asp";
         try {
             Map<String, Map> leaguesFromSite = siteParser.parseLeagues(url);
