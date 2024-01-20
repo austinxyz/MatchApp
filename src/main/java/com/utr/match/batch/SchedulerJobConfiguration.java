@@ -205,16 +205,21 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
 
     //@Scheduled(fixedDelayString = "PT36H", initialDelayString = "PT36H")
-    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 6000)
+    @Scheduled(fixedDelayString = "PT12H", initialDelay = 6000)
     public void refreshScores() {
         LOG.debug("Start to refresh team's match score........");
 
-        List<USTADivision> divisions = service.getDivisionsByYear("2023");
+        List<USTADivision> divisions = service.getOpenDivisions();
         Collections.shuffle(divisions);
+        try {
         for (USTADivision division : divisions) {
             LOG.debug("Start to update match score for division:" + division.getName());
             updateTeamScores(division);
+            Thread.sleep(60000);
             LOG.debug("Complete updating match score for division:" + division.getName());
+        }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         LOG.debug("Complete to update all team's match score........");
     }
