@@ -37,8 +37,7 @@ public class UTRParser {
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
     //private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzE3MDczNSIsIm5iZiI6MTY5ODUzNzIyOSwiZXhwIjoxNzAxMTI5MjI5LCJpYXQiOjE2OTg1MzcyMjl9.YTea4jg2wgeH2CIX5mKqTBd2gc3jReeAqjI9ZbSQ5N4";
 
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzk4MDA5NSIsIm5iZiI6MTcwNDc1OTY0NywiZXhwIjoxNzA3MzUxNjQ3LCJpYXQiOjE3MDQ3NTk2NDd9.wPYDpT96Qth8p3YoJKA2ejVmqZg86dExnmrF4rtdTKI";
-    Map<String, PlayerResult> playerResults;
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxODA0MTM2NCIsIm5iZiI6MTcwNTIxMTc5MCwiZXhwIjoxNzA3ODAzNzkwLCJpYXQiOjE3MDUyMTE3OTB9.1RqVKADV73wVlBE3N73X9xxXB-UPtpM4dWMfWGmF734";    Map<String, PlayerResult> playerResults;
     Map<String, Player> players;
     Map<String, Event> events;
     Map<String, Club> clubs;

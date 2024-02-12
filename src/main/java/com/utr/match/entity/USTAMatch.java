@@ -49,8 +49,22 @@ public class USTAMatch {
     @JoinColumn(name = "guest_team_id")
     private USTATeamEntity guestTeam;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "match", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final Set<USTAMatchLine> lines;
+
+    @JsonProperty
+    public List<USTAMatchLine> getLines() {
+        return getSortLines();
+    }
+
+    public void addLine(USTAMatchLine line) {
+        this.lines.add(line);
+    }
+
+    public void addAllLines(List<USTAMatchLine> lines) {
+        this.lines.addAll(lines);
+    }
 
     public USTAMatch(USTATeamEntity homeTeam, USTATeamEntity guestTeam) {
         this.homeTeam = homeTeam;
@@ -80,9 +94,7 @@ public class USTAMatch {
         return result;
     }
 
-    public Set<USTAMatchLine> getLines() {
-        return lines;
-    }
+
 
     @JsonProperty
     public String getHomeTeamName() {

@@ -20,9 +20,9 @@ class USTAMatchImportorTest {
     @Autowired
     USTATeamRepository teamRepository;
 
-    final String teamName = "MARIN CC 18MX6.0A";
+    final String teamName = "RINCONADA PK 18MX6.0C";
 
-    String divisionName = "2023 Mixed 18 & Over 6.0";
+    String divisionName = "2024 Mixed 18 & Over 6.0";
 
     @Test
     void importTeamMatchs() {
