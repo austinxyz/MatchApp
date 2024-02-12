@@ -232,7 +232,7 @@ public class USTAMatchImportor {
             existMatch.setHomePoint(match.getHomePoint());
             existMatch.setGuestPoint(match.getGuestPoint());
             existMatch.setType(match.getType());
-            existMatch.getLines().addAll(match.getLines());
+            existMatch.addAllLines(match.getLines());
             existMatch.setHomeWin(match.getHomePoint()> match.getGuestPoint());
 
             for (USTAMatchLine line : match.getLines()) {
@@ -295,7 +295,7 @@ public class USTAMatchImportor {
             updatePlayers(score, scoreJson, isSingle, true);
             updatePlayers(score, scoreJson, isSingle, false);
 
-            match.getLines().add(score);
+            match.addLine(score);
             score.setMatch(match);
 
         }

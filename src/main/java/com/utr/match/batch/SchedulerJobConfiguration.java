@@ -229,14 +229,21 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         Collections.shuffle(teams);
         for (USTATeam team : teams) {
             team = service.loadMatch(team);
+            try {
             if (team.requiredUpdateScore(matchImportor.getMatchNumber(team))) {
                 LOG.debug("Refresh team: " + team.getName() + " players' info");
                 importor.importUSTATeam(team.getLink());
+                Thread.sleep(60000);
                 LOG.debug("Start to update team:" + team.getName() + "'s match score");
                 matchImportor.refreshMatchesScores(team, division);
+                Thread.sleep(60000);
                 LOG.debug("Team:" + team.getName() + "'s match score is updated");
+                Thread.sleep(600000);
             } else {
                 LOG.debug("Team:" + team.getName() + " has no new match, no need to update");
+            }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
