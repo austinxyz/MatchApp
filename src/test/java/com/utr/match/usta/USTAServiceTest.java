@@ -50,7 +50,7 @@ class USTAServiceTest {
 
     @Test
     void getTeamsFromUSTASite() {
-        String divLink = "https://www.ustanorcal.com/listteams.asp?leagueid=2605";
+        String divLink = "https://leagues.ustanorcal.com/listteams.asp?leagueid=2605";
         String divName = "2023 Adult 40 & Over Mens 3.5";
         for (USTATeamPO team: service.getTeamsFromUSTASite("2605")) {
             System.out.println(team);
@@ -78,8 +78,8 @@ class USTAServiceTest {
 
     @Test
     void searchByUTR() {
-        List<PlayerEntity> members = service.searchByUTR("3.5", "16.0",
-                "0.0", "double", "F", "18+", "false", 0, 5, false, true);
+        List<PlayerEntity> members = service.searchByUTR("", "6.5",
+                "6.0", "double", "M", "18+", "false", 0, 5, false, true);
 
         for (PlayerEntity member: members) {
             System.out.println(member.getName() + " " + member.getArea() + " " + member.isRegisteredBayArea());

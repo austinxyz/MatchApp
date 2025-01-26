@@ -3,13 +3,11 @@ package com.utr.match;
 
 import com.utr.match.entity.*;
 import com.utr.match.model.Team;
-import com.utr.match.usta.*;
-import com.utr.match.usta.po.*;
 import com.utr.match.utr.CandidateTeam;
-import com.utr.match.utr.UTRDivisionExcelExport;
+import com.utr.match.utr.UTRDivisionCandidateExcelExport;
+import com.utr.match.utr.UTRDivisionPlayerExcelExport;
 import com.utr.match.utr.UTRService;
 import com.utr.model.League;
-import com.utr.model.UTRTeam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,7 +99,7 @@ public class UTRController {
     @GetMapping("/exportExcel/divisions/{divisionId}")
     public ModelAndView exportDivisionToExcel(@PathVariable("divisionId") String divisionId) {
         ModelAndView mav = new ModelAndView();
-        mav.setView(new UTRDivisionExcelExport());
+        mav.setView(new UTRDivisionCandidateExcelExport());
 
         CandidateTeam team = utrService.getCandidateTeam(Long.valueOf(divisionId));
 
@@ -110,6 +108,18 @@ public class UTRController {
         return mav;
     }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping("/exportExcel/team/{teamId}")
+    public ModelAndView exportTeamToExcel(@PathVariable("teamId") String teamId) {
+        ModelAndView mav = new ModelAndView();
+        mav.setView(new UTRDivisionPlayerExcelExport());
+
+        UTRTeamEntity team = utrService.getTeamEntity(teamId);
+
+        //send to excelImpl class
+        mav.addObject("team", team);
+        return mav;
+    }
     @CrossOrigin(origins = "*")
     @PutMapping("/divisions/{id}/candidate/{utrid}")
     public ResponseEntity<DivisionEntity> addCandidate(@PathVariable("id") long id, @PathVariable("utrid") String utrId ) {

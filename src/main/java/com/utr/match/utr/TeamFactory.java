@@ -94,6 +94,14 @@ public class TeamFactory {
             team = createZJCandidateTeam(div);
         }
 
+        if (div.getEvent().getType().equals("YC")) {
+            team = createYCCandidateTeam(div);
+        }
+
+        if (div.getEvent().getType().equals("ZJG")) {
+            team = createZJGCandidateTeam(div);
+        }
+
         if (team == null) {
             return null;
         }
@@ -159,6 +167,14 @@ public class TeamFactory {
         return team;
     }
 
+    private CandidateTeam createYCCandidateTeam(DivisionEntity div) {
+        CandidateTeam team = new CandidateTeam(div);
+        team.getLines().put("D1", new Line("D1", (float) 13.5, 0));
+        team.getLines().put("D2", new Line("D2", (float) 11, 0));
+        team.getLines().put("D3", new Line("D3", (float) 9, 0));
+        return team;
+    }
+
     private CandidateTeam createZJCandidateTeam(DivisionEntity div) {
         CandidateTeam team = new CandidateTeam(div);
         team.getLines().put("D1", new Line("D1", (float) 13.0, 0));
@@ -166,6 +182,16 @@ public class TeamFactory {
         team.getLines().put("D3", new Line("D3", (float) 11.0, 0));
         team.getLines().put("MD", new Line("MD", (float) 10.5, 1));
         team.getLines().put("WD", new Line("WD", (float) 9.5, 2));
+        return team;
+    }
+
+    private CandidateTeam createZJGCandidateTeam(DivisionEntity div) {
+        CandidateTeam team = new CandidateTeam(div);
+        team.getLines().put("D1", new Line("D1", (float) 20.0, 0));
+        team.getLines().put("D2", new Line("D2", (float) 15.0, 0));
+        team.getLines().put("D3", new Line("D3", (float) 13.0, 0));
+        team.getLines().put("MD", new Line("MD", (float) 11.5, 1));
+        team.getLines().put("WD", new Line("WD", (float) 20.0, 2));
         return team;
     }
 }

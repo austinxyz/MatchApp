@@ -26,7 +26,7 @@ class USTAFlightRepositoryTest {
             USTAFlight flight = new USTAFlight(1, division);
             flight.setArea("East Bay");
             flight.setDivision(division);
-            flight.setLink("https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-eb&l=18480:2706&r=L");
+            flight.setLink("https://leagues.ustanorcal.com/standings.asp?a=usta-nc-nc-eb&l=18480:2706&r=L");
 
             flightRepository.save(flight);
 

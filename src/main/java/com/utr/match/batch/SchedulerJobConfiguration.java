@@ -1,13 +1,15 @@
 package com.utr.match.batch;
 
-import com.utr.match.entity.PlayerEntity;
-import com.utr.match.entity.PlayerRepository;
-import com.utr.match.entity.USTADivision;
+import com.utr.match.entity.*;
 import com.utr.match.usta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -52,12 +54,12 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
 
     //@Scheduled(cron = "*/5 * * * * *")
-    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
+    @Scheduled(fixedDelayString = "PT12H", initialDelay = 3000)
     public void refreshUSTARating() {
         LOG.debug("Start to refresh Player's USTA Rating........");
 
         List<PlayerEntity> members = service.searchByUTR("3.5", "16.0",
-                "0.0", "double", "F", "18+", "false", 0, 150, false, false);
+                "0.0", "double", "F", "18+", "false", 0, 200, false, true);
 
 
         try {
@@ -86,7 +88,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
         try {
             for (PlayerEntity player : members) {
-                Map<String, String> playerUSTAInfo = parser.parseUSTANumber("https://www.ustanorcal.com/playermatches.asp?id=" + player.getUstaNorcalId());
+                Map<String, String> playerUSTAInfo = parser.parseUSTANumber("https://leagues.ustanorcal.com/playermatches.asp?id=" + player.getUstaNorcalId());
                 String newRating = playerUSTAInfo.get("Rating");
                 LOG.debug("Player " + player.getName() + " has rating:" + newRating);
                 player.setUstaRating(newRating);
@@ -137,7 +139,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
         LOG.debug("Complete to update all Player's UTR........");
     }
 
-    @Scheduled(fixedDelayString = "PT6H", initialDelay = 3000)
+    //@Scheduled(fixedDelayString = "PT6H", initialDelay = 3000)
     public void findPlayersUTR() {
         LOG.debug("Start to refresh Player's UTR........");
 
@@ -148,6 +150,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
         if (isTokenExpired) {
             LOG.debug("UTR Token is expired, stop update! please refresh token");
+            return;
         } else {
             LOG.debug("UTR Token is valid");
         }
@@ -205,7 +208,7 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
 
 
     //@Scheduled(fixedDelayString = "PT36H", initialDelayString = "PT36H")
-    @Scheduled(fixedDelayString = "PT12H", initialDelay = 6000)
+    //@Scheduled(fixedDelayString = "PT12H", initialDelay = 6000)
     public void refreshScores() {
         LOG.debug("Start to refresh team's match score........");
 
@@ -222,6 +225,39 @@ public class SchedulerJobConfiguration implements SchedulingConfigurer {
             throw new RuntimeException(e);
         }
         LOG.debug("Complete to update all team's match score........");
+    }
+
+    //@Scheduled(fixedDelayString = "PT6H", initialDelay = 3000)
+    public void refreshExpriedUTR() {
+
+        boolean isTokenExpired = importor.isTokenExpired("1316122");
+
+        if (isTokenExpired) {
+            LOG.debug("UTR Token is expired, stop update! please refresh token");
+            return;
+        } else {
+            LOG.debug("UTR Token is valid");
+        }
+
+        List<PlayerEntity> members = service.searchByUTR("3.5", "5.5",
+                "3.0", "double", "F", "18+", "false", 0, 200, false, true);
+        boolean forceUpdate = false;
+        boolean includeWinPercent = false;
+
+        try {
+            for (PlayerEntity player: members) {
+                if (player.isUTRRequriedRefresh()) {
+                    LOG.debug("Start to update UTR for player:" + player.getName());
+                    player = importor.updatePlayerUTRID(player);
+                    importor.updatePlayerUTRInfo(player, forceUpdate, includeWinPercent);
+                    Thread.sleep(60000);
+                    LOG.debug("Complete updating UTR for player:" + player.getName());
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void updateTeamScores(USTADivision division) {

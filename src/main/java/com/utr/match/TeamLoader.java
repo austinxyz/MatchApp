@@ -20,7 +20,7 @@ import java.util.Map;
 @Scope("singleton")
 public class TeamLoader {
 
-    public static final String DEFAULT_EVENT_ID = "196830";
+    public static final String DEFAULT_EVENT_ID = "265410";
     public static final String DEFAULT_CLUB_ID = "3156";
     Map<String, Event> events;
     Map<String, Club> clubs;
@@ -70,7 +70,7 @@ public class TeamLoader {
     }
 
     public List<Division> getDivisions() {
-        return getDivisions(DEFAULT_EVENT_ID, true);
+        return getDivisions(DEFAULT_EVENT_ID, false);
     }
 
     public Club getClub(String clubId, boolean withToken) {

@@ -16,7 +16,7 @@ class ZJUTRExcelImporterTest {
     @Test
     void importUTR() {
 
-        importer.importUTR( true);
+        importer.importUTR( false);
     }
 
     @Test

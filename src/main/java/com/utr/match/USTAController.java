@@ -4,8 +4,6 @@ package com.utr.match;
 import com.utr.match.entity.*;
 import com.utr.match.usta.*;
 import com.utr.match.usta.po.*;
-import com.utr.match.utr.CandidateTeam;
-import com.utr.match.utr.UTRDivisionExcelExport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

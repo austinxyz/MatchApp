@@ -76,13 +76,13 @@ public class ZJUTRExcelImporter {
 
     public void importUTR(boolean force) {
 
-        String fileLocation = "input/196830/2023 Zijing Cup Team Captain Registration.xlsx";
+        String fileLocation = "input/265410/2024 Zijing Cup Match UTR.xlsx";
         FileInputStream file = null;
         try {
             file = new FileInputStream(new File(fileLocation));
             Workbook workbook = new XSSFWorkbook(file);
-            Sheet sheet = workbook.getSheet("Player UTR (Silver)");
-            int rowIndex = 9;
+            Sheet sheet = workbook.getSheet("Player UTR Silver");
+            int rowIndex = 2;
             boolean notEmpty = true;
 
             UTRTeamEntity team = null;
@@ -105,7 +105,7 @@ public class ZJUTRExcelImporter {
                 if (team ==null || !team.getName().equals(teamName)) {
                     List<UTRTeamEntity> teams = teamRepository.findByName(teamName);
                     if (teams.size() > 0) {
-                        team = teams.get(0);
+                        team = teams.get(teams.size()-1);
                     } else {
                         continue;
                     }
