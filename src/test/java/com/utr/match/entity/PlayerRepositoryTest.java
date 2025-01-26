@@ -164,6 +164,26 @@ class PlayerRepositoryTest {
     }
 
     @Test
+    void findPlayerByUTRRange() {
+        Pageable firstPage = PageRequest.of(0,10);
+        PlayerSpecification lowUTR = new PlayerSpecification(new SearchCriteria("dUTR", ">", Double.valueOf("6.0")),
+                new OrderByCriteria("dUTR", false));
+        PlayerSpecification highUTR = new PlayerSpecification(new SearchCriteria("dUTR", "<=", Double.valueOf("6.5")));
+        PlayerSpecification genderSpec = new PlayerSpecification(new SearchCriteria("gender", ":", "M"));
+        PlayerSpecification ageRangeSpec = new PlayerSpecification(new SearchCriteria("ageRange", ">", "18+"));
+
+        PlayerSpecification    bayAreaSpec = new PlayerSpecification(new SearchCriteria("registeredBayArea", ":", Boolean.TRUE));
+
+        Specification spec = Specification.where(lowUTR).and(highUTR).and(genderSpec).and(ageRangeSpec).and(bayAreaSpec);
+
+        Page<PlayerEntity> players = playerRepo.findAll(spec, firstPage);
+
+        for (PlayerEntity player: players) {
+            System.out.println(player.getName() + " " + player.getDUTR());
+            System.out.println(player.getName() + " " + player.isUTRRequriedRefresh());
+        }
+    }
+    @Test
     void fixFullNameIssues() {
 
 //        for (PlayerEntity player: playerRepo.findAll()) {

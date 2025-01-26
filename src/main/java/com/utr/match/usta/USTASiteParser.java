@@ -34,7 +34,7 @@ public class USTASiteParser {
             if (href.startsWith("teaminfo")) {
                 USTATeamEntity team = new USTATeamEntity();
                 team.setName(link.text());
-                team.setLink("https://www.ustanorcal.com/" + href );
+                team.setLink("https://leagues.ustanorcal.com/" + href );
                 result.add(team);
                 Element tr = link.parent().parent();
                 team.setCaptainName(tr.child(1).text());
@@ -61,7 +61,7 @@ public class USTASiteParser {
                 Element e = division.child(0).child(0);
                 String href = e.attr("href");
                 USTADivisionPO div = new USTADivisionPO(e.text());
-                div.setLink("https://www.ustanorcal.com/" + href);
+                div.setLink("https://leagues.ustanorcal.com/" + href);
                 int idStart = href.indexOf("leagueid=") + 9;
                 String id = href.substring(idStart, href.length());
                 divs.put(id, div);
@@ -134,7 +134,7 @@ public class USTASiteParser {
                 JSONObject scoreCard;
                 if (status.startsWith("Confirmed") || status.startsWith("Verify")) {
                     String href = tr.child(2).child(0).attr("href");
-                    scoreCard = parseScoreCard("https://www.ustanorcal.com/" + href);
+                    scoreCard = parseScoreCard("https://leagues.ustanorcal.com/" + href);
                     scoreCard.put("type", type);
                 } else {
                     scoreCard = new JSONObject();
@@ -154,14 +154,14 @@ public class USTASiteParser {
                         scoreCard.put("homeTeamName", team.getName());
                         scoreCard.put("homeTeamLink", team.getLink());
                         String opponentTeam = opposingTeamDR.text();
-                        String href = "https://www.ustanorcal.com/" + opposingTeamDR.attr("href");
+                        String href = "https://leagues.ustanorcal.com/" + opposingTeamDR.attr("href");
                         scoreCard.put("guestTeamName", getTeamName(opponentTeam));
                         scoreCard.put("guestTeamLink", href);
                     } else {
                         scoreCard.put("guestTeamName", team.getName());
                         scoreCard.put("guestTeamLink", team.getLink());
                         String opponentTeam = opposingTeamDR.text();
-                        String href = "https://www.ustanorcal.com/" + opposingTeamDR.attr("href");
+                        String href = "https://leagues.ustanorcal.com/" + opposingTeamDR.attr("href");
                         scoreCard.put("homeTeamName", getTeamName(opponentTeam));
                         scoreCard.put("homeTeamLink", href);
                     }
@@ -189,12 +189,12 @@ public class USTASiteParser {
 
             result.put("matchDate", matchTr.children().get(0).text());
             Element homeTeamDR = matchTr.children().get(1).child(0);
-            String href = "https://www.ustanorcal.com/" + homeTeamDR.attr("href");
+            String href = "https://leagues.ustanorcal.com/" + homeTeamDR.attr("href");
             result.put("homeTeamLink", href);
             result.put("homeTeamName", getTeamName(homeTeamDR.text()));
             result.put("homePoint", matchTr.children().get(2).text());
             Element guestTeamDR = matchTr.children().get(3).child(0);
-            href = "https://www.ustanorcal.com/" + guestTeamDR.attr("href");
+            href = "https://leagues.ustanorcal.com/" + guestTeamDR.attr("href");
             result.put("guestTeamLink", href);
             result.put("guestTeamName", getTeamName(guestTeamDR.text()));
             result.put("guestPoint", matchTr.children().get(4).text());
@@ -283,7 +283,7 @@ public class USTASiteParser {
             String href = link.attr("href");
             if (href.startsWith("TeamInfo.asp")) {
 
-                String teamURL = "https://www.ustanorcal.com/" + href;
+                String teamURL = "https://leagues.ustanorcal.com/" + href;
 
                 if (!teams.contains(teamURL)) {
                     teams.add(teamURL);
@@ -315,7 +315,7 @@ public class USTASiteParser {
                     String area = player.get(1).text();
                     String gender = player.get(2).text();
                     String rating = player.get(3).text();
-                    String noncalLink = "https://www.ustanorcal.com/" + link.attr("href");
+                    String noncalLink = "https://leagues.ustanorcal.com/" + link.attr("href");
                     String matches = player.get(7).text();
                     int last = noncalLink.indexOf("=");
                     String noncalId = noncalLink.substring(last + 1);
@@ -355,7 +355,7 @@ public class USTASiteParser {
             }
             if (href.startsWith("standing")) {
                 USTAFlight flight = new USTAFlight();
-                flight.setLink("https://www.ustanorcal.com/" + href);
+                flight.setLink("https://leagues.ustanorcal.com/" + href);
                 team.setUstaFlight(flight);
             }
         }

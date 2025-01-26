@@ -92,8 +92,8 @@ public class UTRTeamEntity {
 
     public UTRTeamMember getMember(String firstName, String lastName) {
         for (UTRTeamMember member: players) {
-            if (member.getPlayer().getFirstName().trim().equalsIgnoreCase(firstName)
-                && member.getPlayer().getLastName().trim().equalsIgnoreCase(lastName)) {
+            if (member.getPlayer().getFirstName().trim().equalsIgnoreCase(firstName.trim())
+                && member.getPlayer().getLastName().trim().equalsIgnoreCase(lastName.trim())) {
                 return member;
             }
         }

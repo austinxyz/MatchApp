@@ -188,7 +188,7 @@ public class UTRTeamCandidate {
     }
 
     public double getUTR() {
-        if (this.player.getDUTRStatus().equals("Rated")) {
+        if (this.player.getDUTRStatus()!=null && this.player.getDUTRStatus().equals("Rated")) {
             return getDUTR();
         }
         double selfRatingUTR = SelfRatingHelper.getSelfRatingUTR(this.getRating(), this.getRange(), this.getGender());
@@ -200,7 +200,7 @@ public class UTRTeamCandidate {
     }
 
     public String getSelfRating() {
-        if (this.player.getDUTRStatus().equals("Rated")) {
+        if (this.player.getDUTRStatus()!=null && this.player.getDUTRStatus().equals("Rated")) {
             if (this.getUSTARating()!=null && !this.getUSTARating().trim().equals("")) {
                 return this.getUSTARating() + " Player";
             }

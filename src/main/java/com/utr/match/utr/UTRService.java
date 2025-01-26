@@ -60,6 +60,11 @@ public class UTRService {
         return null;
     }
 
+    public UTRTeamEntity getTeamEntity(String teamId) {
+        UTRTeamEntity teamEntity = teamRepository.findByUtrTeamId(teamId);
+        return teamEntity;
+    }
+
     public UTRTeamEntity importTeam(Division division) {
 
         UTRTeamEntity teamEntity = teamRepository.findByUtrTeamId(division.getId());
@@ -209,6 +214,20 @@ public class UTRService {
         return result;
     }
 
+    public DivisionEntity removeCandidate(DivisionEntity division, String playerUTRId) {
+        System.out.println("remove canidate:" + playerUTRId);
+        PlayerEntity player = createOrGetPlayer(playerUTRId);
+
+        if (player == null) {
+            return null;
+        }
+
+        division.removeCandidate(player);
+        DivisionEntity result = divisionRepository.save(division);
+        System.out.println("candidate " + player.getName() + " is removed from the team");
+
+        return result;
+    }
     private PlayerEntity createOrGetPlayer(String playerUTRId) {
         List<PlayerEntity> players = playerRepository.findByUtrId(playerUTRId);
 

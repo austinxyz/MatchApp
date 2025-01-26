@@ -9,7 +9,6 @@ import java.util.Set;
 public class Line {
 
     String name;
-    @JsonIgnore
     float utrLimit;
     @JsonIgnore
     int femaleCount;
@@ -83,7 +82,8 @@ public class Line {
 
     public boolean isMatch(PlayerPair pair) {
         return pair.getWCount() >= this.femaleCount &&
-                pair.getTotalUTR() <= this.utrLimit && pair.getTotalUTR() >= this.utrLimit-this.pairScope ;
+                pair.getTotalUTR() <= this.utrLimit && pair.getTotalUTR() >= this.utrLimit-this.pairScope
+                && !pair.large4();
     }
 
     public void addMatchedPair(PlayerPair pair) {

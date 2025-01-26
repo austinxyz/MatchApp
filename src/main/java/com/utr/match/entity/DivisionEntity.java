@@ -35,7 +35,7 @@ public class DivisionEntity {
     }
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "division_players",
         joinColumns = {@JoinColumn(name="division_id")},
         inverseJoinColumns = {@JoinColumn(name="player_id")})
@@ -50,7 +50,7 @@ public class DivisionEntity {
     private List<PlayerEntity> candidates;
 */
     @JsonIgnore
-    @OneToMany(mappedBy = "division", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "division", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UTRTeamCandidate> candidates;
 
     @JsonIgnore
@@ -136,5 +136,18 @@ public class DivisionEntity {
         }
         UTRTeamCandidate candidate = new UTRTeamCandidate(player, this);
         this.candidates.add(candidate);
+    }
+
+    public void removeCandidate(PlayerEntity player) {
+        UTRTeamCandidate thisCandidate = null;
+        for (UTRTeamCandidate candidate: this.candidates) {
+            if (candidate.getUtrId().equals(player.getUtrId())) {
+                thisCandidate = candidate;
+                break;
+            }
+        }
+        if (thisCandidate !=null) {
+            this.candidates.remove(thisCandidate);
+        }
     }
 }

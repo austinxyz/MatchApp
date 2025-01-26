@@ -22,7 +22,7 @@ class USTASiteParserTest {
         List<String> teams = null;
 
         try {
-            teams = util.parseUSTAFlight("https://www.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=16677:2567&r=L");
+            teams = util.parseUSTAFlight("https://leagues.ustanorcal.com/standings.asp?a=usta-nc-nc-sb&l=16677:2567&r=L");
             System.out.println(teams.size());
             for(String teamURL: teams) {
                 System.out.println(teamURL);
@@ -42,7 +42,7 @@ class USTASiteParserTest {
         USTATeamEntity team = null;
 
         try {
-            team = util.parseUSTATeam("https://www.ustanorcal.com/Teaminfo.asp?id=97084");
+            team = util.parseUSTATeam("https://leagues.ustanorcal.com/teaminfo.asp?id=105129");
 
             for (USTATeamMember player: team.getPlayers()) {
                 System.out.println(player.getName() + "'s Qualified =  " + (player.isQualifiedPo()));
@@ -58,7 +58,7 @@ class USTASiteParserTest {
     void parseUSTANumber() {
         USTASiteParser util = new USTASiteParser();
         try {
-            System.out.println(util.parseUSTANumber("https://www.ustanorcal.com/playermatches.asp?id=169410"));
+            System.out.println(util.parseUSTANumber("https://leagues.ustanorcal.com/playermatches.asp?id=143639"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -97,7 +97,7 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
 
         try {
-            System.out.println(util.parseScoreCard("https://www.ustanorcal.com/scorecard.asp?id=750078&l=17608:2606").toString());
+            System.out.println(util.parseScoreCard("https://leagues.ustanorcal.com/scorecard.asp?id=913053&l=19444:2821").toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -111,7 +111,7 @@ class USTASiteParserTest {
         USTASiteParser util = new USTASiteParser();
 
         try {
-            USTATeamEntity team = util.parseUSTATeam("https://www.ustanorcal.com/teaminfo.asp?id=96701");
+            USTATeamEntity team = util.parseUSTATeam("https://leagues.ustanorcal.com/teaminfo.asp?id=105129");
             System.out.println(team.getDivisionName());
             JSONArray matches = util.parseTeamMatches(team);
 
@@ -143,7 +143,7 @@ class USTASiteParserTest {
     @Test
     void parseLeagues() {
         USTASiteParser util = new USTASiteParser();
-        String url = "https://www.ustanorcal.com/listdivisions.asp";
+        String url = "https://leagues.ustanorcal.com/listdivisions.asp";
 
         try {
             util.parseLeagues(url);
@@ -156,7 +156,7 @@ class USTASiteParserTest {
     @Test
     void parseDivision() {
         USTASiteParser util = new USTASiteParser();
-        String url = "https://www.ustanorcal.com/listteams.asp?leagueid=2605";
+        String url = "https://leagues.ustanorcal.com/listteams.asp?leagueid=2605";
 
         try {
             List<USTATeamEntity> teams = util.parseDivision(url);

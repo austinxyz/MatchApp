@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-public class UTRDivisionExcelExport extends AbstractXlsxView {
+public class UTRDivisionCandidateExcelExport extends AbstractXlsxView {
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model,

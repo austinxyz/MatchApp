@@ -358,6 +358,22 @@ public class USTAService {
         return member;
     }
 
+    public PlayerEntity updatePlayerUTRValue(String utrId, double dUTRValue, double sUTRValue) {
+
+        PlayerEntity member = getPlayerByUTRId(utrId);
+        if (dUTRValue > 0.1d) {
+            member.setDUTR(dUTRValue);
+            member.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+        }
+        if (sUTRValue > 0.1d) {
+            member.setSUTR(sUTRValue);
+            member.setUtrFetchedTime(new Timestamp(System.currentTimeMillis()));
+        }
+        member = playerRepository.save(member);
+
+        return member;
+    }
+
     public PlayerEntity updatePlayer(String id, PlayerEntity player) {
         PlayerEntity member = getPlayer(id);
 
@@ -591,7 +607,7 @@ public class USTAService {
 
         List<USTALeague> leaguesInDB = getOpenLeagues();
                 //getLeagues(START_YEAR);
-        String url = "https://www.ustanorcal.com/listdivisions.asp";
+        String url = "https://leagues.ustanorcal.com/listdivisions.asp";
         try {
             Map<String, Map> leaguesFromSite = siteParser.parseLeagues(url);
 

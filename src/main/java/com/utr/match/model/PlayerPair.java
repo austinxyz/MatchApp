@@ -52,6 +52,7 @@ public class PlayerPair {
         return Objects.equals(player1, that.player1) && Objects.equals(player2, that.player2);
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(player1, player2);
@@ -75,6 +76,10 @@ public class PlayerPair {
     public boolean has55Member() {
         return (player1.getGender().equals("F") && player1.getUTR() > 5.5) ||
                 (player2.getGender().equals("F") && player2.getUTR() > 5.5);
+    }
+
+    public boolean large4() {
+        return Math.abs(player1.getUTR() - player2.getUTR()) > 4;
     }
 
     public String getPairName() {

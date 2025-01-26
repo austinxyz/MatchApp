@@ -129,7 +129,9 @@ public class PlayerController {
     @CrossOrigin(origins = "*")
     @GetMapping("/utr/{id}")
     public ResponseEntity<PlayerEntity> playerByUTR(@PathVariable("id") String utrId,
-                                                          @RequestParam(value = "action", defaultValue = "search") String action
+                                                          @RequestParam(value = "action", defaultValue = "search") String action,
+                                                    @RequestParam(value = "dutr", defaultValue = "0.0") String dUTRString,
+                                                    @RequestParam(value = "sutr", defaultValue = "0.0") String sUTRString
     ) {
 
         if (action.equals("search")) {
@@ -146,6 +148,20 @@ public class PlayerController {
         if (action.equals("refreshUTRValue")) {
 
             PlayerEntity member = service.updatePlayerUTRValue(utrId);
+
+            if (member != null) {
+                return ResponseEntity.ok(member);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
+
+        if (action.equals("updateUTRValue")) {
+
+            double dUTRValue = Double.parseDouble(dUTRString);
+            double sUTRValue = Double.parseDouble(sUTRString);
+
+            PlayerEntity member = service.updatePlayerUTRValue(utrId, dUTRValue, sUTRValue);
 
             if (member != null) {
                 return ResponseEntity.ok(member);

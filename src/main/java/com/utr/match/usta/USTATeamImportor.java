@@ -130,8 +130,16 @@ public class USTATeamImportor {
 
                     if (players != null && players.size() >0) {
                         for (PlayerEntity candidate: players) {
-                            if (candidate.getUstaRating()!=null && candidate.getUstaRating().equals(player.getUSTARating())) {
-                                existedPlayer = candidate;
+                            if (candidate.getUstaRating()!=null &&
+                                    candidate.getUstaRating().equals(player.getUSTARating())
+                                    ) {
+                                if (candidate.getUstaNorcalId()!= null) {
+                                    if (candidate.getUstaNorcalId().equals(player.getUstaNorcalId())) {
+                                        existedPlayer = candidate;
+                                    }
+                                } else {
+                                    existedPlayer = candidate;
+                                }
                             }
                         }
                     }

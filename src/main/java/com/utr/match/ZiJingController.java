@@ -110,7 +110,7 @@ public class ZiJingController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/team")
-    public ResponseEntity<Team> team(@RequestParam(value = "team", defaultValue = "ZJU-HQU-CMU") String teamName) {
+    public ResponseEntity<Team> team(@RequestParam(value = "team", defaultValue = "ZJU") String teamName) {
         Team team = loader.initTeam(teamName);
 
         if (team!=null && team.getPlayers().size() > 0) {
@@ -139,7 +139,7 @@ public class ZiJingController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/lineup")
-    public ResponseEntity<List<Lineup>> analysis(@RequestParam(value = "team", defaultValue = "ZJU-BYD") String teamName,
+    public ResponseEntity<List<Lineup>> analysis(@RequestParam(value = "team", defaultValue = "ZJU") String teamName,
                                                  @RequestParam(value = "strategy", defaultValue = "0") String strategyNo) {
 
         Team team = loader.initTeam(teamName);
