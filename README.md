@@ -1,7 +1,12 @@
 # MatchApp
  
-It is an application to analysis UTR data 
+## Description
+It is an backend REST API application to analysis UTR/USTA data based on sprint boot and digital ocean MY SQL DB 
 
-it provides rest apis based on sprint boot
+## Architecture
 
 ![alt text](MatchApp.png "Match App")
+
+## DB Diagram
+
+![alt text](Match.png "Match DB")
