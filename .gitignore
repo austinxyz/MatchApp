@@ -32,3 +32,12 @@ build/
 ### VS Code ###
 .vscode/
 /cloud/tess/
+
+### Security-related files ###
+# Environment files with secrets
+.env
+*.env
+# Docker Compose override files that might contain secrets
+docker-compose.override.yml
+# Application properties with actual tokens (use .properties.example for templates)
+# src/main/resources/application-*.properties

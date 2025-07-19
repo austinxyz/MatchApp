@@ -1,0 +1,33 @@
+FROM openjdk:17-jdk-slim-buster
+
+# Add a non-root user to run the application
+RUN addgroup --system --gid 1001 appuser && \
+    adduser --system --uid 1001 --gid 1001 appuser
+
+# Set working directory
+WORKDIR /app
+
+# Copy the jar file
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+
+# Copy required directories
+COPY src ./src
+COPY input ./input
+
+# Set ownership to the non-root user
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Environment variables can be set at runtime using -e flag or docker-compose
+# Example: docker run -e UTR_API_TOKEN=your_token_here ...
+ENV UTR_API_TOKEN=""
+
+# Healthcheck to verify the application is running correctly
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8080/api/utr/token/status || exit 1
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

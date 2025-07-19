@@ -3,11 +3,13 @@ package com.utr.parser;
 import com.utr.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import com.utr.UTRApiConfig;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -35,8 +37,8 @@ public class UTRParser {
     public static final String LEAGUE_CONFERENCE_URL = "https://leagues-api.universaltennis.com/v1/leagues/conferences/%s";
     public static final String LEAGUE_URL = "https://leagues-api.universaltennis.com/v1/leagues/%s/summary";
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
-    //private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6IjE4MTUxOCIsImVtYWlsIjoiYXVzdGluLnh5ekBnbWFpbC5jb20iLCJWZXJzaW9uIjoiMSIsIkRldmljZUxvZ2luSWQiOiIxNzE3MDczNSIsIm5iZiI6MTY5ODUzNzIyOSwiZXhwIjoxNzAxMTI5MjI5LCJpYXQiOjE2OTg1MzcyMjl9.YTea4jg2wgeH2CIX5mKqTBd2gc3jReeAqjI9ZbSQ5N4";
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNZW1iZXJJZCI6Ijc5MjQxNyIsImVtYWlsIjoibWxpZW1AdXdhdGVybG9vLmNhIiwiVmVyc2lvbiI6IjEiLCJEZXZpY2VMb2dpbklkIjoiMjA1MzUxOTQiLCJuYmYiOjE3MjI1NzYyNzEsImV4cCI6MTcyNTE2ODI3MSwiaWF0IjoxNzIyNTc2MjcxfQ.Rswtpx-FhntQok9Fuo0E60l2nXjlgvpdbA87Vnw_6gw";
+    @Autowired
+    private UTRApiConfig utrApiConfig;
     Map<String, PlayerResult> playerResults;
     Map<String, Player> players;
     Map<String, Event> events;
@@ -235,7 +237,7 @@ public class UTRParser {
     public String restGetCall(String getCallURL, boolean withToken) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
-        String accessToken = withToken? TOKEN: "";
+        String accessToken = withToken ? utrApiConfig.getToken() : "";
         headers.set("Authorization", "Bearer " + accessToken);
         try {
             String requestJson = "{}";
@@ -349,7 +351,15 @@ public class UTRParser {
     }
 
     public boolean isTokenExpired(String playerId) {
-        TokenCheckParser resultParser = new TokenCheckParser(playerId);
-        return resultParser.parseResult(getPlayerJson(playerId, true));
+        return utrApiConfig.isTokenExpired(playerId);
+    }
+    
+    /**
+     * Get instructions for updating the token when it expires.
+     * 
+     * @return A string with instructions for updating the token
+     */
+    public String getTokenUpdateInstructions() {
+        return utrApiConfig.getTokenUpdateInstructions();
     }
 }

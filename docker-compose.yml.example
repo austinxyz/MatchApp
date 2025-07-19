@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  matchapp:
+    build:
+      context: .
+      dockerfile: Dockerfile.secure
+    container_name: matchapp
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      # UTR API Configuration
+      - UTR_API_TOKEN=${UTR_API_TOKEN}
+      
+      # Database Configuration
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?ssl-mode=REQUIRED
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+      
+      # JVM Options
+      - JAVA_OPTS=${JAVA_OPTS:-"-Xmx512m -Xms256m"}
+    volumes:
+      # Mount a volume for logs
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/utr/token/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - matchapp-network
+
+networks:
+  matchapp-network:
+    driver: bridge
