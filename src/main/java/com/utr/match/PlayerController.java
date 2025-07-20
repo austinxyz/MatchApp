@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -263,5 +264,42 @@ public class PlayerController {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    
+    @CrossOrigin(origins = "*")
+    @PostMapping("/utr/batch-update")
+    @ApiOperation(value = "Update UTR values for multiple players", notes = "Updates the double UTR (dutr) and single UTR (sutr) values for a list of players")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully updated players"),
+        @ApiResponse(code = 400, message = "Invalid request"),
+        @ApiResponse(code = 404, message = "One or more players not found")
+    })
+    public ResponseEntity<List<PlayerEntity>> updatePlayersUTRValues(
+            @ApiParam(value = "List of player UTR IDs and their UTR values", required = true) @RequestBody List<Map<String, Object>> playerUtrUpdates
+    ) {
+        List<PlayerEntity> updatedPlayers = new ArrayList<>();
+        List<String> notFoundPlayers = new ArrayList<>();
+        
+        for (Map<String, Object> playerUpdate : playerUtrUpdates) {
+            String utrId = (String) playerUpdate.get("utrId");
+            Double dUTRValue = Double.parseDouble(playerUpdate.get("dutr").toString());
+            Double sUTRValue = Double.parseDouble(playerUpdate.get("sutr").toString());
+            
+            // First check if the player exists
+            PlayerEntity player = service.getPlayerByUTRId(utrId);
+            
+            if (player != null) {
+                player = service.updatePlayerUTRValue(utrId, dUTRValue, sUTRValue);
+                updatedPlayers.add(player);
+            } else {
+                notFoundPlayers.add(utrId);
+            }
+        }
+        
+        if (!notFoundPlayers.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        return ResponseEntity.ok(updatedPlayers);
     }
 }

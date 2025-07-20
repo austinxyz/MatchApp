@@ -174,6 +174,41 @@ GET /players/usta/{norcalId}
 - `200 OK`: Returns the `PlayerEntity` object.
 - `404 Not Found`: If no player with the specified NorCal ID exists or the action is invalid.
 
+### Batch Update UTR Values
+
+```
+POST /players/utr/batch-update
+```
+
+**Purpose:** Update UTR values (doubles and singles) for multiple players at once.
+
+**Request Body:**
+- A list of objects, each containing:
+  - `utrId` (string): The UTR ID of the player.
+  - `dutr` (number): The doubles UTR value to set.
+  - `sutr` (number): The singles UTR value to set.
+
+**Example Request Body:**
+```json
+[
+  {
+    "utrId": "123456",
+    "dutr": 8.5,
+    "sutr": 9.0
+  },
+  {
+    "utrId": "789012",
+    "dutr": 7.2,
+    "sutr": 7.8
+  }
+]
+```
+
+**Response:**
+- `200 OK`: Returns a list of updated `PlayerEntity` objects.
+- `400 Bad Request`: If the request body is invalid.
+- `404 Not Found`: If one or more players with the specified UTR IDs don't exist.
+
 ## Data Models
 
 The API uses the following primary data models:
