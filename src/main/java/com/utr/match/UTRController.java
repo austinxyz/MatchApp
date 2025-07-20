@@ -1,6 +1,5 @@
 package com.utr.match;
 
-
 import com.utr.match.entity.*;
 import com.utr.match.model.Team;
 import com.utr.match.utr.CandidateTeam;
@@ -8,6 +7,11 @@ import com.utr.match.utr.UTRDivisionCandidateExcelExport;
 import com.utr.match.utr.UTRDivisionPlayerExcelExport;
 import com.utr.match.utr.UTRService;
 import com.utr.model.League;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/utr")
+@Api(tags = "UTR Management", description = "Operations related to UTR (Universal Tennis Rating) management")
 public class UTRController {
 
     @Autowired
@@ -25,7 +30,14 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/events")
-    public ResponseEntity<List<EventEntity>> events(@RequestParam(value = "status", defaultValue = "active") String status
+    @ApiOperation(value = "Get events", notes = "Retrieves all events based on status")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved events"),
+        @ApiResponse(code = 404, message = "No events found")
+    })
+    public ResponseEntity<List<EventEntity>> events(
+            @ApiParam(value = "Event status (active/inactive)", defaultValue = "active") 
+            @RequestParam(value = "status", defaultValue = "active") String status
     ) {
         List<EventEntity> events = utrService.getEvents(status.equals("active"));
 
@@ -38,7 +50,13 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/leagues/{id}")
-    public ResponseEntity<League> getLeague(@PathVariable("id") String id
+    @ApiOperation(value = "Get league by ID", notes = "Retrieves a league by its ID")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved league"),
+        @ApiResponse(code = 404, message = "League not found")
+    })
+    public ResponseEntity<League> getLeague(
+            @ApiParam(value = "League ID", required = true) @PathVariable("id") String id
     ) {
         League league = utrService.getLeague(id);
 
@@ -51,7 +69,13 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}")
-    public ResponseEntity<Team> getTeam(@PathVariable("id") String id
+    @ApiOperation(value = "Get team by ID", notes = "Retrieves a team by its ID")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved team"),
+        @ApiResponse(code = 404, message = "Team not found")
+    })
+    public ResponseEntity<Team> getTeam(
+            @ApiParam(value = "Team ID", required = true) @PathVariable("id") String id
     ) {
         Team team = utrService.getTeam(id);
 
@@ -64,7 +88,13 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/candidateTeams/{id}")
-    public ResponseEntity<CandidateTeam> candidateTeam(@PathVariable("id") String id
+    @ApiOperation(value = "Get candidate team by ID", notes = "Retrieves a candidate team by its ID")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved candidate team"),
+        @ApiResponse(code = 404, message = "Candidate team not found")
+    })
+    public ResponseEntity<CandidateTeam> candidateTeam(
+            @ApiParam(value = "Candidate team ID", required = true) @PathVariable("id") String id
     ) {
         CandidateTeam team = utrService.getCandidateTeam(Long.valueOf(id));
 
@@ -77,8 +107,14 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/candidateTeams/{id}/utrs")
-    public ResponseEntity<CandidateTeam> updateCandidatesUTR(@PathVariable("id") String id,
-                                                       @RequestParam("action") String action
+    @ApiOperation(value = "Update candidate team UTRs", notes = "Updates UTR values for a candidate team")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully updated UTR values"),
+        @ApiResponse(code = 404, message = "Candidate team not found")
+    })
+    public ResponseEntity<CandidateTeam> updateCandidatesUTR(
+            @ApiParam(value = "Candidate team ID", required = true) @PathVariable("id") String id,
+            @ApiParam(value = "Action to perform", required = true) @RequestParam("action") String action
     ) {
 
         if (action.equals("refreshValue")) {
@@ -97,7 +133,9 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/exportExcel/divisions/{divisionId}")
-    public ModelAndView exportDivisionToExcel(@PathVariable("divisionId") String divisionId) {
+    @ApiOperation(value = "Export division to Excel", notes = "Exports division data to Excel format")
+    public ModelAndView exportDivisionToExcel(
+            @ApiParam(value = "Division ID", required = true) @PathVariable("divisionId") String divisionId) {
         ModelAndView mav = new ModelAndView();
         mav.setView(new UTRDivisionCandidateExcelExport());
 
@@ -110,7 +148,9 @@ public class UTRController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/exportExcel/team/{teamId}")
-    public ModelAndView exportTeamToExcel(@PathVariable("teamId") String teamId) {
+    @ApiOperation(value = "Export team to Excel", notes = "Exports team data to Excel format")
+    public ModelAndView exportTeamToExcel(
+            @ApiParam(value = "Team ID", required = true) @PathVariable("teamId") String teamId) {
         ModelAndView mav = new ModelAndView();
         mav.setView(new UTRDivisionPlayerExcelExport());
 
@@ -122,7 +162,14 @@ public class UTRController {
     }
     @CrossOrigin(origins = "*")
     @PutMapping("/divisions/{id}/candidate/{utrid}")
-    public ResponseEntity<DivisionEntity> addCandidate(@PathVariable("id") long id, @PathVariable("utrid") String utrId ) {
+    @ApiOperation(value = "Add candidate to division", notes = "Adds a candidate to a division")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully added candidate"),
+        @ApiResponse(code = 404, message = "Division not found")
+    })
+    public ResponseEntity<DivisionEntity> addCandidate(
+            @ApiParam(value = "Division ID", required = true) @PathVariable("id") long id, 
+            @ApiParam(value = "UTR ID", required = true) @PathVariable("utrid") String utrId ) {
 
         DivisionEntity div = utrService.getDivision(Long.valueOf(id));
 
