@@ -4,7 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-!**/src/main/resources/application.properties
+# Exclude application.properties files that may contain secrets
+**/src/main/resources/application.properties
+# But include the template file
+!**/src/main/resources/application.properties.template
 
 ### STS ###
 .apt_generated
