@@ -370,6 +370,33 @@ GET /usta/current/leagues
 - `200 OK`: Returns a list of `USTALeaguePO` objects from the USTA site.
 - `404 Not Found`: If no leagues are found.
 
+#### Create League
+
+```
+POST /usta/leagues
+```
+
+**Purpose:** Create a new USTA league.
+
+**Request Body:**
+- `USTALeague` object containing:
+  - `name` (required): The name of the league.
+  - `year` (required): The year of the league.
+  - `status` (optional): The status of the league. Default is "Open".
+
+**Example Request Body:**
+```json
+{
+  "name": "2025 USTA NorCal Adult 18 & Over",
+  "year": "2025",
+  "status": "Open"
+}
+```
+
+**Response:**
+- `200 OK`: Returns the created `USTALeague` object.
+- `400 Bad Request`: If the request body is missing required fields.
+
 ### Match Scores
 
 #### Update Line Score Information

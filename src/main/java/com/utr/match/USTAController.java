@@ -722,4 +722,23 @@ public class USTAController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    
+    @CrossOrigin(origins = "*")
+    @PostMapping("/leagues")
+    @ApiOperation(value = "Create league", notes = "Creates a new USTA league")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully created league"),
+        @ApiResponse(code = 400, message = "Invalid request")
+    })
+    public ResponseEntity<USTALeague> createLeague(
+            @ApiParam(value = "League details", required = true) @RequestBody USTALeague league) {
+        
+        if (league.getName() == null || league.getName().trim().isEmpty() || 
+            league.getYear() == null || league.getYear().trim().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        
+        USTALeague createdLeague = ustaService.createLeague(league);
+        return new ResponseEntity<>(createdLeague, HttpStatus.OK);
+    }
 }

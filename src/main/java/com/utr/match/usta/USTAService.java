@@ -805,5 +805,21 @@ public class USTAService {
 
         return team;
     }
+    
+    public USTALeague createLeague(USTALeague league) {
+        // Check if a league with the same name already exists
+        USTALeague existingLeague = leagueRepository.findByName(league.getName());
+        if (existingLeague != null) {
+            return existingLeague;
+        }
+        
+        // Set default status to "Open" if not provided
+        if (league.getStatus() == null) {
+            league.setStatus("Open");
+        }
+        
+        // Save the new league
+        return leagueRepository.save(league);
+    }
 
 }
