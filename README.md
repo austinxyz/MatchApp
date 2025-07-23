@@ -128,10 +128,57 @@ Each API documentation includes:
 The application implements several security best practices:
 
 - **API Authentication**: Secure token-based authentication for API access.
-- **UTR API Token Management:** Secure handling of UTR API authentication tokens using environment variables and externalized configuration.
-- **Database Credentials:** Secure storage of database credentials using environment variables.
-- **CORS Configuration**: Controlled cross-origin resource sharing for frontend integration.
-- **Docker Security:** Non-root user execution in containerized deployments.
+- **Environment-Specific Configuration**: 
+  - **Development**: Uses application.properties with direct values for local development
+  - **Production**: Uses application-production.properties with environment variables
+- **Secure Credential Management**: 
+  - **UTR API Token**: Securely managed through environment variables in production
+  - **Database Credentials**: Externalized through environment variables in production
+  - **Google Sheets API**: Secure handling of Google API credentials
+- **CORS Configuration**: Controlled cross-origin resource sharing for frontend integration
+- **Docker Security**: Non-root user execution in containerized deployments
+
+### Credential Management Best Practices
+
+The application follows these security best practices for managing credentials:
+
+1. **Development Environment**: 
+   - Uses application.properties with direct values for ease of local development
+   - No need to set environment variables for local testing
+
+2. **Production Environment**: 
+   - Uses application-production.properties which requires environment variables:
+   ```bash
+   # UTR API Token
+   export UTR_API_TOKEN=your_actual_token_here
+   
+   # Database Credentials
+   export SPRING_DATASOURCE_URL=jdbc:mysql://your-db-host:3306/matchapp
+   export SPRING_DATASOURCE_USERNAME=your_username
+   export SPRING_DATASOURCE_PASSWORD=your_password
+   
+   # Google API Credentials
+   export GOOGLE_SPREADSHEET_ID=your_spreadsheet_id
+   export GOOGLE_CREDENTIALS_FILE_PATH=/path/to/credentials.json
+   ```
+
+3. **Activating Production Profile**:
+   - When deploying to production, activate the production profile:
+   ```bash
+   java -jar matchapp.jar --spring.profiles.active=production
+   ```
+   - Or set the environment variable:
+   ```bash
+   export SPRING_PROFILES_ACTIVE=production
+   ```
+
+4. **Secrets Management**: For production deployments, consider using a dedicated secrets management solution:
+   - Kubernetes Secrets
+   - AWS Secrets Manager
+   - HashiCorp Vault
+   - Docker Secrets
+
+5. **Token Rotation**: Implement regular rotation of API tokens and credentials
 
 ---
 
@@ -160,9 +207,32 @@ The application implements several security best practices:
      spring.datasource.password=your-password
      ```
 
-3. **Configure the UTR API token:**
-   - Option 1: Update the `utr.api.token` property in application.properties
-   - Option 2: Set the `UTR_API_TOKEN` environment variable (recommended for production)
+3. **Configure the environment:**
+
+   **For Local Development:**
+   - No additional configuration needed - application.properties contains development values
+   - You can modify application.properties for your local environment if needed
+
+   **For Production Deployment:**
+   - Activate the production profile:
+     ```bash
+     java -jar matchapp.jar --spring.profiles.active=production
+     ```
+     
+   - Set required environment variables:
+     ```bash
+     # UTR API Token
+     export UTR_API_TOKEN=your_actual_token_here
+     
+     # Database Credentials
+     export SPRING_DATASOURCE_URL=jdbc:mysql://your-db-host:3306/matchapp
+     export SPRING_DATASOURCE_USERNAME=your_username
+     export SPRING_DATASOURCE_PASSWORD=your_password
+     
+     # Google Sheets API (if using)
+     export GOOGLE_SPREADSHEET_ID=your_spreadsheet_id
+     export GOOGLE_CREDENTIALS_FILE_PATH=/path/to/credentials.json
+     ```
 
 4. **Build and run the application:**
     ```bash
