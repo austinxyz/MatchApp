@@ -75,6 +75,64 @@ GET /usta/site/divisions/{id}/teams
 - `200 OK`: Returns a list of `USTATeamPO` objects from the USTA site.
 - `404 Not Found`: If no teams are found or the division doesn't exist.
 
+#### Initiate Team Import with SSE Progress Tracking
+
+```
+POST /usta/teams/import
+```
+
+**Purpose:** Initiate the import of a USTA team with Server-Sent Events (SSE) progress tracking.
+
+**Request Body:**
+- `USTATeamPO` object containing at minimum the team's link on the USTA website.
+
+**Response:**
+- `200 OK`: Returns an object containing the import ID: `{ "importId": 123 }`.
+
+#### Track Import Progress (SSE)
+
+```
+GET /usta/teams/import/{id}/progress
+```
+
+**Purpose:** Server-Sent Events (SSE) endpoint that provides real-time updates on the import progress.
+
+**Request Parameters:**
+- `id` (path variable): The unique identifier of the import process.
+
+**Response:**
+- SSE stream with the following event types:
+  - `progress`: Updates on the import progress.
+    ```
+    event: progress
+    data: {"step": "fetching_team_data", "progress": 25, "message": "Retrieving team information...", "status": "in_progress"}
+    ```
+  - `complete`: Sent when the import is completed successfully.
+    ```
+    event: complete
+    data: {"teamId": 123, "teamName": "Team Name", "message": "Import completed successfully"}
+    ```
+  - `error`: Sent when an error occurs during the import.
+    ```
+    event: error
+    data: {"message": "Error message"}
+    ```
+
+#### Get Import Status
+
+```
+GET /usta/teams/import/{id}
+```
+
+**Purpose:** Retrieve the current status of an import process.
+
+**Request Parameters:**
+- `id` (path variable): The unique identifier of the import process.
+
+**Response:**
+- `200 OK`: Returns a `USTAImportProgress` object containing the current status of the import.
+- `404 Not Found`: If the import with the specified ID doesn't exist.
+
 #### Create Team
 
 ```
@@ -546,6 +604,7 @@ The API uses the following primary data models:
 - `PlayerEntity`: Represents a player with their UTR and USTA information.
 - `USTACandidateTeam`: Represents a team of candidate players.
 - `USTATeamAnalysisResult`: Contains the results of comparing two teams.
+- `USTAImportProgress`: Represents the progress of a team import operation, including step, progress percentage, message, and status.
 
 ## Error Handling
 

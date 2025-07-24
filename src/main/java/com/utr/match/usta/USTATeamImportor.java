@@ -75,7 +75,7 @@ public class USTATeamImportor {
         return teams;
     }
 
-    private USTATeamEntity createTeamAndAddPlayers(String teamURL) {
+    public USTATeamEntity createTeamAndAddPlayers(String teamURL) {
 
         USTASiteParser util = new USTASiteParser();
         try {
@@ -494,7 +494,9 @@ public class USTATeamImportor {
                         player.getPlayer().setUstaNorcalId(newPlayer.getUstaNorcalId());
                     }
                     playerRepository.save(player.getPlayer());
-                    logger.debug("Player:" + player.getName() + " non CAL ID: " + player.getUstaNorcalId() + " Saved ");
+                    String debugMsg = "Player:" + player.getName() + " non CAL ID: " + player.getUstaNorcalId() + " Saved ";
+                    logger.debug(debugMsg);
+                    sendDebugMessage(debugMsg);
                 }
 
                 if (player.getNoncalLink() != null) {
@@ -503,11 +505,15 @@ public class USTATeamImportor {
                         player.getPlayer().setUstaId(playerInfo.get("USTAID"));
                         player.getPlayer().setUstaRating(playerInfo.get("Rating"));
                         playerRepository.save(player.getPlayer());
-                        logger.debug("Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ");
+                        String debugMsg = "Player:" + player.getName() + " usta ID: " + player.getUstaId() + " Saved ";
+                        logger.debug(debugMsg);
+                        sendDebugMessage(debugMsg);
                     } else {
                         player.getPlayer().setUstaRating(playerInfo.get("Rating"));
                         playerRepository.save(player.getPlayer());
-                        logger.debug("Player:" + player.getName() + " usta Rating: " + player.getUstaId() + " Saved ");
+                        String debugMsg = "Player:" + player.getName() + " usta Rating: " + player.getUstaId() + " Saved ";
+                        logger.debug(debugMsg);
+                        sendDebugMessage(debugMsg);
 //                        logger.debug("Player:" + player.getName() + " nothing to update ");
                     }
                 }
@@ -526,5 +532,18 @@ public class USTATeamImportor {
 
     public boolean isTokenExpired(String playerId) {
         return parser.isTokenExpired(playerId);
+    }
+    
+    // Debug message callback
+    private java.util.function.Consumer<String> debugCallback;
+    
+    private void sendDebugMessage(String message) {
+        if (debugCallback != null) {
+            debugCallback.accept(message);
+        }
+    }
+    
+    public void setDebugCallback(java.util.function.Consumer<String> callback) {
+        this.debugCallback = callback;
     }
 }

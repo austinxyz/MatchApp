@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USTA Team Import SSE Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .progress-container {
+            margin-top: 20px;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .log {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .error {
+            color: #D32F2F;
+        }
+        .success {
+            color: #388E3C;
+        }
+        .info {
+            color: #1976D2;
+        }
+        .debug {
+            color: #9C27B0;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0b7dda;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>USTA Team Import with SSE Progress</h1>
+    
+    <div class="container">
+        <h2>Import a USTA Team</h2>
+        <div>
+            <input type="text" id="teamLink" placeholder="Enter USTA team link" value="https://leagues.ustanorcal.com/listplayers.asp?teamid=1234">
+            <button id="startImport">Start Import</button>
+        </div>
+        
+        <div class="progress-container" id="progressContainer" style="display: none;">
+            <h3>Import Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="progressText">0%</div>
+            <div id="statusMessage">Initializing...</div>
+        </div>
+        
+        <div class="log">
+            <div id="logContainer"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startImportBtn = document.getElementById('startImport');
+            const teamLinkInput = document.getElementById('teamLink');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const statusMessage = document.getElementById('statusMessage');
+            const logContainer = document.getElementById('logContainer');
+            
+            let eventSource = null;
+            
+            function addLogEntry(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+            
+            function updateProgress(progress, message) {
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `${progress}%`;
+                statusMessage.textContent = message;
+            }
+            
+            startImportBtn.addEventListener('click', function() {
+                const teamLink = teamLinkInput.value.trim();
+                if (!teamLink) {
+                    addLogEntry('Please enter a valid USTA team link', 'error');
+                    return;
+                }
+                
+                // Close any existing event source
+                if (eventSource) {
+                    eventSource.close();
+                }
+                
+                // Reset UI
+                progressContainer.style.display = 'block';
+                updateProgress(0, 'Starting import...');
+                logContainer.innerHTML = '';
+                addLogEntry('Starting team import...', 'info');
+                
+                // Start the import
+                fetch('/usta/teams/import', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        link: teamLink
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to start import');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const importId = data.importId;
+                    addLogEntry(`Import started with ID: ${importId}`, 'info');
+                    
+                    // Connect to SSE endpoint
+                    eventSource = new EventSource(`/usta/teams/import/${importId}/progress`);
+                    
+                    eventSource.addEventListener('progress', function(event) {
+                        const data = JSON.parse(event.data);
+                        updateProgress(data.progress, data.message);
+                        addLogEntry(`Progress: ${data.progress}% - ${data.message}`, 'info');
+                    });
+                    
+                    eventSource.addEventListener('debug', function(event) {
+                        const data = JSON.parse(event.data);
+                        addLogEntry(`Debug: ${data.message}`, 'debug');
+                    });
+                    
+                    eventSource.addEventListener('complete', function(event) {
+                        const data = JSON.parse(event.data);
+                        updateProgress(100, 'Import completed successfully');
+                        addLogEntry(`Import completed successfully! Team ID: ${data.teamId}`, 'success');
+                        eventSource.close();
+                    });
+                    
+                    eventSource.addEventListener('error', function(event) {
+                        const data = JSON.parse(event.data);
+                        addLogEntry(`Error: ${data.message}`, 'error');
+                        eventSource.close();
+                    });
+                    
+                    eventSource.onerror = function() {
+                        addLogEntry('Connection to server lost', 'error');
+                        eventSource.close();
+                    };
+                })
+                .catch(error => {
+                    addLogEntry(`Error: ${error.message}`, 'error');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

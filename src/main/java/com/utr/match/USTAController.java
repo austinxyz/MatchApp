@@ -10,11 +10,14 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/usta")
@@ -24,7 +27,6 @@ public class USTAController {
     @Autowired
     private USTAService ustaService;
 
-
     @Autowired
     private USTATeamImportor importor;
 
@@ -33,6 +35,9 @@ public class USTAController {
 
     @Autowired
     private USTATeamAnalyser teamAnalyser;
+    
+    @Autowired
+    private USTAImportService importService;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/teams/{id}")
@@ -339,6 +344,47 @@ public class USTAController {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/teams/import")
+    @ApiOperation(value = "Initiate team import", notes = "Initiates the import of a USTA team and returns an import ID for tracking progress")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully initiated import")
+    })
+    public ResponseEntity<Map<String, Long>> initiateTeamImport(
+            @ApiParam(value = "Team details", required = true) @RequestBody USTATeamPO team) {
+
+        Long importId = importService.startImport(team.getLink());
+        
+        return ResponseEntity.ok(Map.of("importId", importId));
+    }
+    
+    @CrossOrigin(origins = "*")
+    @GetMapping(value = "/teams/import/{id}/progress", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @ApiOperation(value = "Track import progress", notes = "SSE endpoint that provides real-time updates on the import progress")
+    public SseEmitter trackImportProgress(
+            @ApiParam(value = "Import ID", required = true) @PathVariable("id") Long id) {
+        
+        return importService.registerEmitter(id);
+    }
+    
+    @CrossOrigin(origins = "*")
+    @GetMapping("/teams/import/{id}")
+    @ApiOperation(value = "Get import status", notes = "Retrieves the current status of an import process")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved import status"),
+        @ApiResponse(code = 404, message = "Import not found")
+    })
+    public ResponseEntity<USTAImportProgress> getImportStatus(
+            @ApiParam(value = "Import ID", required = true) @PathVariable("id") Long id) {
+        
+        try {
+            USTAImportProgress progress = importService.getProgress(id);
+            return ResponseEntity.ok(progress);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @CrossOrigin(origins = "*")

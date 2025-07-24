@@ -11,6 +11,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+/**
+ * Tests for the UTRParser class
+ */
 @SpringBootTest
 @TestPropertySource(properties = {
     "utr.api.token=test-token-from-properties"
@@ -23,6 +26,9 @@ public class UTRParserTest {
     @MockBean
     private Environment environment;
 
+    /**
+     * Test that the token is retrieved from environment variable when available
+     */
     @Test
     public void testGetTokenFromEnvironmentVariable() {
         // Mock environment to return a token
@@ -35,6 +41,9 @@ public class UTRParserTest {
         assertEquals("test-token-from-env", token);
     }
 
+    /**
+     * Test that the token falls back to application.properties when no environment variable is set
+     */
     @Test
     public void testGetTokenFromApplicationProperties() {
         // Mock environment to return null (no env variable set)
@@ -47,6 +56,9 @@ public class UTRParserTest {
         assertEquals("test-token-from-properties", token);
     }
 
+    /**
+     * Test that an empty string is returned when both sources are empty
+     */
     @Test
     public void testGetTokenFallbackWhenBothSourcesEmpty() {
         // Mock environment to return null (no env variable set)

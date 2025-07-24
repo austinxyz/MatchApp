@@ -39,7 +39,7 @@ public class UTRParser {
     public static final String LEAGUE_URL = "https://leagues-api.universaltennis.com/v1/leagues/%s/summary";
     private static final Logger logger = LoggerFactory.getLogger(UTRParser.class);
     
-    @Value("${utr.api.token:}")
+    @Value("${utr.api.token}")
     private String configuredToken;
     
     @Autowired
@@ -74,7 +74,7 @@ public class UTRParser {
         }
         
         // Fall back to the configured token from application.properties
-        return configuredToken;
+        return configuredToken != null ? configuredToken : "";
     }
 
     public List<Event> getClubEvents(String clubId, boolean withToken) {
